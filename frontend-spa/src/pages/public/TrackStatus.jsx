@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import apiClient from '../../services/apiClient';
-import { Search, Clock, CheckCircle, FileText, XCircle } from 'lucide-react';
+import { Search, Clock, CheckCircle, FileText, XCircle, User, Calendar } from 'lucide-react';
 
 const StatusIcon = ({ status }) => {
   switch(status) {
@@ -53,7 +53,7 @@ export const TrackStatus = () => {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto mb-20">
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold text-slate-800">Lacak Status Surat</h1>
         <p className="text-slate-500 mt-2">Masukkan Kode Pelacakan (Tracking Code) untuk melihat histori proses pembuatan surat Anda.</p>
@@ -86,29 +86,56 @@ export const TrackStatus = () => {
 
       {data && (
         <div className="space-y-6">
-          <Card>
-            <CardBody className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
-              <div>
-                <p className="text-sm text-slate-500">Pemohon</p>
-                <h3 className="font-semibold text-slate-800 text-lg">{data.nama_lengkap}</h3>
-                <p className="text-sm font-medium text-slate-600 mt-1">Surat: {data.nama_surat}</p>
-                <p className="text-xs text-slate-400 mt-1">Diajukan pada: {data.tgl_pengajuan}</p>
+          <Card className="shadow-md border border-slate-200 overflow-hidden">
+            {(() => {
+              const getTheme = (status) => {
+                switch(status) {
+                  case 'selesai': return { bg: 'bg-emerald-600', border: 'border-emerald-700', label: 'text-emerald-100' };
+                  case 'ditolak': return { bg: 'bg-rose-600', border: 'border-rose-700', label: 'text-rose-100' };
+                  case 'diproses': return { bg: 'bg-blue-600', border: 'border-blue-700', label: 'text-blue-100' };
+                  case 'menunggu': 
+                  default: return { bg: 'bg-amber-500', border: 'border-amber-600', label: 'text-amber-100' };
+                }
+              };
+              const theme = getTheme(data.status);
+              
+              return (
+                <div className={`${theme.bg} border-b ${theme.border} p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-colors duration-500`}>
+                  <div>
+                    <p className={`text-[11px] font-bold ${theme.label} uppercase tracking-widest mb-1`}>Kode Pelacakan</p>
+                    <p className="font-mono font-black text-white text-lg tracking-tight">
+                      {data.tracking_code || trackCode}
+                    </p>
+                  </div>
+                  <div className="px-5 py-2 rounded-xl text-sm uppercase font-black shadow-sm bg-white/20 border border-white/30 text-white backdrop-blur-sm tracking-wider">
+                    {data.status}
+                  </div>
+                </div>
+              );
+            })()}
+            
+            <CardBody className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nama Pemohon</p>
+                  <p className="font-bold text-slate-900 text-lg leading-tight">{data.nama_lengkap}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Jenis Surat</p>
+                  <p className="font-medium text-slate-800 leading-snug">{data.nama_surat}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Tanggal Masuk</p>
+                  <p className="font-medium text-slate-800 leading-snug">{data.tgl_pengajuan}</p>
+                </div>
               </div>
-              <div className="flex flex-col items-end gap-2">
-                <Badge 
-                  variant={
-                    data.status === 'selesai' ? 'success' : 
-                    data.status === 'ditolak' ? 'danger' : 
-                    data.status === 'diproses' ? 'info' : 'warning'
-                  }
-                  className="px-4 py-1.5 text-sm uppercase"
-                >
-                  {data.status}
-                </Badge>
-                {data.status === 'ditolak' && (
-                  <p className="text-xs text-rose-600 max-w-xs text-right">Alasan: {data.alasan_penolakan}</p>
-                )}
-              </div>
+
+              {data.status === 'ditolak' && (
+                <div className="mt-6 p-4 bg-rose-50 border border-rose-100 rounded-lg">
+                  <p className="text-[11px] font-bold text-rose-600 uppercase tracking-wider mb-1">Alasan Penolakan</p>
+                  <p className="text-sm font-semibold text-rose-800">{data.alasan_penolakan}</p>
+                </div>
+              )}
             </CardBody>
           </Card>
 
@@ -116,7 +143,7 @@ export const TrackStatus = () => {
             <h3 className="text-lg font-semibold text-slate-800 mb-4 px-1">Riwayat Proses</h3>
             <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="relative border-l border-slate-200 ml-3 space-y-8">
-                {data.riwayat.map((history, idx) => (
+                {[...data.riwayat].reverse().map((history, idx) => (
                   <div key={idx} className="relative pl-6">
                     <span className="absolute -left-4 bg-white p-1 rounded-full">
                       <StatusIcon status={history.status_baru} />
