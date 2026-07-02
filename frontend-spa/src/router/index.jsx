@@ -6,6 +6,7 @@ import { PublicLayout } from '../components/layout/PublicLayout';
 import { AdminLayout } from '../components/layout/AdminLayout';
 
 // Public Pages
+import { Home } from '../pages/public/Home';
 import { FormPengajuan } from '../pages/public/FormPengajuan';
 import { TrackStatus } from '../pages/public/TrackStatus';
 
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <Home />
+      },
+      {
+        path: 'ajukan',
         element: <FormPengajuan />
       },
       {

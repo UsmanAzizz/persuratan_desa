@@ -9,6 +9,8 @@ $routes->get('/', 'Home::index');
 // API Routes (Sistem Informasi Persuratan Desa)
 // ==========================================
 $routes->group('api/v1', function($routes) {
+    // Rute preflight CORS
+    $routes->options('(:any)', 'Home::index');
     
     // Modul Otentikasi Sesi
     $routes->group('auth', function($routes) {

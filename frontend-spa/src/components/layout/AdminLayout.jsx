@@ -1,16 +1,25 @@
-import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, Settings, LogOut } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
 
 export const AdminLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToast } = useToastStore();
+
+  useEffect(() => {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      addToast('Anda harus masuk (login) terlebih dahulu', 'warning');
+      navigate('/login', { replace: true });
+    }
+  }, [location.pathname, navigate, addToast]);
 
   const handleLogout = () => {
     localStorage.removeItem('jwt_token');
     addToast('Sesi Anda telah berakhir', 'info');
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
   return (

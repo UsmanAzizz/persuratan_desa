@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -13,6 +13,13 @@ export const Login = () => {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem('jwt_token');
+    if (token) {
+      navigate('/admin', { replace: true });
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -24,7 +31,7 @@ export const Login = () => {
       if (res.data.success) {
         localStorage.setItem('jwt_token', res.data.data.token);
         addToast(`Selamat datang, ${res.data.data.user.nama_petugas}`, 'success');
-        navigate('/admin');
+        navigate('/admin', { replace: true });
       }
     } catch (error) {
       // apiClient already dispatched error toast

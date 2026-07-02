@@ -4,25 +4,25 @@ import { Outlet, Link } from 'react-router-dom';
 export const PublicLayout = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0 flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">DK</span>
-              </div>
-              <span className="font-semibold text-slate-800 text-lg">Desa Kutasari</span>
+              <img src="/logo_Cilacap.png" alt="Logo Cilacap" className="w-10 h-10 object-contain" />
+              <span className="font-bold text-slate-800 text-2xl tracking-tight">Desa Kutasari</span>
             </div>
-            <nav className="flex gap-4">
-              <Link to="/" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Pengajuan Surat</Link>
-              <Link to="/track" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Cek Status</Link>
-              <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Portal Staf</Link>
+            <nav className="flex gap-6 items-center">
+              <Link to="/" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Beranda</Link>
+              <Link to="/ajukan" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Ajukan Surat</Link>
+              <Link to="/track" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Cek Status</Link>
+              <div className="w-px h-4 bg-slate-300 mx-2 hidden sm:block"></div>
+              <Link to="/login" className="hidden sm:block text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Portal Staf</Link>
             </nav>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full flex flex-col">
         <Outlet />
       </main>
 

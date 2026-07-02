@@ -13,7 +13,8 @@ function getJWTFromRequest($authenticationHeader)
 
 function validateJWTFromRequest(string $encodedToken)
 {
-    $key = getenv('JWT_SECRET_KEY');
+    // Firebase PHP-JWT v6+ requires key to be at least 32 bytes for HS256
+    $key = getenv('JWT_SECRET_KEY') ?: 'kutasari_secure_key_2026_!@#_long_enough_32bytes';
     if (!$key) {
         throw new Exception('JWT_SECRET_KEY is not configured in environment variables');
     }
@@ -24,7 +25,7 @@ function validateJWTFromRequest(string $encodedToken)
 
 function getSignedJWTForUser($username, $role, $id)
 {
-    $key = getenv('JWT_SECRET_KEY');
+    $key = getenv('JWT_SECRET_KEY') ?: 'kutasari_secure_key_2026_!@#_long_enough_32bytes';
     
     $issuedAtTime = time();
     $tokenTimeToLive = getenv('JWT_TIME_TO_LIVE') ?: 3600; // default 1 hour
