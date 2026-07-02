@@ -1,0 +1,29 @@
+{
+  "apps": [
+    {
+      "name": "desa-frontend",
+      "script": "npm",
+      "args": "run dev",
+      "cwd": "./frontend-spa",
+      "autorestart": true,
+      "watch": false,
+      "ignore_watch": ["node_modules", "logs", "dist"],
+      "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
+      "error_file": "./logs/frontend-err.log",
+      "out_file": "./logs/frontend-out.log"
+    },
+    {
+      "name": "desa-backend",
+      "script": "spark",
+      "args": "serve --host 127.0.0.1 --port 8080",
+      "interpreter": "C:\\php\\php.exe",
+      "cwd": "./backend-api",
+      "autorestart": true,
+      "watch": false,
+      "ignore_watch": ["logs", "writable"],
+      "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
+      "error_file": "./logs/backend-err.log",
+      "out_file": "./logs/backend-out.log"
+    }
+  ]
+}
