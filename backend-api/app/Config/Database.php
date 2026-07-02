@@ -32,7 +32,7 @@ class Database extends Config
         'database'     => '',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
-        'pConnect'     => false,
+        'pConnect'     => true, // Optimasi: Menggunakan Persistent Connection layaknya Connection Pool di Node.js
         'DBDebug'      => true,
         'charset'      => 'utf8mb4',
         'DBCollat'     => 'utf8mb4_general_ci',

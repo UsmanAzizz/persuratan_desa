@@ -14,8 +14,16 @@ class PengajuanController extends BaseApiController
      */
     public function getJenisSurat()
     {
-        $jenisSuratModel = new JenisSuratModel();
-        return $this->respondSuccess($jenisSuratModel->findAll(), 'Berhasil mengambil referensi surat');
+        // Optimasi: Memori Caching agar tidak membebani database setiap saat
+        $cache = \Config\Services::cache();
+        
+        if (! $data = $cache->get('jenis_surat_list')) {
+            $jenisSuratModel = new JenisSuratModel();
+            $data = $jenisSuratModel->findAll();
+            $cache->save('jenis_surat_list', $data, 3600); 
+        }
+
+        return $this->respondSuccess($data, 'Berhasil mengambil referensi surat (Cache Enabled)');
     }
 
     /**
