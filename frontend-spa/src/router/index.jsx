@@ -14,6 +14,7 @@ import { TrackStatus } from '../pages/public/TrackStatus';
 import { Login } from '../pages/auth/Login';
 import { Dashboard } from '../pages/admin/Dashboard';
 import { AntreanSurat } from '../pages/admin/AntreanSurat';
+import { PengaturanWA } from '../pages/admin/PengaturanWA';
 
 // Mock Pages (Temporary placeholders removed)
 
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
       {
         path: 'pengajuan',
         element: <AntreanSurat />
+      },
+      {
+        path: 'pengaturan-wa',
+        element: <PengaturanWA />
       }
     ]
   }

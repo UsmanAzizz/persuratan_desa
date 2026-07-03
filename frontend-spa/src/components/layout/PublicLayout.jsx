@@ -1,7 +1,14 @@
-import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 
 export const PublicLayout = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">

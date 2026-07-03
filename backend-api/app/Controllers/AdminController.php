@@ -48,6 +48,16 @@ class AdminController extends BaseApiController
             return $this->respondError('Data pengajuan tidak ditemukan', 404);
         }
 
+        // Ambil detail warga dan jenis surat untuk notifikasi WA
+        $db = \Config\Database::connect();
+        $pengajuanDetail = $db->table('pengajuan_surat p')
+                              ->select('p.kode_tracking, w.nama_lengkap, w.no_hp, j.nama_surat')
+                              ->join('warga w', 'w.nik = p.nik_warga')
+                              ->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat')
+                              ->where('p.id_pengajuan', $id_pengajuan)
+                              ->get()
+                              ->getRowArray();
+
         $statusBaru = $this->request->getVar('status_baru');
         $catatan = $this->request->getVar('catatan');
         
@@ -84,6 +94,41 @@ class AdminController extends BaseApiController
             'id_user_eksekutor' => $idUserEksekutor,
             'catatan'           => $catatan ?: "Status diperbarui ke " . strtoupper($statusBaru)
         ]);
+
+        // Trigger WA Gateway Notifikasi
+        if ($pengajuanDetail && !empty($pengajuanDetail['no_hp'])) {
+            $pesan = "Halo Sdr/i *" . $pengajuanDetail['nama_lengkap'] . "*, \n\n";
+            $pesan .= "Pemberitahuan dari *Desa Kutasari* mengenai permohonan *" . $pengajuanDetail['nama_surat'] . "* Anda (Kode: " . $pengajuanDetail['kode_tracking'] . ").\n\n";
+            
+            if ($statusBaru === 'diproses') {
+                $pesan .= "⏳ Berkas Anda saat ini sedang dalam tahap *DIPROSES* oleh staf administrasi.";
+            } else if ($statusBaru === 'selesai') {
+                $pesan .= "✅ Berkas Anda telah *SELESAI* diproses! Silakan datang ke balai desa pada jam kerja untuk mengambil dokumen tersebut.";
+            } else if ($statusBaru === 'ditolak') {
+                $pesan .= "❌ Mohon maaf, permohonan Anda *DITOLAK* dengan catatan:\n_{$catatan}_\n\nSilakan lengkapi kekurangan dan ajukan kembali.";
+            } else if ($statusBaru === 'menunggu') {
+                $pesan .= "🕒 Berkas Anda dikembalikan ke antrean *MENUNGGU* verifikasi.";
+            }
+
+            $pesan .= "\n\nCek rincian dan riwayat pengajuan Anda di sini:\n";
+            $pesan .= "http://localhost:5173/track?code=" . $pengajuanDetail['kode_tracking'];
+
+            // Kirim ke Node.js Gateway
+            $waUrl = 'http://localhost:3000/wa/send';
+            $waData = [
+                'target' => $pengajuanDetail['no_hp'],
+                'message' => $pesan
+            ];
+            
+            $ch = curl_init($waUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($waData));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            curl_setopt($ch, CURLOPT_TIMEOUT, 3); // Timeout singkat agar UI Admin tidak freeze
+            curl_exec($ch);
+            curl_close($ch);
+        }
 
         return $this->respondSuccess(null, 'Status dokumen berhasil diperbarui');
     }

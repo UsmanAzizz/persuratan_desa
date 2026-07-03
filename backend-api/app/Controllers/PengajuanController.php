@@ -92,6 +92,47 @@ class PengajuanController extends BaseApiController
             'catatan'           => 'Pengajuan awal masuk ke sistem'
         ]);
 
+        // 5. Kirim Notifikasi WA ke Pemohon
+        $jenisSuratModel = new JenisSuratModel();
+        $jenisSurat = $jenisSuratModel->find($this->request->getVar('id_jenis_surat'));
+        $namaSurat = $jenisSurat ? $jenisSurat['nama_surat'] : 'Surat Keterangan';
+
+        $noHp = $wargaData['no_hp'];
+        $namaLengkap = $wargaData['nama_lengkap'];
+        
+        $dataInputArr = json_decode($this->request->getVar('data_input'), true) ?: [];
+
+        $pesan = "Halo Sdr/i *" . $namaLengkap . "*,\n\n";
+        $pesan .= "Pengajuan *" . $namaSurat . "* Anda telah berhasil diterima dan masuk ke dalam antrean sistem *Desa Kutasari*.\n\n";
+        $pesan .= "📋 *DETAIL DATA:*\n";
+        $pesan .= "• NIK: " . $nik . "\n";
+        foreach ($dataInputArr as $key => $val) {
+            $label = ucwords(str_replace('_', ' ', $key));
+            $pesan .= "• " . $label . ": " . $val . "\n";
+        }
+        
+        $pesan .= "\nKODE PELACAKAN: *" . $kodeTracking . "*\n\n";
+        $pesan .= "Untuk memantau progres permohonan surat Anda secara real-time, silakan kunjungi tautan di bawah ini:\n";
+        // Asumsi frontend berjalan di localhost:5173
+        $pesan .= "http://localhost:5173/track?code=" . $kodeTracking . "\n\n";
+        $pesan .= "_(Catatan: Mohon simpan pesan dan tautan ini untuk mengambil dokumen Anda nanti di balai desa)_";
+
+        // Eksekusi API Node.js Gateway
+        $waUrl = 'http://localhost:3000/wa/send';
+        $waData = [
+            'target' => $noHp,
+            'message' => $pesan
+        ];
+        
+        $ch = curl_init($waUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($waData));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3); // Timeout agar user tidak lama menunggu
+        curl_exec($ch);
+        curl_close($ch);
+
         return $this->respondSuccess([
             'kode_tracking' => $kodeTracking,
         ], 'Pengajuan berhasil direkam. Harap simpan Kode Pelacakan Anda.');

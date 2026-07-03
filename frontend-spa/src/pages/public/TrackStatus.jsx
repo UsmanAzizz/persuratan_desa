@@ -53,7 +53,7 @@ export const TrackStatus = () => {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto mb-20">
+    <div className="max-w-3xl mx-auto mt-12 mb-20">
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold text-slate-800">Lacak Status Surat</h1>
         <p className="text-slate-500 mt-2">Masukkan Kode Pelacakan (Tracking Code) untuk melihat histori proses pembuatan surat Anda.</p>

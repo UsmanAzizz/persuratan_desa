@@ -4,3 +4,8 @@ logs/
 dist/
 build/
 .DS_Store
+
+# WhatsApp Gateway Sessions
+.wwebjs_auth/
+wa-gateway/.wwebjs_auth/
+.wwebjs_cache/
