@@ -226,7 +226,7 @@ class AdminController extends BaseApiController
     // ==================================================
     private function _proxyWaGateway($endpoint, $method = 'GET')
     {
-        $url = 'http://127.0.0.1:3000' . $endpoint;
+        $url = 'http://127.0.0.1:3030' . $endpoint;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if ($method === 'POST') {
