@@ -78,18 +78,17 @@ export const PengaturanWA = () => {
             
             {/* --- KOLOM KIRI --- */}
             <div className="p-8 flex flex-col justify-center items-center md:items-start text-center md:text-left border-r border-slate-100 h-full">
-              <AnimatePresence mode="wait">
                 
                 {status === 'CHECKING' && (
-                  <motion.div key="checking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <div key="checking">
                     <div className="w-16 h-16 border-4 border-slate-200 border-t-emerald-500 rounded-full animate-spin mb-4 mx-auto md:mx-0"></div>
                     <h4 className="text-2xl font-black text-slate-800 mb-2">Memeriksa...</h4>
                     <p className="text-slate-500 text-sm">Menghubungi server WhatsApp Gateway desa.</p>
-                  </motion.div>
+                  </div>
                 )}
 
                 {(status === 'DISCONNECTED' || (status === 'QR_READY' && !qrCode)) && (
-                  <motion.div key="disconnected" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <div key="disconnected">
                     <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mb-4 mx-auto md:mx-0 shadow-inner shadow-rose-200/50">
                       <WifiOff className="w-8 h-8 text-rose-500" />
                     </div>
@@ -98,32 +97,32 @@ export const PengaturanWA = () => {
                     <div className="inline-flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
                       <RefreshCw className="w-3 h-3 animate-spin" /> Sedang Memuat...
                     </div>
-                  </motion.div>
+                  </div>
                 )}
 
                 {status === 'QR_READY' && qrCode && (
-                  <motion.div key="qr_ready" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <div key="qr_ready">
                     <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4 mx-auto md:mx-0 shadow-inner shadow-amber-200/50">
                       <QrCode className="w-8 h-8 text-amber-500" />
                     </div>
                     <h4 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">Menunggu Scan</h4>
                     <p className="text-slate-500 text-sm mb-6 leading-relaxed max-w-xs">Silakan tautkan perangkat Anda menggunakan QR Code di sebelah kanan.</p>
-                  </motion.div>
+                  </div>
                 )}
 
                 {status === 'AUTHENTICATING' && (
-                  <motion.div key="authenticating" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <div key="authenticating">
                     <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 mx-auto md:mx-0 shadow-inner shadow-blue-200/50">
                       <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
                     </div>
                     <h4 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">Menyinkronkan...</h4>
                     <p className="text-slate-500 text-sm leading-relaxed max-w-xs">Ponsel berhasil di-scan. Sedang mengambil data sesi...</p>
-                  </motion.div>
+                  </div>
                 )}
 
                 {/* --- KONDISI CONNECTED: INFO AKUN KIRI --- */}
                 {status === 'CONNECTED' && (
-                  <motion.div key="connected_info" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full">
+                  <div key="connected_info" className="w-full">
                     <h4 className="text-xl font-black text-slate-800 mb-1 tracking-tight">Informasi Akun</h4>
                     <p className="text-slate-500 text-sm mb-8">Pusat kontrol bot notifikasi WhatsApp.</p>
                     
@@ -148,9 +147,22 @@ export const PengaturanWA = () => {
                       <LogOut className="w-5 h-5 mr-2" />
                       Putuskan Koneksi & Ganti Akun
                     </Button>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+
+                {/* --- FALLBACK UNTUK ERROR TAK TERDUGA --- */}
+                {status !== 'CHECKING' && status !== 'DISCONNECTED' && status !== 'QR_READY' && status !== 'AUTHENTICATING' && status !== 'CONNECTED' && (
+                  <div key="unknown_error" className="w-full text-center">
+                    <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mb-4 mx-auto border-2 border-rose-200">
+                      <WifiOff className="w-8 h-8 text-rose-500" />
+                    </div>
+                    <h4 className="text-lg font-bold text-rose-700 mb-2">Terjadi Kesalahan Proxy</h4>
+                    <p className="text-sm text-slate-600 mb-4">
+                      Sistem menerima status yang tidak dikenal: <strong className="text-rose-600 bg-rose-50 px-2 py-1 rounded">{JSON.stringify(status)}</strong>
+                    </p>
+                    <p className="text-xs text-slate-500">Silakan periksa log VPS atau tekan Ctrl+F5.</p>
+                  </div>
+                )}
             </div>
 
             {/* --- KOLOM KANAN --- */}

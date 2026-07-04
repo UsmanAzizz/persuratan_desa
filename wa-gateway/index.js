@@ -126,6 +126,6 @@ app.post('/wa/send', async (req, res) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`WA Gateway Server running on port ${PORT}`);
 });
