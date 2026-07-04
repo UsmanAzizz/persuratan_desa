@@ -7,7 +7,7 @@ import { Badge } from '../../components/ui/Badge';
 import apiClient from '../../services/apiClient';
 import { Search, Clock, CheckCircle, FileText, XCircle, User, Calendar, Download } from 'lucide-react';
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '') : 'http://localhost:8080';
 
 const StatusIcon = ({ status }) => {
   switch(status) {
