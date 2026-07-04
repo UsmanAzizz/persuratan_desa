@@ -32,6 +32,7 @@ $routes->group('api/v1', function($routes) {
         $routes->get('jenis-surat', 'PengajuanController::getJenisSurat');
         $routes->post('buat', 'PengajuanController::buat');
         $routes->get('track/(:segment)', 'PengajuanController::track/$1');
+    $routes->get('download/(:segment)', 'PengajuanController::download/$1');
     });
 
 });

@@ -197,4 +197,15 @@ class PengajuanController extends BaseApiController
 
         return $this->respondSuccess($pengajuan, 'Data pelacakan berhasil ditemukan');
     }
+
+    public function download($fileName)
+    {
+        $filePath = FCPATH . 'uploads/surat/' . $fileName;
+
+        if (!is_file($filePath)) {
+            return $this->respondError('File surat tidak ditemukan', 404);
+        }
+
+        return $this->response->download($filePath, null);
+    }
 }
