@@ -10,6 +10,7 @@ export const PengaturanWA = () => {
   const [qrCode, setQrCode] = useState(null);
   const [linkedNumber, setLinkedNumber] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [debugData, setDebugData] = useState(null);
 
   useEffect(() => {
     let intervalId;
@@ -19,6 +20,7 @@ export const PengaturanWA = () => {
         const timestamp = new Date().getTime();
         const res = await apiClient.get(`/admin/wa/status?_t=${timestamp}`);
         const data = res.data;
+        setDebugData(data);
         setStatus(data.status);
         if (data.number) {
           setLinkedNumber(data.number);
@@ -158,9 +160,12 @@ export const PengaturanWA = () => {
                     </div>
                     <h4 className="text-lg font-bold text-rose-700 mb-2">Terjadi Kesalahan Proxy</h4>
                     <p className="text-sm text-slate-600 mb-4">
-                      Sistem menerima status yang tidak dikenal: <strong className="text-rose-600 bg-rose-50 px-2 py-1 rounded">{JSON.stringify(status)}</strong>
+                      Isi data mentah dari server VPS:<br/>
+                      <strong className="text-rose-600 bg-rose-50 px-2 py-1 rounded block mt-2 text-left text-[10px] whitespace-pre-wrap max-h-40 overflow-y-auto">
+                        {JSON.stringify(debugData, null, 2)}
+                      </strong>
                     </p>
-                    <p className="text-xs text-slate-500">Silakan periksa log VPS atau tekan Ctrl+F5.</p>
+                    <p className="text-xs text-slate-500">Tolong kirimkan teks di atas ke asisten Anda.</p>
                   </div>
                 )}
             </div>
