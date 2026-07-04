@@ -22,15 +22,22 @@
       loadingTask.promise.then(function(pdf) {
         return pdf.getPage(1);
       }).then(function(page) {
-        // Skala menyesuaikan lebar layar
+        // Skala menyesuaikan lebar layar & ketajaman layar (Retina/High DPI)
+        const dpr = window.devicePixelRatio || 1;
         const viewportUnscaled = page.getViewport({ scale: 1 });
-        const scale = window.innerWidth / viewportUnscaled.width;
-        const viewport = page.getViewport({ scale: scale });
+        const baseScale = window.innerWidth / viewportUnscaled.width;
+        
+        // Render resolusi tinggi
+        const viewport = page.getViewport({ scale: baseScale * dpr });
         
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
+        
+        // Tampilkan sebesar layar aslinya melalui CSS
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
         
         document.body.appendChild(canvas);
         
