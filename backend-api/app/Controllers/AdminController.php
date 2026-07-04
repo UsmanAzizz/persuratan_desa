@@ -195,7 +195,7 @@ class AdminController extends BaseApiController
             $pesan .= $frontendUrl . "/track?code=" . $pengajuanDetail['kode_tracking'];
 
             // Kirim ke Node.js Gateway (Gunakan 127.0.0.1 untuk mencegah isu resolve IPv6)
-            $waUrl = 'http://127.0.0.1:3000/wa/send';
+            $waUrl = 'http://127.0.0.1:3030/wa/send';
             $waData = [
                 'target' => $pengajuanDetail['no_hp'],
                 'message' => $pesan
@@ -238,7 +238,7 @@ class AdminController extends BaseApiController
         curl_close($ch);
 
         if (!$result) {
-            return $this->respondError('WA Gateway tidak dapat dihubungi (Pastikan Node.js berjalan di port 3000)', 503);
+            return $this->respondError('WA Gateway tidak dapat dihubungi (Pastikan Node.js berjalan di port 3030)', 503);
         }
 
         // Return raw JSON string directly

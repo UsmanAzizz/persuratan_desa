@@ -139,7 +139,7 @@ class PengajuanController extends BaseApiController
         $pesan .= "_(Catatan: Mohon simpan pesan dan tautan ini untuk mengambil dokumen Anda nanti di balai desa)_";
 
         // Eksekusi API Node.js Gateway
-        $waUrl = 'http://localhost:3000/wa/send';
+        $waUrl = 'http://127.0.0.1:3030/wa/send';
         $waData = [
             'target' => $noHp,
             'message' => $pesan
