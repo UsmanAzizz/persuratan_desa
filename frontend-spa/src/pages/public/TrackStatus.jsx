@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import apiClient from '../../services/apiClient';
-import { Search, Clock, CheckCircle, FileText, XCircle, User, Calendar, Download } from 'lucide-react';
+import { Search, Clock, CheckCircle, FileText, XCircle, User, Calendar, Download, Share2 } from 'lucide-react';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '') : 'http://localhost:8080';
 
