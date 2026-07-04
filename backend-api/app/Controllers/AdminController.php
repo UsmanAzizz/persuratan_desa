@@ -191,10 +191,11 @@ class AdminController extends BaseApiController
             }
 
             $pesan .= "\n\nCek rincian dan riwayat pengajuan Anda di sini:\n";
-            $pesan .= "http://localhost:5173/track?code=" . $pengajuanDetail['kode_tracking'];
+            $frontendUrl = getenv('FRONTEND_URL') ?: 'https://persuratan-desa-kutasari.snowline.cloud';
+            $pesan .= $frontendUrl . "/track?code=" . $pengajuanDetail['kode_tracking'];
 
-            // Kirim ke Node.js Gateway
-            $waUrl = 'http://localhost:3000/wa/send';
+            // Kirim ke Node.js Gateway (Gunakan 127.0.0.1 untuk mencegah isu resolve IPv6)
+            $waUrl = 'http://127.0.0.1:3000/wa/send';
             $waData = [
                 'target' => $pengajuanDetail['no_hp'],
                 'message' => $pesan
@@ -205,8 +206,15 @@ class AdminController extends BaseApiController
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($waData));
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-            curl_setopt($ch, CURLOPT_TIMEOUT, 3); // Timeout singkat agar UI Admin tidak freeze
-            curl_exec($ch);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout diperpanjang
+            $result = curl_exec($ch);
+            
+            if(curl_errno($ch)){
+                log_message('error', 'WA Gateway Error: ' . curl_error($ch));
+            } else {
+                log_message('info', 'WA Gateway Response: ' . $result);
+            }
+            
             curl_close($ch);
         }
 
