@@ -241,21 +241,24 @@ class AdminController extends BaseApiController
             return $this->respondError('WA Gateway tidak dapat dihubungi (Pastikan Node.js berjalan di port 3000)', 503);
         }
 
-        return $this->response->setStatusCode($httpCode ?: 200)->setJSON($result);
+        // Return raw JSON string directly
+        return $this->response->setStatusCode($httpCode ?: 200)
+                              ->setContentType('application/json')
+                              ->setBody($result);
     }
 
     public function waStatus()
     {
-        return $this->response->setContentType('application/json')->setBody($this->_proxyWaGateway('/wa/status')->getBody());
+        return $this->_proxyWaGateway('/wa/status');
     }
 
     public function waQr()
     {
-        return $this->response->setContentType('application/json')->setBody($this->_proxyWaGateway('/wa/qr')->getBody());
+        return $this->_proxyWaGateway('/wa/qr');
     }
 
     public function waLogout()
     {
-        return $this->response->setContentType('application/json')->setBody($this->_proxyWaGateway('/wa/logout', 'POST')->getBody());
+        return $this->_proxyWaGateway('/wa/logout', 'POST');
     }
 }
