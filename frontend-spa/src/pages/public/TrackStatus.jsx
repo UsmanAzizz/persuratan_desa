@@ -147,7 +147,7 @@ export const TrackStatus = () => {
                   </div>
                   
                   {/* Pratinjau PDF (PDF Viewer) */}
-                  <div className="w-full aspect-[21/29.7] border border-emerald-200 rounded-lg overflow-hidden bg-white shadow-inner">
+                  <div className="w-full aspect-[21/29.7] border border-emerald-200 rounded-lg overflow-hidden bg-white shadow-inner hidden sm:block">
                     <iframe 
                       src={`${BASE_URL}/${data.file_path}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
                       className="w-full h-full pointer-events-none"
