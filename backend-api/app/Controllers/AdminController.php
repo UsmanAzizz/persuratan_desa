@@ -220,4 +220,42 @@ class AdminController extends BaseApiController
 
         return $this->respondSuccess(null, 'Status dokumen berhasil diperbarui');
     }
+
+    // ==================================================
+    // PROXY WA GATEWAY (Untuk diakses Frontend SPA)
+    // ==================================================
+    private function _proxyWaGateway($endpoint, $method = 'GET')
+    {
+        $url = 'http://127.0.0.1:3000' . $endpoint;
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($method === 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+        }
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $result = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (!$result) {
+            return $this->respondError('WA Gateway tidak dapat dihubungi (Pastikan Node.js berjalan di port 3000)', 503);
+        }
+
+        return $this->response->setStatusCode($httpCode ?: 200)->setJSON($result);
+    }
+
+    public function waStatus()
+    {
+        return $this->response->setContentType('application/json')->setBody($this->_proxyWaGateway('/wa/status')->getBody());
+    }
+
+    public function waQr()
+    {
+        return $this->response->setContentType('application/json')->setBody($this->_proxyWaGateway('/wa/qr')->getBody());
+    }
+
+    public function waLogout()
+    {
+        return $this->response->setContentType('application/json')->setBody($this->_proxyWaGateway('/wa/logout', 'POST')->getBody());
+    }
 }

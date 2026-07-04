@@ -25,6 +25,11 @@ $routes->group('api/v1', function($routes) {
         $routes->get('pengajuan/(:num)', 'AdminController::getPengajuanDetail/$1');
         // Rute intervensi status
         $routes->put('pengajuan/(:num)/status', 'AdminController::updateStatus/$1');
+        
+        // Rute Proxy WhatsApp Gateway
+        $routes->get('wa/status', 'AdminController::waStatus');
+        $routes->get('wa/qr', 'AdminController::waQr');
+        $routes->post('wa/logout', 'AdminController::waLogout');
     });
 
     // Modul Warga (Area Publik)

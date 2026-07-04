@@ -3,8 +3,7 @@ import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Smartphone, RefreshCw, LogOut, CheckCircle, WifiOff, QrCode, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const WA_API_URL = 'http://localhost:3000/wa';
+import apiClient from '../../services/apiClient';
 
 export const PengaturanWA = () => {
   const [status, setStatus] = useState('CHECKING'); // CHECKING, DISCONNECTED, QR_READY, AUTHENTICATING, CONNECTED
@@ -18,16 +17,16 @@ export const PengaturanWA = () => {
     const checkStatus = async () => {
       try {
         const timestamp = new Date().getTime();
-        const res = await fetch(`${WA_API_URL}/status?_t=${timestamp}`, { cache: 'no-store' });
-        const data = await res.json();
+        const res = await apiClient.get(`/admin/wa/status?_t=${timestamp}`);
+        const data = res.data;
         setStatus(data.status);
         if (data.number) {
           setLinkedNumber(data.number);
         }
 
         if (data.status === 'QR_READY') {
-          const qrRes = await fetch(`${WA_API_URL}/qr?_t=${timestamp}`, { cache: 'no-store' });
-          const qrData = await qrRes.json();
+          const qrRes = await apiClient.get(`/admin/wa/qr?_t=${timestamp}`);
+          const qrData = qrRes.data;
           if (qrData.success) {
             setQrCode(qrData.qr);
           }
@@ -45,7 +44,7 @@ export const PengaturanWA = () => {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      await fetch(`${WA_API_URL}/logout`, { method: 'POST' });
+      await apiClient.post(`/admin/wa/logout`);
       setStatus('DISCONNECTED');
       setQrCode(null);
       setLinkedNumber(null);
