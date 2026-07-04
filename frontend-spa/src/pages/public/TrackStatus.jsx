@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -88,7 +88,7 @@ export const TrackStatus = () => {
 
       {data && (
         <div className="space-y-6">
-          <Card className="shadow-md border border-slate-200 overflow-hidden">
+          <Card className="shadow-md border border-slate-200 overflow-hidden rounded-t-none sm:rounded-t-xl">
             {(() => {
               const getTheme = (status) => {
                 switch(status) {
@@ -141,18 +141,28 @@ export const TrackStatus = () => {
 
               {data.status === 'selesai' && data.file_path && (
                 <div className="mt-6 p-6 bg-emerald-50 border border-emerald-100 rounded-lg flex flex-col gap-4">
-                  <div>
-                    <h4 className="font-bold text-emerald-800">Dokumen Anda Sudah Siap!</h4>
-                    <p className="text-sm text-emerald-600 mt-1">Surat Anda telah ditandatangani dan di-generate dalam bentuk PDF.</p>
+                  <div className="mb-4">
+                    <h4 className="text-xl font-bold text-emerald-800">Dokumen Resmi Telah Diterbitkan</h4>
+                    <p className="text-sm text-emerald-600 mt-1">Surat permohonan Anda telah disahkan dan ditandatangani oleh Kepala Desa Kutasari. Silakan unduh salinan digital surat Anda di bawah ini.</p>
                   </div>
                   
-                  {/* Pratinjau PDF (PDF Viewer) */}
-                  <div className="w-full aspect-[21/29.7] border border-emerald-200 rounded-lg overflow-hidden bg-white shadow-inner hidden sm:block">
+                  {/* Pratinjau PDF (Desktop - Native Viewer) */}
+                  <div className="hidden sm:block w-full aspect-[21/29.7] border border-emerald-200 rounded-lg overflow-hidden bg-white shadow-inner">
                     <iframe 
                       src={`${BASE_URL}/${data.file_path}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
                       className="w-full h-full pointer-events-none"
                       scrolling="no"
-                      title="Pratinjau Surat"
+                      title="Pratinjau Surat Desktop"
+                    />
+                  </div>
+
+                  {/* Pratinjau PDF (Mobile - Isolated Iframe PDF.js) */}
+                  <div className="block sm:hidden w-full aspect-[21/29.7] border border-emerald-200 rounded-lg overflow-hidden bg-white shadow-inner">
+                    <iframe 
+                      src={`/pdf-viewer.html?file=${encodeURIComponent(`${BASE_URL}/${data.file_path}`)}`}
+                      className="w-full h-full border-none pointer-events-none"
+                      scrolling="no"
+                      title="Pratinjau Surat Mobile"
                     />
                   </div>
 

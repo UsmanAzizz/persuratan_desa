@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Viewer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <style>
+    body { margin: 0; padding: 0; display: flex; justify-content: center; background-color: #f1f5f9; overflow: hidden; }
+    canvas { width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileUrl = urlParams.get('file');
+    
+    if (fileUrl) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+      
+      const loadingTask = pdfjsLib.getDocument(fileUrl);
+      loadingTask.promise.then(function(pdf) {
+        return pdf.getPage(1);
+      }).then(function(page) {
+        // Skala menyesuaikan lebar layar
+        const viewportUnscaled = page.getViewport({ scale: 1 });
+        const scale = window.innerWidth / viewportUnscaled.width;
+        const viewport = page.getViewport({ scale: scale });
+        
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        
+        document.body.appendChild(canvas);
+        
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport
+        };
+        page.render(renderContext);
+      }).catch(function(error) {
+        console.error('Error rendering PDF:', error);
+        document.body.innerHTML = '<p style="text-align:center; padding: 20px; font-family:sans-serif; color:#64748b; font-size: 12px;">Pratinjau gagal dimuat.<br/><br/>Error: ' + (error.message || error.name || error) + '<br/><br/>URL: ' + fileUrl + '</p>';
+      });
+    }
+  </script>
+</body>
+</html>

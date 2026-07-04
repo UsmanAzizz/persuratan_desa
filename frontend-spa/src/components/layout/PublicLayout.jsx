@@ -16,7 +16,7 @@ export const PublicLayout = () => {
           <div className="flex justify-between items-center h-16 gap-2">
             <div className="flex-shrink-0 flex items-center gap-2">
               <img src="/logo_Cilacap.png" alt="Logo Cilacap" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
-              <span className="font-bold text-slate-800 text-lg sm:text-2xl tracking-tight leading-none hidden min-[360px]:block">Desa Kutasari</span>
+              <span className="font-bold text-slate-800 text-sm sm:text-2xl tracking-tight leading-none">Desa Kutasari</span>
             </div>
             <nav className="flex gap-3 sm:gap-6 items-center">
               <Link to="/" className="text-[11px] sm:text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Beranda</Link>
