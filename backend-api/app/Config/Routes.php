@@ -22,6 +22,7 @@ $routes->group('api/v1', function($routes) {
     $routes->group('admin', ['filter' => 'jwt'], function($routes) {
         // Rute manifes antrean
         $routes->get('pengajuan', 'AdminController::getPengajuan');
+        $routes->get('pengajuan/(:num)', 'AdminController::getPengajuanDetail/$1');
         // Rute intervensi status
         $routes->put('pengajuan/(:num)/status', 'AdminController::updateStatus/$1');
     });

@@ -27,6 +27,28 @@ class AdminController extends BaseApiController
     }
 
     /**
+     * Endpoint untuk menarik rincian detail satu pengajuan beserta berkasnya
+     */
+    public function getPengajuanDetail($id_pengajuan)
+    {
+        $db = \Config\Database::connect();
+        
+        $builder = $db->table('pengajuan_surat p');
+        $builder->select('p.*, w.nama_lengkap, w.nik, w.no_hp, w.no_kk, w.alamat, w.rt, w.rw, j.nama_surat, j.syarat_berkas');
+        $builder->join('warga w', 'w.nik = p.nik_warga');
+        $builder->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat');
+        $builder->where('p.id_pengajuan', $id_pengajuan);
+        
+        $data = $builder->get()->getRowArray();
+        
+        if (!$data) {
+            return $this->respondError('Data pengajuan tidak ditemukan', 404);
+        }
+        
+        return $this->respondSuccess($data, 'Berhasil memuat detail pengajuan');
+    }
+
+    /**
      * Endpoint untuk mengubah status dokumen (Intervensi Admin)
      */
     public function updateStatus($id_pengajuan)
@@ -84,6 +106,64 @@ class AdminController extends BaseApiController
         if ($statusBaru === 'ditolak') {
             $updateData['alasan_penolakan'] = $catatan;
         }
+
+        if ($statusBaru === 'selesai') {
+            // 1. Buat Token QR
+            $qrToken = bin2hex(random_bytes(16));
+            $updateData['qr_token'] = $qrToken;
+            
+            // 2. Generate QR Code (Base64)
+            $qrOptions = new \chillerlan\QRCode\QROptions([
+                'version'         => 5,
+                'outputInterface' => \chillerlan\QRCode\Output\QRMarkupSVG::class,
+                'eccLevel'        => \chillerlan\QRCode\Common\EccLevel::L,
+                'outputBase64'    => true,
+            ]);
+            $qrcode = new \chillerlan\QRCode\QRCode($qrOptions);
+            $qrUrl = base_url('validasi/' . $qrToken); // URL Validasi Publik (Bisa dibuat nanti)
+            $qrBase64 = $qrcode->render($qrUrl);
+            
+            // 3. Tarik Data Utuh Warga & Jenis Surat untuk Template
+            $warga = $db->table('warga')->where('nik', $pengajuanLama['nik_warga'])->get()->getRowArray();
+            $jenisSurat = $db->table('jenis_surat')->where('id_jenis', $pengajuanLama['id_jenis_surat'])->get()->getRowArray();
+            
+            $viewData = [
+                'warga' => $warga,
+                'data_input' => json_decode($pengajuanLama['data_input'], true),
+                'id_pengajuan' => $pengajuanLama['id_pengajuan'],
+                'created_at' => $pengajuanLama['created_at'],
+                'qr_base64' => $qrBase64
+            ];
+            
+            // Peta ID Surat ke File View
+            $slugMap = [
+                1 => 'sktm', // ID 1: SKTM
+                2 => 'sku',  // ID 2: SKU
+                3 => 'skd',  // ID 3: SK Domisili
+                4 => 'skck'  // ID 4: Pengantar SKCK
+            ];
+            
+            $viewFile = 'surat/' . ($slugMap[$jenisSurat['id_jenis']] ?? 'skd');
+            $html = view($viewFile, $viewData);
+            
+            // 4. Generate PDF dengan DomPDF
+            $dompdf = new \Dompdf\Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            $pdfOutput = $dompdf->output();
+            
+            // 5. Simpan PDF ke Folder uploads/surat/
+            $fileName = 'Surat_' . $pengajuanLama['kode_tracking'] . '_' . time() . '.pdf';
+            $uploadPath = FCPATH . 'uploads/surat/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+            
+            file_put_contents($uploadPath . $fileName, $pdfOutput);
+            $updateData['file_path'] = 'uploads/surat/' . $fileName;
+        }
+
         $pengajuanModel->update($id_pengajuan, $updateData);
 
         // Sisipkan Log Riwayat

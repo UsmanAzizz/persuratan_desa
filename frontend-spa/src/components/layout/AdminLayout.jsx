@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, LogOut, Shield, ChevronRight, Settings, Smartphone } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
+import { useHeaderStore } from '../../store/useHeaderStore';
 
 const SidebarItem = ({ icon, label, to, active }) => (
   <Link 
@@ -46,7 +47,11 @@ export const AdminLayout = () => {
     return { title: 'Ruang Kendali', subtitle: 'Panel Administrasi Desa' };
   };
 
-  const pageInfo = getPageTitle(currentPath);
+  const defaultPageInfo = getPageTitle(currentPath);
+  const headerStore = useHeaderStore();
+  
+  const displayTitle = headerStore.title || defaultPageInfo.title;
+  const displaySubtitle = headerStore.subtitle || defaultPageInfo.subtitle;
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -103,9 +108,16 @@ export const AdminLayout = () => {
       {/* Main Content Area */}
       <div className="flex-1 lg:ml-72 flex flex-col min-h-screen">
         <header className="h-24 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
-          <div>
-            <h1 className="text-xl font-black text-slate-800 tracking-tight">{pageInfo.title}</h1>
-            <p className="text-slate-500 mt-0.5 text-xs max-w-lg">{pageInfo.subtitle}</p>
+          <div className="flex items-center gap-4">
+            {headerStore.leftComponent && (
+              <div>{headerStore.leftComponent}</div>
+            )}
+            <div>
+              <h1 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                {displayTitle}
+              </h1>
+              <p className="text-slate-500 mt-0.5 text-xs max-w-lg">{displaySubtitle}</p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">

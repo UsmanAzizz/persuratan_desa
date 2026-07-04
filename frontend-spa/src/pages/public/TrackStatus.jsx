@@ -5,7 +5,9 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import apiClient from '../../services/apiClient';
-import { Search, Clock, CheckCircle, FileText, XCircle, User, Calendar } from 'lucide-react';
+import { Search, Clock, CheckCircle, FileText, XCircle, User, Calendar, Download } from 'lucide-react';
+
+const BASE_URL = 'http://localhost:8080';
 
 const StatusIcon = ({ status }) => {
   switch(status) {
@@ -134,6 +136,24 @@ export const TrackStatus = () => {
                 <div className="mt-6 p-4 bg-rose-50 border border-rose-100 rounded-lg">
                   <p className="text-[11px] font-bold text-rose-600 uppercase tracking-wider mb-1">Alasan Penolakan</p>
                   <p className="text-sm font-semibold text-rose-800">{data.alasan_penolakan}</p>
+                </div>
+              )}
+
+              {data.status === 'selesai' && data.file_path && (
+                <div className="mt-6 p-6 bg-emerald-50 border border-emerald-100 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h4 className="font-bold text-emerald-800">Dokumen Anda Sudah Siap!</h4>
+                    <p className="text-sm text-emerald-600 mt-1">Surat Anda telah ditandatangani dan di-generate dalam bentuk PDF.</p>
+                  </div>
+                  <a 
+                    href={`${BASE_URL}/${data.file_path}`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="shrink-0 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-sm transition-colors"
+                  >
+                    <Download className="w-5 h-5" />
+                    Unduh Surat
+                  </a>
                 </div>
               )}
             </CardBody>

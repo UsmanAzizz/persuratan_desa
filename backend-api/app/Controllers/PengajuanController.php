@@ -51,7 +51,6 @@ class PengajuanController extends BaseApiController
         $nik = $this->request->getVar('nik');
         
         // 1. Daftarkan / Perbarui Profil Warga
-        $wargaAda = $wargaModel->find($nik);
         $wargaData = [
             'nik'          => $nik,
             'no_kk'        => $this->request->getVar('no_kk'),
@@ -62,25 +61,47 @@ class PengajuanController extends BaseApiController
             'rw'           => $this->request->getVar('rw') ?: '000',
         ];
 
-        if (!$wargaAda) {
-            $wargaModel->insert($wargaData);
+        // Gunakan db->table update langsung untuk menghindari isu Model::update CI4 ketika data tidak berubah
+        $db = \Config\Database::connect();
+        $wargaBuilder = $db->table('warga');
+        if ($wargaBuilder->where('nik', $nik)->countAllResults() > 0) {
+            $wargaBuilder->where('nik', $nik)->update($wargaData);
         } else {
-            $wargaModel->update($nik, $wargaData);
+            $wargaBuilder->insert($wargaData);
         }
 
         // 2. Generate Tracking Code Unik
         $kodeTracking = 'TRK-' . strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
+
+        // Penanganan Upload Berkas Dinamis
+        $dataInputArr = json_decode($this->request->getVar('data_input'), true) ?: [];
+        if ($files = $this->request->getFiles()) {
+            $uploadPath = FCPATH . 'uploads/persyaratan/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+            
+            foreach ($files as $key => $file) {
+                if ($file->isValid() && !$file->hasMoved()) {
+                    $newName = $file->getRandomName();
+                    $file->move($uploadPath, $newName);
+                    $dataInputArr[$key] = '/uploads/persyaratan/' . $newName;
+                }
+            }
+        }
 
         // 3. Simpan Pengajuan
         $pengajuanData = [
             'kode_tracking'  => $kodeTracking,
             'nik_warga'      => $nik,
             'id_jenis_surat' => $this->request->getVar('id_jenis_surat'),
-            'data_input'     => $this->request->getVar('data_input'), // Diharapkan JSON Array berserialisasi
+            'data_input'     => json_encode($dataInputArr), // Sudah termasuk URL file
             'status'         => 'menunggu'
         ];
 
-        $pengajuanModel->insert($pengajuanData);
+        if (!$pengajuanModel->insert($pengajuanData)) {
+            return $this->respondError('Gagal merekam data pengajuan ke sistem', 500, $pengajuanModel->errors());
+        }
         $idPengajuanBaru = $pengajuanModel->getInsertID();
 
         // 4. Catat Log Riwayat Status Pertama
@@ -152,7 +173,7 @@ class PengajuanController extends BaseApiController
         $db = \Config\Database::connect();
         // Custom Query with join to JenisSurat and Warga
         $builder = $db->table('pengajuan_surat p');
-        $builder->select('p.kode_tracking, p.status, p.alasan_penolakan, p.created_at as tgl_pengajuan, w.nama_lengkap, j.nama_surat');
+        $builder->select('p.kode_tracking, p.status, p.alasan_penolakan, p.created_at as tgl_pengajuan, p.file_path, w.nama_lengkap, j.nama_surat');
         $builder->join('warga w', 'w.nik = p.nik_warga');
         $builder->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat');
         $builder->where('p.kode_tracking', $kodeTracking);

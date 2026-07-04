@@ -4,9 +4,11 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import apiClient from '../../services/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileSearch, X, FileText, Search, Filter, Clock, Activity, CheckCircle, XCircle } from 'lucide-react';
+import { FileSearch, X, FileText, Search, Filter, Clock, Activity, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const AntreanSurat = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +26,7 @@ export const AntreanSurat = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.get('/admin/pengajuan');
+      const res = await apiClient.get(`/admin/pengajuan?t=${new Date().getTime()}`);
       if (res.data.success) {
         setData(res.data.data);
       }
@@ -48,24 +50,7 @@ export const AntreanSurat = () => {
   }, []);
 
   const openActionModal = (pengajuan) => {
-    setSelectedPengajuan(pengajuan);
-    setUpdateForm({ status_baru: pengajuan.status, catatan: '' });
-    setModalOpen(true);
-  };
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setUpdating(true);
-    try {
-      const res = await apiClient.put(`/admin/pengajuan/${selectedPengajuan.id_pengajuan}/status`, updateForm, { showSuccessToast: true });
-      if (res.data.success) {
-        setModalOpen(false);
-        fetchData(); // Refresh table
-      }
-    } catch (error) {
-    } finally {
-      setUpdating(false);
-    }
+    navigate(`/admin/pengajuan/${pengajuan.id_pengajuan}`);
   };
 
   // Helper status color mapping
@@ -106,7 +91,17 @@ export const AntreanSurat = () => {
 
       {/* Filter and Actions Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={fetchData} 
+            disabled={loading}
+            className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Segarkan</span>
+          </Button>
+          
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Filter className="w-4 h-4 text-slate-400" />
@@ -148,8 +143,8 @@ export const AntreanSurat = () => {
               onChange={(e) => setFilterJenis(e.target.value)}
             >
               <option value="semua">Semua Jenis Layanan</option>
-              {jenisSuratList.map((jenis) => (
-                <option key={jenis.id_jenis_surat} value={jenis.nama_surat}>
+              {jenisSuratList.map((jenis, idx) => (
+                <option key={jenis.id_jenis || idx} value={jenis.nama_surat}>
                   {jenis.nama_surat}
                 </option>
               ))}
@@ -237,105 +232,6 @@ export const AntreanSurat = () => {
           </div>
         </CardBody>
       </Card>
-
-      {/* Modal Mutasi Status */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-              onClick={() => setModalOpen(false)}
-            />
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg"
-            >
-              <Card className="shadow-2xl border-0 overflow-hidden rounded-3xl bg-white">
-                <div className="px-8 py-6 bg-white border-b border-slate-100 flex justify-between items-center relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 opacity-5 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                  <div className="relative z-10">
-                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">Tinjauan Surat</p>
-                    <h3 className="text-xl font-black text-slate-800 tracking-tight font-mono">{selectedPengajuan?.kode_tracking}</h3>
-                  </div>
-                  <button onClick={() => setModalOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition-colors relative z-10">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                
-                <form onSubmit={handleUpdate}>
-                  <CardBody className="space-y-6 p-8">
-                    <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Pemohon</p>
-                          <p className="font-bold text-slate-800 text-sm">{selectedPengajuan?.nama_lengkap}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Layanan</p>
-                          <p className="font-bold text-slate-800 text-sm">{selectedPengajuan?.nama_surat}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Ubah Status Menjadi</label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          {(() => {
-                            switch(updateForm.status_baru) {
-                              case 'menunggu': return <Clock className="w-5 h-5 text-amber-500" />;
-                              case 'diproses': return <Activity className="w-5 h-5 text-blue-500" />;
-                              case 'selesai': return <CheckCircle className="w-5 h-5 text-emerald-500" />;
-                              case 'ditolak': return <XCircle className="w-5 h-5 text-rose-500" />;
-                              default: return <Clock className="w-5 h-5 text-slate-400" />;
-                            }
-                          })()}
-                        </div>
-                        <select 
-                          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-100 rounded-xl text-sm font-semibold text-slate-700 focus:border-blue-500 focus:ring-0 outline-none transition-colors appearance-none cursor-pointer"
-                          value={updateForm.status_baru}
-                          onChange={(e) => setUpdateForm({...updateForm, status_baru: e.target.value})}
-                          required
-                        >
-                          <option value="menunggu">Menunggu Verifikasi</option>
-                          <option value="diproses">Sedang Diproses</option>
-                          <option value="selesai">Selesai / Dapat Diambil</option>
-                          <option value="ditolak">Tolak Berkas</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex justify-between">
-                        <span>Catatan Staf</span>
-                        {updateForm.status_baru === 'ditolak' && <span className="text-rose-500">*wajib</span>}
-                      </label>
-                      <textarea 
-                        rows={3}
-                        className="w-full px-4 py-3 bg-white border-2 border-slate-100 rounded-xl text-sm focus:border-blue-500 focus:ring-0 outline-none transition-colors resize-none"
-                        placeholder="Tulis alasan jika ditolak, atau pesan untuk warga..."
-                        value={updateForm.catatan}
-                        onChange={(e) => setUpdateForm({...updateForm, catatan: e.target.value})}
-                        required={updateForm.status_baru === 'ditolak'}
-                      />
-                    </div>
-                  </CardBody>
-                  <div className="px-8 py-5 bg-slate-50/80 border-t border-slate-100 flex justify-end gap-3">
-                    <Button type="button" variant="outline" className="rounded-xl font-bold border-slate-200" onClick={() => setModalOpen(false)}>Batal</Button>
-                    <Button type="submit" isLoading={updating} className="rounded-xl font-bold px-6 shadow-md shadow-blue-600/20">Simpan Status</Button>
-                  </div>
-                </form>
-              </Card>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
