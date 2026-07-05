@@ -95,8 +95,8 @@
         
         <div class="signature-box-right">
             <p style="margin:5px 0 0 0;">KEPALA DESA KUTASARI</p>
-            <p class="kades-name" style="margin-top: 40px;">KUSNENDAR</p>
-            <p style="margin:0; border-top: 1px solid black; display: inline-block; padding-top: 2px;">NIP. -</p>
+            <p class="kades-name" style="text-decoration: underline; margin-top: 60px; display:inline-block;">KUSNENDAR</p><br/>
+            <p style="margin:0; display: inline-block; padding-top: 2px;">NIP. -</p>
         </div>
         
         <div class="clear"></div>
