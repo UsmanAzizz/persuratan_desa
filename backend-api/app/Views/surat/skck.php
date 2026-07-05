@@ -55,7 +55,7 @@
             <tr><td width="20">1.</td><td width="140">Nomor KK</td><td width="10">:</td><td><?= $warga['no_kk'] ?? '-' ?></td></tr>
             <tr><td>2.</td><td>NIK</td><td>:</td><td><?= $warga['nik'] ?? '-' ?></td></tr>
             <tr><td>3.</td><td>Nama Lengkap</td><td>:</td><td><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '-' ?></td></tr>
-            <tr><td>4.</td><td>Tempat/Tanggal Lahir</td><td>:</td><td><?= ($warga['tempat_lahir'] ?? '-') . ' / ' . (isset($warga['tanggal_lahir']) ? date('d-m-Y', strtotime($warga['tanggal_lahir'])) : '-') ?></td></tr>
+            <tr><td>4.</td><td>Tempat/Tanggal Lahir</td><td>:</td><td><?= ($warga['tempat_lahir'] ?? '-') . ' / ' . (isset($warga['tanggal_lahir']) ? tgl_indo($warga['tanggal_lahir']) : '-') ?></td></tr>
             <tr><td>5.</td><td>Jenis Kelamin</td><td>:</td><td><?= isset($warga['jenis_kelamin']) ? ($warga['jenis_kelamin'] === 'L' ? 'Laki-Laki' : 'Perempuan') : '-' ?></td></tr>
             <tr><td>6.</td><td>Warganegara</td><td>:</td><td>WNI</td></tr>
             <tr><td>7.</td><td>Status Perkawinan</td><td>:</td><td><?= $warga['status_perkawinan'] ?? '-' ?></td></tr>
@@ -63,16 +63,16 @@
             <tr><td>9.</td><td>Pekerjaan</td><td>:</td><td><?= $warga['pekerjaan'] ?? '-' ?></td></tr>
             <tr><td>10.</td><td>Alamat</td><td>:</td><td>Dusun <?= $warga['dusun'] ?? '-' ?> RT. <?= str_pad($warga['rt'] ?? '0', 3, '0', STR_PAD_LEFT) ?> RW. <?= str_pad($warga['rw'] ?? '0', 3, '0', STR_PAD_LEFT) ?> DESA/KEL. Kutasari KEC. Cipari</td></tr>
             <tr><td>11.</td><td>Keperluan</td><td>:</td><td><?= $data_input['keperluan'] ?? 'MELAMAR PEKERJAAN' ?></td></tr>
-            <tr><td>12.</td><td>Berlaku</td><td>:</td><td><?= date('d/m/Y', strtotime($created_at)) ?> s/d <?= date('d/m/Y', strtotime('+1 month', strtotime($created_at))) ?></td></tr>
+            <tr><td>12.</td><td>Berlaku</td><td>:</td><td><?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?> s/d <?= tgl_indo(date('Y-m-d', strtotime('+1 month', strtotime($created_at)))) ?></td></tr>
             <tr><td>13.</td><td>Keterangan lain</td><td>:</td><td>-</td></tr>
         </table>
 
-        <p>Berdasarkan Surat Keterangan dari Ketua Rukun Tetangga...... Nomor ..... Tanggal .../.../...... dan menurut pengakuan yang bersangkutan sampai saat ini belum pernah tersangkut yustisi/urusan kepolisian. Surat keterangan ini diperlukan untuk <strong><?= $data_input['keperluan'] ?? 'MELAMAR PEKERJAAN' ?></strong>. Demikian Surat Keterangan ini kami buat atas permintaan yang bersangkutan dan dapat dipergunakan sebagaimana mestinya.</p>
+        <p>Berdasarkan Surat Keterangan dari Ketua Rukun Tetangga <?= str_pad($warga['rt'] ?? '0', 3, '0', STR_PAD_LEFT) ?> Nomor <?= $data_input['no_surat_rt'] ?? '...............' ?> Tanggal <?= isset($data_input['tgl_surat_rt']) ? tgl_indo($data_input['tgl_surat_rt']) : '.../.../......' ?> dan menurut pengakuan yang bersangkutan sampai saat ini belum pernah tersangkut yustisi/urusan kepolisian. Surat keterangan ini diperlukan untuk <strong><?= $data_input['keperluan'] ?? 'MELAMAR PEKERJAAN' ?></strong>. Demikian Surat Keterangan ini kami buat atas permintaan yang bersangkutan dan dapat dipergunakan sebagaimana mestinya.</p>
     </div>
 
     <div class="signature-container">
         <div class="signature-box-right" style="margin-bottom: 20px;">
-            <p style="margin:0;">Kutasari, <?= date('d F Y', strtotime($created_at)) ?></p>
+            <p style="margin:0;">Kutasari, <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p>
         </div>
         <div class="clear"></div>
         
@@ -83,7 +83,7 @@
         
         <div class="signature-box">
             <p style="margin:5px 0 0 0;">Pemohon</p>
-            <p class="kades-name" style="text-decoration: none; border-bottom: 1px dotted black; display:inline-block; width:150px; margin-top: 60px;">&nbsp;</p>
+            <p class="kades-name" style="text-decoration: underline; display:inline-block; margin-top: 60px;"><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '...................' ?></p>
         </div>
         
         <div class="signature-box">

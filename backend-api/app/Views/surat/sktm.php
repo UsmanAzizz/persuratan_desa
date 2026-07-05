@@ -49,7 +49,7 @@
         
         <table class="table-data">
             <tr><td width="150">Nama</td><td width="15">:</td><td><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '-' ?></td></tr>
-            <tr><td>Tempat Tgl lahir</td><td>:</td><td><?= ($warga['tempat_lahir'] ?? '-') . ', ' . (isset($warga['tanggal_lahir']) ? date('d-m-Y', strtotime($warga['tanggal_lahir'])) : '-') ?></td></tr>
+            <tr><td>Tempat / Tgl. Lahir</td><td>:</td><td><?= ($warga['tempat_lahir'] ?? '-') . ' / ' . (isset($warga['tanggal_lahir']) ? tgl_indo($warga['tanggal_lahir']) : '-') ?></td></tr>
             <tr><td>Pekerjaan</td><td>:</td><td><?= $warga['pekerjaan'] ?? '-' ?></td></tr>
             <tr><td>No KTP / NIK</td><td>:</td><td><?= $warga['nik'] ?? '-' ?></td></tr>
             <tr><td>Alamat</td><td>:</td><td>Dusun <?= $warga['dusun'] ?? '-' ?>, RT <?= str_pad($warga['rt'] ?? '0', 3, '0', STR_PAD_LEFT) ?> RW <?= str_pad($warga['rw'] ?? '0', 3, '0', STR_PAD_LEFT) ?></td></tr>
@@ -71,7 +71,7 @@
             <?php endif; ?>
         </div>
         <div class="signature">
-            <p style="margin:0;">Kutasari , <?= date('d F Y', strtotime($created_at)) ?></p>
+            <p style="margin:0;">Kutasari , <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p>
             <p style="margin:5px 0 0 0;">KEPALA DESA KUTASARI</p>
             <p class="kades-name">KUSNENDAR</p>
             <p style="margin:0;">NIP. -</p>

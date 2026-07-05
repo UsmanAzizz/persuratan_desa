@@ -52,7 +52,7 @@
         <table class="table-data">
             <tr><td width="20">1.</td><td width="160">N a m a</td><td width="15">:</td><td><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '-' ?></td></tr>
             <tr><td>2.</td><td>Jenis Kelamin</td><td>:</td><td><?= isset($warga['jenis_kelamin']) ? ($warga['jenis_kelamin'] === 'L' ? 'Laki-Laki' : 'Perempuan') : '-' ?></td></tr>
-            <tr><td>3.</td><td>Tempat Tanggal Lahir</td><td>:</td><td><?= ($warga['tempat_lahir'] ?? '-') . ', ' . (isset($warga['tanggal_lahir']) ? date('d-m-Y', strtotime($warga['tanggal_lahir'])) : '-') ?></td></tr>
+            <tr><td>3.</td><td>Tempat/Tgl. Lahir</td><td>:</td><td><?= ($warga['tempat_lahir'] ?? '-') . ' / ' . (isset($warga['tanggal_lahir']) ? tgl_indo($warga['tanggal_lahir']) : '-') ?></td></tr>
             <tr><td>4.</td><td>Bangsa/Agama</td><td>:</td><td>WNI / <?= $warga['agama'] ?? '-' ?></td></tr>
             <tr><td>5.</td><td>Pekerjaan</td><td>:</td><td><?= $warga['pekerjaan'] ?? '-' ?></td></tr>
             <tr><td>6.</td><td>Alamat Tinggal</td><td>:</td><td>Dusun <?= $warga['dusun'] ?? '-' ?></td></tr>
@@ -73,8 +73,7 @@
         </div>
         <div class="signature">
             <table style="width: 100%;">
-                <tr><td width="80">Dibuat di</td><td>: Kutasari</td></tr>
-                <tr><td style="text-decoration: underline;">Pada Tanggal</td><td style="text-decoration: underline;">: <?= date('d F Y', strtotime($created_at)) ?></td></tr>
+                <tr><td><p style="margin:0;">Kutasari , <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p></td></tr>
             </table>
             <p style="margin:5px 0 0 0; text-align: center;">Kepala Desa Kutasari</p>
             <p class="kades-name" style="text-align: center;">KUSNENDAR</p>

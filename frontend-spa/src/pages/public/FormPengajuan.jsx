@@ -424,6 +424,22 @@ export const FormPengajuan = () => {
                           </div>
                         </>
                       )}
+                      
+                      {formData.id_jenis_surat == 2 && ( // SKU
+                        <div className="flex flex-col gap-1.5">
+                          <label htmlFor="nama_usaha" className="text-sm font-medium text-slate-700">Nama Usaha <span className="text-rose-500">*</span></label>
+                          <input 
+                            type="text"
+                            id="nama_usaha"
+                            className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
+                            placeholder="Contoh: Warung Sembako Berkah"
+                            required
+                            value={dynamicFields.nama_usaha || ''}
+                            onChange={handleDynamicFieldChange}
+                            disabled={!isVerified}
+                          />
+                        </div>
+                      )}
 
                       <div className="flex flex-col gap-1.5">
                         <label htmlFor="keperluan" className="text-sm font-medium text-slate-700">Tujuan / Keperluan Surat <span className="text-rose-500">*</span></label>

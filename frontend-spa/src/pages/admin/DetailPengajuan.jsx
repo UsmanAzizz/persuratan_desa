@@ -18,7 +18,7 @@ export const DetailPengajuan = () => {
   
   const [activeTab, setActiveTab] = useState('detail');
   
-  const [updateForm, setUpdateForm] = useState({ status_baru: '', catatan: '' });
+  const [updateForm, setUpdateForm] = useState({ status_baru: 'menunggu', catatan: '', no_surat_rt: '', tgl_surat_rt: '' });
   const [updating, setUpdating] = useState(false);
   
   // State for image viewer modal
@@ -342,6 +342,32 @@ export const DetailPengajuan = () => {
                       required={updateForm.status_baru === 'ditolak'}
                     />
                   </div>
+                  
+                  {data?.id_jenis_surat == 4 && updateForm.status_baru === 'selesai' && (
+                    <div className="grid grid-cols-2 gap-4 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Nomor Surat RT</label>
+                        <input 
+                          type="text" 
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none"
+                          placeholder="01/RT.01/2026"
+                          value={updateForm.no_surat_rt}
+                          onChange={(e) => setUpdateForm({...updateForm, no_surat_rt: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Tanggal Surat RT</label>
+                        <input 
+                          type="date" 
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none"
+                          value={updateForm.tgl_surat_rt}
+                          onChange={(e) => setUpdateForm({...updateForm, tgl_surat_rt: e.target.value})}
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="pt-4 mt-4 flex justify-between items-center border-t border-slate-100 shrink-0">
                     <Button type="button" onClick={() => setActiveTab('berkas')} variant="outline" className="rounded-xl px-6 border-slate-200 text-slate-600 font-bold">
