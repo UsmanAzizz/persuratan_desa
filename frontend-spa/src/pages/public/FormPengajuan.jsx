@@ -425,7 +425,7 @@ export const FormPengajuan = () => {
                         </>
                       )}
                       
-                      {formData.id_jenis_surat == 2 && ( // SKU
+                      {formData.id_jenis_surat == 1 && ( // SKU
                         <div className="flex flex-col gap-1.5">
                           <label htmlFor="nama_usaha" className="text-sm font-medium text-slate-700">Nama Usaha <span className="text-rose-500">*</span></label>
                           <input 
@@ -441,7 +441,7 @@ export const FormPengajuan = () => {
                         </div>
                       )}
 
-                      {formData.id_jenis_surat == 4 && ( // SKCK
+                      {formData.id_jenis_surat == 3 && ( // SKCK
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="flex flex-col gap-1.5">
                             <label htmlFor="no_surat_rt" className="text-sm font-medium text-slate-700">Nomor Surat Pengantar RT <span className="text-rose-500">*</span></label>

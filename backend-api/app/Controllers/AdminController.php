@@ -139,10 +139,10 @@ class AdminController extends BaseApiController
             
             // Peta ID Surat ke File View
             $slugMap = [
-                1 => 'sktm', // ID 1: SKTM
-                2 => 'sku',  // ID 2: SKU
-                3 => 'skd',  // ID 3: SK Domisili
-                4 => 'skck'  // ID 4: Pengantar SKCK
+                1 => 'sku',  // ID 1: SKU
+                2 => 'skd',  // ID 2: SK Domisili
+                3 => 'skck', // ID 3: Pengantar SKCK
+                4 => 'sktm'  // ID 4: SKTM
             ];
             
             $viewFile = 'surat/' . ($slugMap[$jenisSurat['id_jenis']] ?? 'skd');
