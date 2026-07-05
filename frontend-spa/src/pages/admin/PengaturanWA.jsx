@@ -57,6 +57,23 @@ export const PengaturanWA = () => {
     }
   };
 
+  const handleTestConnection = async () => {
+    try {
+      setLoading(true);
+      const res = await apiClient.post(`/admin/wa/send-test`, { target: linkedNumber }, { showSuccessToast: false });
+      if (res.data && res.data.success) {
+        alert('✅ Berhasil! Pesan uji coba telah dikirim ke nomor ' + linkedNumber);
+      } else {
+        alert('❌ Gagal mengirim pesan uji coba.\n\nLog: ' + JSON.stringify(res.data));
+      }
+    } catch (error) {
+      console.error(error);
+      alert('❌ Terjadi kesalahan saat menghubungi API CodeIgniter.\n\nLog: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto h-[400px]">
       <Card className="border-0 shadow-sm rounded-3xl overflow-hidden bg-white h-full flex flex-col">
@@ -207,9 +224,17 @@ export const PengaturanWA = () => {
                       <CheckCircle className="w-16 h-16 text-emerald-500 relative z-10 drop-shadow-md" />
                     </div>
                     <h4 className="text-2xl font-black text-emerald-600 mb-2 tracking-tight">Gateway Aktif</h4>
-                    <p className="text-slate-500 text-sm leading-relaxed max-w-[250px]">
+                    <p className="text-slate-500 text-sm leading-relaxed max-w-[250px] mb-6">
                       Pesan notifikasi otomatis akan segera dikirimkan melalui saluran ini.
                     </p>
+                    <Button 
+                      onClick={handleTestConnection} 
+                      disabled={loading}
+                      className="rounded-xl font-bold px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/30 transition-transform active:scale-95"
+                    >
+                      {loading ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Smartphone className="w-4 h-4 mr-2" />}
+                      Uji Koneksi (Kirim Pesan)
+                    </Button>
                   </motion.div>
                 )}
 

@@ -34,6 +34,7 @@ $routes->group('api/v1', function($routes) {
         $routes->get('wa/status', 'AdminController::waStatus');
         $routes->get('wa/qr', 'AdminController::waQr');
         $routes->post('wa/logout', 'AdminController::waLogout');
+        $routes->post('wa/send-test', 'AdminController::waSendTest');
 
         // Modul Manajemen Warga
         $routes->group('warga', function($routes) {

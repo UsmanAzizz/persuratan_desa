@@ -331,13 +331,17 @@ class AdminController extends BaseApiController
     // ==================================================
     // PROXY WA GATEWAY (Untuk diakses Frontend SPA)
     // ==================================================
-    private function _proxyWaGateway($endpoint, $method = 'GET')
+    private function _proxyWaGateway($endpoint, $method = 'GET', $data = null)
     {
         $url = 'http://127.0.0.1:3030' . $endpoint;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
+            if ($data) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            }
         }
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $result = curl_exec($ch);
@@ -367,5 +371,16 @@ class AdminController extends BaseApiController
     public function waLogout()
     {
         return $this->_proxyWaGateway('/wa/logout', 'POST');
+    }
+
+    public function waSendTest()
+    {
+        $target = $this->request->getVar('target');
+        $message = "🤖 *UJI COBA SISTEM*\n\nHalo! Jika pesan ini sampai ke Anda, artinya *WhatsApp Gateway Desa Kutasari* telah terhubung dan berfungsi dengan sempurna. ✅\n\n_Pesan otomatis dikirim pada: " . date('Y-m-d H:i:s') . "_";
+        
+        return $this->_proxyWaGateway('/wa/send', 'POST', [
+            'target' => $target,
+            'message' => $message
+        ]);
     }
 }
