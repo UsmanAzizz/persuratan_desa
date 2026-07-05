@@ -206,7 +206,7 @@ class PengajuanController extends BaseApiController
         // Get Riwayat
         $riwayatBuilder = $db->table('riwayat_status rs');
         $riwayatBuilder->select('rs.status_baru, rs.catatan, rs.created_at, u.nama_petugas');
-        $riwayatBuilder->join('users u', 'u.id_user = rs.id_user_eksekutor', 'left');
+        $riwayatBuilder->join('admin u', 'u.id_user = rs.id_user_eksekutor', 'left');
         $riwayatBuilder->where('rs.id_pengajuan', function($builder) use ($kodeTracking) {
             $builder->select('id_pengajuan')->from('pengajuan_surat')->where('kode_tracking', $kodeTracking);
         });
