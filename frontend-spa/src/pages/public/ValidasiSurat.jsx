@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { apiClient } from '../../utils/apiClient';
+import apiClient from '../../services/apiClient';
 import { ShieldCheck, ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react';
 
 export const ValidasiSurat = () => {
