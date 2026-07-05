@@ -46,5 +46,8 @@ class InitSeeder extends Seeder
         ];
 
         $this->db->table('jenis_surat')->ignore(true)->insertBatch($jenisSuratData);
+
+        // 3. Seed Data Dummy Warga (Untuk testing form pengajuan)
+        $this->call('WargaSeeder');
     }
 }

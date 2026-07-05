@@ -86,14 +86,32 @@ export const FormPengajuan = () => {
     setDynamicFields(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
+    if (formData.nik.length !== 16) return;
+
     setIsVerifying(true);
     
-    setTimeout(() => {
+    try {
+      const res = await apiClient.get(`/pengajuan/cek-nik/${formData.nik}`, { showSuccessToast: true });
+      if (res.data.success) {
+        const warga = res.data.data;
+        // Auto-fill form dengan data warga
+        setFormData(prev => ({
+          ...prev,
+          nama_lengkap: warga.nama_lengkap,
+          no_kk: warga.no_kk,
+          no_hp: warga.no_hp || prev.no_hp,
+          alamat: warga.alamat
+        }));
+        setIsVerified(true);
+      }
+    } catch (error) {
+      // Error handled by apiClient interceptor (toast)
+      setIsVerified(false);
+    } finally {
       setIsVerifying(false);
-      setIsVerified(true);
-    }, 1000);
+    }
   };
 
   const handleEditData = () => {
@@ -202,10 +220,10 @@ export const FormPengajuan = () => {
         <div className="lg:col-span-5 xl:col-span-4">
           <form onSubmit={handleVerify} className="h-full">
             <Card className={`h-full min-h-[460px] flex flex-col border-[3px] ${isVerified ? 'border-emerald-200' : 'border-slate-100'} rounded-[2rem] shadow-xl bg-white overflow-hidden transition-colors duration-300`}>
-              <div className={`p-5 border-b ${isVerified ? 'border-emerald-100 bg-gradient-to-r from-emerald-50/80 to-white' : 'border-slate-100 bg-gradient-to-r from-slate-50/80 to-white'} flex justify-between items-center`}>
+              <div className={`p-5 border-b ${isVerified ? 'border-emerald-100 bg-gradient-to-r from-emerald-50/60 to-white' : 'border-slate-100 bg-gradient-to-r from-blue-50/60 to-white'} flex justify-between items-center`}>
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm ${isVerified ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-slate-800 text-white shadow-slate-200'}`}>
-                    <User className="w-5 h-5" fill="currentColor" strokeWidth={1} />
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm ${isVerified ? 'bg-emerald-50 border border-emerald-200 text-emerald-600 shadow-emerald-100' : 'bg-blue-50 border border-blue-200 text-blue-600 shadow-blue-100'}`}>
+                    <User className="w-5 h-5" strokeWidth={2} />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -361,6 +379,37 @@ export const FormPengajuan = () => {
                             disabled={!isVerified}
                           />
                         </div>
+                      )}
+
+                      {selectedKodeSurat === 'SKD' && (
+                        <>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="alamat_asal" className="text-sm font-medium text-slate-700">Alamat Tinggal Asal <span className="text-rose-500">*</span></label>
+                            <input 
+                              type="text"
+                              id="alamat_asal"
+                              className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
+                              placeholder="Alamat sesuai KTP"
+                              required
+                              value={dynamicFields.alamat_asal || ''}
+                              onChange={handleDynamicFieldChange}
+                              disabled={!isVerified}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="alamat_domisili" className="text-sm font-medium text-slate-700">Alamat Domisili Sekarang <span className="text-rose-500">*</span></label>
+                            <input 
+                              type="text"
+                              id="alamat_domisili"
+                              className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
+                              placeholder="Dusun, RT/RW tujuan domisili"
+                              required
+                              value={dynamicFields.alamat_domisili || ''}
+                              onChange={handleDynamicFieldChange}
+                              disabled={!isVerified}
+                            />
+                          </div>
+                        </>
                       )}
 
                       <div className="flex flex-col gap-1.5">

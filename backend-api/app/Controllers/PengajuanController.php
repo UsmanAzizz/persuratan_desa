@@ -27,6 +27,26 @@ class PengajuanController extends BaseApiController
     }
 
     /**
+     * Endpoint untuk memvalidasi NIK Warga
+     * GET /pengajuan/cek-nik/{nik}
+     */
+    public function cekNik($nik = null)
+    {
+        if (empty($nik) || strlen($nik) !== 16) {
+            return $this->respondError('NIK tidak valid, harus 16 digit.', 400);
+        }
+
+        $wargaModel = new WargaModel();
+        $warga = $wargaModel->where('nik', $nik)->first();
+
+        if (!$warga) {
+            return $this->respondError('NIK tidak terdaftar dalam database penduduk Desa Kutasari. Silakan hubungi aparat desa.', 404);
+        }
+
+        return $this->respondSuccess($warga, 'Data warga berhasil ditemukan');
+    }
+
+    /**
      * Endpoint untuk pendaftaran pengajuan oleh publik (Warga)
      */
     public function buat()
@@ -50,24 +70,15 @@ class PengajuanController extends BaseApiController
 
         $nik = $this->request->getVar('nik');
         
-        // 1. Daftarkan / Perbarui Profil Warga
-        $wargaData = [
-            'nik'          => $nik,
-            'no_kk'        => $this->request->getVar('no_kk'),
-            'nama_lengkap' => $this->request->getVar('nama_lengkap'),
-            'no_hp'        => $this->request->getVar('no_hp'),
-            'alamat'       => $this->request->getVar('alamat') ?: 'Menunggu Validasi',
-            'rt'           => $this->request->getVar('rt') ?: '000',
-            'rw'           => $this->request->getVar('rw') ?: '000',
-        ];
-
-        // Gunakan db->table update langsung untuk menghindari isu Model::update CI4 ketika data tidak berubah
+        // Gunakan db->table update langsung untuk memperbarui nomor HP (jika ada perubahan)
         $db = \Config\Database::connect();
         $wargaBuilder = $db->table('warga');
+        
+        // Kita hanya mengizinkan insert jika NIK sudah ada, tetapi validasi front-end harusnya sudah mencegah ini
         if ($wargaBuilder->where('nik', $nik)->countAllResults() > 0) {
-            $wargaBuilder->where('nik', $nik)->update($wargaData);
+            $wargaBuilder->where('nik', $nik)->update(['no_hp' => $this->request->getVar('no_hp')]);
         } else {
-            $wargaBuilder->insert($wargaData);
+            return $this->respondError('Gagal: NIK tidak terdaftar sebagai Warga Kutasari.', 403);
         }
 
         // 2. Generate Tracking Code Unik
@@ -118,8 +129,8 @@ class PengajuanController extends BaseApiController
         $jenisSurat = $jenisSuratModel->find($this->request->getVar('id_jenis_surat'));
         $namaSurat = $jenisSurat ? $jenisSurat['nama_surat'] : 'Surat Keterangan';
 
-        $noHp = $wargaData['no_hp'];
-        $namaLengkap = $wargaData['nama_lengkap'];
+        $noHp = $this->request->getVar('no_hp');
+        $namaLengkap = $this->request->getVar('nama_lengkap');
         
         $dataInputArr = json_decode($this->request->getVar('data_input'), true) ?: [];
 

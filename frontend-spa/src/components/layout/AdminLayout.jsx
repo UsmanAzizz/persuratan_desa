@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, LogOut, Shield, ChevronRight, Settings, Smartphone } from 'lucide-react';
+import { LayoutDashboard, FileText, LogOut, Shield, ChevronRight, LifeBuoy, Smartphone, BarChart, Users } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
 import { useHeaderStore } from '../../store/useHeaderStore';
 
@@ -41,10 +41,18 @@ export const AdminLayout = () => {
   const currentPath = location.pathname;
 
   const getPageTitle = (path) => {
-    if (path === '/admin') return { title: 'Dasbor Administrasi', subtitle: 'Pantau dan kelola data antrean pelayanan persuratan Desa Kutasari.' };
-    if (path.startsWith('/admin/pengajuan')) return { title: 'Antrean Permohonan', subtitle: 'Daftar permohonan surat dari warga yang membutuhkan verifikasi.' };
-    if (path.startsWith('/admin/pengaturan-wa')) return { title: 'Pengaturan WhatsApp', subtitle: 'Konfigurasi akun dan status gateway notifikasi otomatis.' };
-    return { title: 'Ruang Kendali', subtitle: 'Panel Administrasi Desa' };
+    switch (path) {
+      case '/admin':
+        return { title: 'Dasbor Administrasi', subtitle: 'Pantau dan kelola data antrean pelayanan persuratan Desa Kutasari.' };
+      case '/admin/pengajuan':
+        return { title: 'Antrean Permohonan', subtitle: 'Daftar permohonan surat dari warga yang membutuhkan verifikasi.' };
+      case '/admin/pengaturan-wa':
+        return { title: 'Pengaturan WhatsApp', subtitle: 'Konfigurasi WA Gateway' };
+      case '/admin/laporan':
+        return { title: 'Laporan', subtitle: 'Rekapitulasi data pengajuan surat' };
+      default:
+        return { title: 'Ruang Kendali', subtitle: 'Panel Administrasi Desa' };
+    }
   };
 
   const defaultPageInfo = getPageTitle(currentPath);
@@ -54,10 +62,10 @@ export const AdminLayout = () => {
   const displaySubtitle = headerStore.subtitle || defaultPageInfo.subtitle;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="h-screen overflow-hidden bg-slate-50 flex">
       {/* Modern Sidebar (Glassmorphism & Sleek Dark) */}
-      <aside className="w-72 bg-[#0F172A] text-slate-300 flex-col hidden lg:flex fixed h-full border-r border-slate-800 shadow-2xl z-20">
-        <div className="h-24 flex items-center px-8 border-b border-white/5 relative overflow-hidden">
+      <aside className="w-64 bg-[#0F172A] text-slate-300 flex-col hidden lg:flex fixed h-full border-r border-slate-800 shadow-2xl z-20">
+        <div className="h-20 flex items-center px-8 border-b border-white/5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-[60px] opacity-20 -mr-10 -mt-10"></div>
           <div className="flex items-center gap-3 relative z-10">
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 shadow-md">
@@ -86,10 +94,22 @@ export const AdminLayout = () => {
               active={currentPath === '/admin/pengajuan'} 
             />
             <SidebarItem 
+              to="/admin/warga" 
+              icon={<Users className="w-5 h-5" />} 
+              label="Data Warga" 
+              active={currentPath === '/admin/warga'} 
+            />
+            <SidebarItem 
               to="/admin/pengaturan-wa" 
               icon={<Smartphone className="w-5 h-5" />} 
               label="Pengaturan WA" 
               active={currentPath === '/admin/pengaturan-wa'} 
+            />
+            <SidebarItem 
+              to="/admin/laporan" 
+              icon={<BarChart className="w-5 h-5" />} 
+              label="Laporan" 
+              active={currentPath === '/admin/laporan'} 
             />
           </nav>
         </div>
@@ -106,31 +126,38 @@ export const AdminLayout = () => {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 lg:ml-72 flex flex-col min-h-screen">
-        <header className="h-24 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-            {headerStore.leftComponent && (
-              <div>{headerStore.leftComponent}</div>
-            )}
-            <div>
-              <h1 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-                {displayTitle}
-              </h1>
-              <p className="text-slate-500 mt-0.5 text-xs max-w-lg">{displaySubtitle}</p>
+      <div className="flex-1 lg:ml-64 flex flex-col h-screen">
+        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-center px-8 sm:px-12 sticky top-0 z-30 shrink-0">
+          <div className="w-full max-w-6xl flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {headerStore.leftComponent && (
+                <div>{headerStore.leftComponent}</div>
+              )}
+              <div>
+                <h1 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                  {displayTitle}
+                </h1>
+                <p className="text-slate-600 font-medium mt-0.5 text-sm max-w-lg">{displaySubtitle}</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-slate-800 uppercase tracking-widest">Administrator</p>
-            </div>
-            <div className="w-11 h-11 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors">
-              <Settings className="w-5 h-5 text-slate-600" />
+            <div className="flex items-center gap-4">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-slate-800 uppercase tracking-widest">Administrator</p>
+              </div>
+              <div className="flex items-center justify-center cursor-pointer p-2 hover:opacity-80 transition-opacity mr-3" title="Status Sistem: Online">
+                <span className="relative flex h-3.5 w-3.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                </span>
+              </div>
             </div>
           </div>
         </header>
         
-        <main className="flex-1 px-8 sm:px-12 pb-12 pt-6">
-          <Outlet />
+        <main className="flex-1 px-8 sm:px-12 pb-8 pt-6 flex flex-col items-center overflow-y-auto">
+          <div className="w-full max-w-6xl flex flex-col flex-1 min-h-0">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

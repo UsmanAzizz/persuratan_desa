@@ -1,11 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, FileText, MapPin, Mail, Phone, ChevronRight, Sparkles, Building2, FileBadge, FileCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, FileText, MapPin, Mail, Phone, ChevronRight, Sparkles, Building2, FileBadge, FileCheck, X, CheckCircle2, Store, Users } from 'lucide-react';
 import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
 export const Home = () => {
+  const [selectedService, setSelectedService] = useState(null);
+
+  const services = [
+    { 
+      title: 'Surat Keterangan Usaha', 
+      desc: 'Pengajuan legalitas untuk izin usaha mikro warga.', 
+      icon: <Store />,
+      reqs: [
+        'Fotokopi KTP Pemohon (1 Lembar)',
+        'Fotokopi Kartu Keluarga (1 Lembar)',
+        'Surat Pengantar dari RT/RW Setempat',
+        'Foto Lokasi Usaha Tampak Depan (Opsional)'
+      ]
+    },
+    { 
+      title: 'Surat Keterangan Domisili', 
+      desc: 'Dokumen yang menyatakan kedudukan dan tempat tinggal.', 
+      icon: <MapPin />,
+      reqs: [
+        'Fotokopi KTP Pemohon (1 Lembar)',
+        'Fotokopi Kartu Keluarga (1 Lembar)',
+        'Surat Pengantar dari RT/RW Setempat',
+        'Surat Pernyataan Jaminan Tempat Tinggal (Bagi Pendatang)'
+      ]
+    },
+    { 
+      title: 'Surat Pengantar Nikah', 
+      desc: 'Persyaratan administratif untuk melangsungkan pernikahan.', 
+      icon: <Users />,
+      reqs: [
+        'Fotokopi KTP Calon Pengantin Pria & Wanita (2 Lembar)',
+        'Fotokopi Kartu Keluarga CPW & CPP (2 Lembar)',
+        'Fotokopi KTP Kedua Orang Tua (2 Lembar)',
+        'Surat Pengantar dari RT/RW Setempat',
+        'Pas Foto 2x3 dan 3x4 Latar Biru (Masing-masing 4 Lembar)'
+      ]
+    }
+  ];
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -121,11 +159,7 @@ export const Home = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {[
-            { title: 'Surat Keterangan Usaha', desc: 'Pengajuan legalitas untuk izin usaha mikro warga.', icon: <FileText /> },
-            { title: 'Surat Keterangan Domisili', desc: 'Dokumen yang menyatakan kedudukan dan tempat tinggal.', icon: <FileText /> },
-            { title: 'Surat Pengantar Nikah', desc: 'Persyaratan administratif untuk melangsungkan pernikahan.', icon: <FileText /> }
-          ].map((item, idx) => (
+          {services.map((item, idx) => (
             <Card key={idx} className="border-[3px] border-slate-100 bg-white rounded-[2rem] shadow-sm hover:border-blue-600 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <CardBody className="p-8 space-y-5">
                 <div className="w-16 h-16 rounded-[1.5rem] bg-blue-50 flex items-center justify-center text-blue-700 border-2 border-blue-100">
@@ -134,7 +168,10 @@ export const Home = () => {
                 <h3 className="text-xl font-black text-slate-900">{item.title}</h3>
                 <p className="text-slate-600 text-base leading-relaxed font-medium">{item.desc}</p>
                 <div className="pt-4">
-                  <div className="inline-flex items-center text-slate-700 font-bold text-sm bg-slate-100 px-5 py-2.5 rounded-full hover:bg-slate-200 transition-colors cursor-pointer w-max">
+                  <div 
+                    onClick={() => setSelectedService(item)}
+                    className="inline-flex items-center text-slate-700 font-bold text-sm bg-slate-100 px-5 py-2.5 rounded-full hover:bg-slate-200 transition-colors cursor-pointer w-max"
+                  >
                     Baca Persyaratan <ChevronRight className="w-4 h-4 ml-1" />
                   </div>
                 </div>
@@ -191,6 +228,63 @@ export const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Modal Persyaratan */}
+      <AnimatePresence>
+        {selectedService && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedService(null)}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer"
+            ></motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white border-[3px] border-slate-100 rounded-[2rem] shadow-2xl overflow-hidden z-10"
+            >
+              <div className="p-6 sm:p-8">
+                <div className="flex justify-end mb-2">
+                  <button 
+                    onClick={() => setSelectedService(null)}
+                    className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <h3 className="text-xl font-black text-slate-900 mb-2">{selectedService.title}</h3>
+                <p className="text-slate-500 text-sm font-medium mb-6 leading-relaxed">Berikut adalah dokumen persyaratan yang wajib Anda siapkan sebelum melakukan pengajuan di kantor desa.</p>
+                
+                <div className="space-y-3 mb-8">
+                  {selectedService.reqs.map((req, idx) => (
+                    <motion.div 
+                      key={idx}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                      <span className="text-slate-700 font-bold text-[13px] pt-0.5">{req}</span>
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <Link to="/ajukan" className="block w-full">
+                  <button className="w-full bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-xl px-5 py-3.5 flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-blue-600/30 cursor-pointer text-sm">
+                    Mulai Buat Pengajuan <ArrowRight className="w-4 h-4" />
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

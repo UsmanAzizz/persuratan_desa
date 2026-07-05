@@ -30,12 +30,22 @@ $routes->group('api/v1', function($routes) {
         $routes->get('wa/status', 'AdminController::waStatus');
         $routes->get('wa/qr', 'AdminController::waQr');
         $routes->post('wa/logout', 'AdminController::waLogout');
+
+        // Modul Manajemen Warga
+        $routes->group('warga', function($routes) {
+            $routes->get('/', 'WargaController::index');
+            $routes->post('/', 'WargaController::create');
+            $routes->put('(:segment)', 'WargaController::update/$1');
+            $routes->delete('(:segment)', 'WargaController::delete/$1');
+            $routes->post('import-json', 'WargaController::importJson');
+        });
     });
 
     // Modul Warga (Area Publik)
     $routes->group('pengajuan', function($routes) {
         $routes->get('jenis-surat', 'PengajuanController::getJenisSurat');
-        $routes->post('buat', 'PengajuanController::buat');
+    $routes->get('cek-nik/(:segment)', 'PengajuanController::cekNik/$1');
+    $routes->post('buat', 'PengajuanController::buat');
         $routes->get('track/(:segment)', 'PengajuanController::track/$1');
     $routes->get('download/(:segment)', 'PengajuanController::download/$1');
     });

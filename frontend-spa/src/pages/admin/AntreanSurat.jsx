@@ -86,11 +86,11 @@ export const AntreanSurat = () => {
   }, [data, filterStatus, sortTime]);
 
   return (
-    <div className="max-w-7xl mx-auto pb-10">
+    <div className="w-full h-full flex-1 flex flex-col min-h-0 max-w-7xl mx-auto">
       {/* Judul Halaman kini telah dipindah ke bagian Navbar (AdminLayout) */}
 
       {/* Filter and Actions Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
         <div className="flex flex-wrap items-center gap-3">
           <Button 
             variant="outline" 
@@ -157,20 +157,20 @@ export const AntreanSurat = () => {
         </div>
       </div>
 
-      <Card className="border-0 shadow-sm rounded-2xl overflow-hidden bg-white mt-4">
-        <CardBody className="p-0">
-          <div className="w-full">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-blue-50/80 border-b border-blue-100">
-                  <th className="px-6 py-4 text-xs font-bold text-blue-800 tracking-wide w-48">Kode / Tgl</th>
-                  <th className="px-6 py-4 text-xs font-bold text-blue-800 tracking-wide">Identitas Warga</th>
-                  <th className="px-6 py-4 text-xs font-bold text-blue-800 tracking-wide">Jenis Layanan</th>
-                  <th className="px-6 py-4 text-xs font-bold text-blue-800 tracking-wide">Status</th>
-                  <th className="px-6 py-4 text-xs font-bold text-blue-800 tracking-wide text-right">Aksi</th>
+      <Card className="border-0 shadow-sm rounded-2xl bg-white mt-4 flex flex-col flex-1 min-h-0 overflow-hidden">
+        <div className="overflow-auto flex-1">
+          <div className="w-full min-w-max">
+            <table className="w-full text-left border-separate border-spacing-0">
+              <thead className="z-20 relative">
+                <tr>
+                  <th className="sticky top-0 px-6 py-4 text-xs font-bold text-blue-800 tracking-wide w-32 border-b border-blue-100 bg-blue-50 z-20">Kode / Tgl</th>
+                  <th className="sticky top-0 px-6 py-4 text-xs font-bold text-blue-800 tracking-wide border-b border-blue-100 bg-blue-50 z-20">Identitas Warga</th>
+                  <th className="sticky top-0 px-6 py-4 text-xs font-bold text-blue-800 tracking-wide border-b border-blue-100 bg-blue-50 z-20">Jenis Layanan</th>
+                  <th className="sticky top-0 px-6 py-4 text-xs font-bold text-blue-800 tracking-wide border-b border-blue-100 bg-blue-50 z-20">Status</th>
+                  <th className="sticky top-0 px-6 py-4 text-xs font-bold text-blue-800 tracking-wide text-right border-b border-blue-100 bg-blue-50 z-20">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-slate-50 relative z-0">
                 <AnimatePresence>
                   {loading ? (
                     <tr>
@@ -199,27 +199,29 @@ export const AntreanSurat = () => {
                         transition={{ duration: 0.2, delay: (index % 10) * 0.05 }}
                         className="hover:bg-blue-50/40 transition-colors group"
                       >
-                        <td className="px-6 py-5">
+                        <td className="px-6 py-4">
                           <p className="text-sm font-mono font-black text-slate-800">{row.kode_tracking}</p>
                           <p className="text-xs text-slate-400 mt-1">{row.tgl_pengajuan}</p>
                         </td>
-                        <td className="px-6 py-5">
+                        <td className="px-6 py-4">
                           <p className="text-sm font-bold text-slate-800">{row.nama_lengkap}</p>
                           <p className="text-xs font-mono text-slate-500 mt-1">{row.nik}</p>
                         </td>
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-slate-100 rounded-lg text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
-                              <FileText className="w-4 h-4" />
-                            </div>
-                            <p className="text-sm font-semibold text-slate-700">{row.nama_surat}</p>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs font-semibold text-slate-700 max-w-[200px] truncate" title={row.nama_surat}>{row.nama_surat}</p>
                           </div>
                         </td>
-                        <td className="px-6 py-5">
+                        <td className="px-6 py-4">
                           {getStatusBadge(row.status)}
                         </td>
-                        <td className="px-6 py-5 text-right">
-                          <Button size="sm" variant="outline" className="rounded-xl border-slate-200 text-slate-600 hover:text-blue-700 hover:border-blue-200 hover:bg-blue-50 font-semibold" onClick={() => openActionModal(row)}>
+                        <td className="px-6 py-4 text-right">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="rounded-xl border-slate-200 text-slate-600 hover:text-blue-700 hover:border-blue-200 hover:bg-blue-50 font-semibold" 
+                            onClick={() => openActionModal(row)}
+                          >
                             <Search className="w-4 h-4 mr-2" /> Tinjau
                           </Button>
                         </td>
@@ -230,7 +232,7 @@ export const AntreanSurat = () => {
               </tbody>
             </table>
           </div>
-        </CardBody>
+        </div>
       </Card>
     </div>
   );

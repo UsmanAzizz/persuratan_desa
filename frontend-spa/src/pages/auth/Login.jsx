@@ -46,9 +46,9 @@ export const Login = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {/* Logo ala GitHub */}
-        <div className="w-12 h-12 bg-[#24292f] rounded-full flex items-center justify-center mb-6 shadow-sm">
-          <span className="text-white font-bold text-xl tracking-tighter">DK</span>
+        {/* Logo Desa / Kabupaten */}
+        <div className="w-16 h-16 mb-6 flex items-center justify-center">
+          <img src="/logo_Cilacap.png" alt="Logo Cilacap" className="w-full h-full object-contain drop-shadow-sm" />
         </div>
 
         {/* Judul di luar kotak */}
