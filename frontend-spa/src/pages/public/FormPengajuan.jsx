@@ -202,7 +202,7 @@ export const FormPengajuan = () => {
     );
   }
 
-  const isForm1Complete = formData.nik.length === 16 && formData.no_kk.length === 16 && formData.nama_lengkap && formData.no_hp && formData.alamat;
+  const isForm1Complete = formData.nik.length === 16 && formData.no_kk.length === 16 && formData.no_hp;
   const isForm2Complete = formData.id_jenis_surat && formData.keperluan && 
     (selectedKodeSurat !== 'SKU' || dynamicFields.data_usaha) &&
     selectedSyarat.length > 0 && selectedSyarat.every(s => fileData[s]);
@@ -239,41 +239,54 @@ export const FormPengajuan = () => {
                   </Button>
                 )}
               </div>
-              <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
-                <Input 
-                  id="nik" label="Nomor Induk Kependudukan" 
-                  placeholder="16 Digit NIK" maxLength={16} required 
-                  value={formData.nik} onChange={handleInputChange}
-                  disabled={isVerified}
-                />
-                <Input 
-                  id="no_kk" label="Nomor Kartu Keluarga (KK)" 
-                  placeholder="16 Digit KK" maxLength={16} required 
-                  value={formData.no_kk} onChange={handleInputChange}
-                  disabled={isVerified}
-                />
-                <Input 
-                  id="nama_lengkap" label="Nama Lengkap Pemohon" 
-                  placeholder="Sesuai KTP" required 
-                  value={formData.nama_lengkap} onChange={handleInputChange}
-                  disabled={isVerified}
-                />
-                <Input 
-                  id="no_hp" label="Nomor HP / WhatsApp" 
-                  placeholder="0812xxxxxx" required 
-                  value={formData.no_hp} onChange={handleInputChange}
-                  disabled={isVerified}
-                />
-                
-                <div className="md:col-span-2">
+              {isVerified ? (
+                <CardBody className="p-5 flex flex-col gap-4">
+                  <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col gap-3">
+                    <div>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">Nama Lengkap</p>
+                      <p className="text-sm font-bold text-slate-800">{formData.nama_lengkap}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">NIK</p>
+                        <p className="text-sm font-semibold text-slate-700">{formData.nik}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">No. KK</p>
+                        <p className="text-sm font-semibold text-slate-700">{formData.no_kk}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">Alamat Domisili</p>
+                      <p className="text-sm font-semibold text-slate-700">{formData.alamat}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">No. HP / WhatsApp (Kontak Aktif)</p>
+                      <p className="text-sm font-semibold text-slate-700">{formData.no_hp}</p>
+                    </div>
+                  </div>
+                </CardBody>
+              ) : (
+                <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
                   <Input 
-                    id="alamat" label="Alamat Lengkap Domisili" 
-                    placeholder="Nama Jalan, RT/RW, Dusun" required 
-                    value={formData.alamat} onChange={handleInputChange}
-                    disabled={isVerified}
+                    id="nik" label="Nomor Induk Kependudukan" 
+                    placeholder="16 Digit NIK" maxLength={16} required 
+                    value={formData.nik} onChange={handleInputChange}
                   />
-                </div>
-              </CardBody>
+                  <Input 
+                    id="no_kk" label="Nomor Kartu Keluarga (KK)" 
+                    placeholder="16 Digit KK" maxLength={16} required 
+                    value={formData.no_kk} onChange={handleInputChange}
+                  />
+                  <div className="md:col-span-2">
+                    <Input 
+                      id="no_hp" label="Nomor HP / WhatsApp" 
+                      placeholder="0812xxxxxx (Aktif untuk notifikasi)" required 
+                      value={formData.no_hp} onChange={handleInputChange}
+                    />
+                  </div>
+                </CardBody>
+              )}
               
               {isVerified ? (
                 <div className="p-3 bg-emerald-500 border-t border-emerald-600 flex items-center justify-center gap-2 text-white mt-auto">

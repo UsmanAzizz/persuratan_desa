@@ -182,20 +182,20 @@ export const DataWarga = () => {
           />
           <button 
             onClick={downloadTemplate}
-            className="flex items-center gap-2 bg-slate-50 text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm border border-slate-200"
+            className="flex items-center gap-2 bg-slate-50 text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm border border-slate-200 cursor-pointer"
           >
             Download Template
           </button>
           <button 
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm border border-emerald-200"
+            className="flex items-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm border border-emerald-200 cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4" />
             Import
           </button>
           <button 
             onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm shadow-blue-500/30"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm shadow-blue-500/30 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Tambah Data
@@ -247,14 +247,14 @@ export const DataWarga = () => {
                       <div className="flex items-center justify-end gap-2">
                         <button 
                           onClick={() => handleOpenModal(w)}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                           title="Ubah"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => handleDelete(w.nik)}
-                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           title="Hapus"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -361,10 +361,10 @@ export const DataWarga = () => {
               </div>
 
               <div className="px-6 py-4 flex justify-end gap-3 shrink-0 bg-slate-50 border-t border-slate-100 rounded-b-3xl">
-                <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white hover:bg-slate-100 rounded-xl transition-colors border border-slate-200">
+                <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white hover:bg-slate-100 rounded-xl transition-colors border border-slate-200 cursor-pointer">
                   Batal
                 </button>
-                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shadow-sm shadow-blue-500/30">
+                <button type="submit" className="px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shadow-sm shadow-blue-500/30 cursor-pointer">
                   Simpan Data
                 </button>
               </div>

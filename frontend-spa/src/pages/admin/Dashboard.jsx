@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'; // HMR trigger
 import { Card, CardBody } from '../../components/ui/Card';
-import { Clock, FileText, CheckCircle, Activity, LayoutDashboard } from 'lucide-react';
+import { Clock, FileText, CheckCircle, Activity, XCircle } from 'lucide-react';
 import apiClient from '../../services/apiClient';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -33,7 +33,7 @@ const StatCard = ({ title, count, icon, bgColor, iconColor, delay }) => (
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ menunggu: 0, diproses: 0, selesai: 0 });
+  const [stats, setStats] = useState({ menunggu: 0, diproses: 0, selesai: 0, ditolak: 0 });
   const [recentPending, setRecentPending] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,9 +50,10 @@ export const Dashboard = () => {
             menunggu: menungguList.length,
             diproses: data.filter(d => d.status === 'diproses').length,
             selesai: data.filter(d => d.status === 'selesai').length,
+            ditolak: data.filter(d => d.status === 'ditolak').length,
           });
           
-          setRecentPending(menungguList.slice(0, 5));
+          setRecentPending(menungguList.slice(0, 3));
         }
       } catch (e) { 
         console.error(e);
@@ -64,7 +65,7 @@ export const Dashboard = () => {
   }, []);
 
   return (
-    <div className="pb-10 mt-6">
+    <div className="w-full max-w-7xl mx-auto">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard 
             title="Menunggu" 
@@ -91,11 +92,11 @@ export const Dashboard = () => {
             delay={0.3}
           />
           <StatCard 
-            title="Total" 
-            count={stats.menunggu + stats.diproses + stats.selesai} 
-            icon={<FileText className="w-6 h-6" />} 
-            bgColor="bg-slate-100" 
-            iconColor="text-slate-600"
+            title="Ditolak" 
+            count={stats.ditolak} 
+            icon={<XCircle className="w-6 h-6" />} 
+            bgColor="bg-rose-100" 
+            iconColor="text-rose-600"
             delay={0.4}
           />
       </div>
@@ -150,8 +151,8 @@ export const Dashboard = () => {
                       </td>
                       <td className="py-4 px-6">
                         <p className="text-sm text-slate-600 font-medium">
-                          {item.created_at 
-                            ? format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: id }) 
+                          {item.tgl_pengajuan 
+                            ? format(new Date(item.tgl_pengajuan), 'dd MMM yyyy, HH:mm', { locale: id }) 
                             : '-'}
                         </p>
                       </td>

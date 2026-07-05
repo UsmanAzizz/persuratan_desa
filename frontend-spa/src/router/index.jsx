@@ -18,6 +18,7 @@ import { DetailPengajuan } from '../pages/admin/DetailPengajuan';
 import { PengaturanWA } from '../pages/admin/PengaturanWA';
 import { Laporan } from '../pages/admin/Laporan';
 import { DataWarga } from '../pages/admin/DataWarga';
+import { PengaturanAkun } from '../pages/admin/PengaturanAkun';
 
 // Mock Pages (Temporary placeholders removed)
 
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
       {
         path: 'warga',
         element: <DataWarga />
+      },
+      {
+        path: 'pengaturan-akun',
+        element: <PengaturanAkun />
       }
     ]
   }

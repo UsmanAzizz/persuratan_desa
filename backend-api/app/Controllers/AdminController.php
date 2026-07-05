@@ -34,7 +34,7 @@ class AdminController extends BaseApiController
         $db = \Config\Database::connect();
         
         $builder = $db->table('pengajuan_surat p');
-        $builder->select('p.*, w.nama_lengkap, w.nik, w.no_hp, w.no_kk, w.alamat, w.rt, w.rw, j.nama_surat, j.syarat_berkas');
+        $builder->select('p.*, w.nama_lengkap, w.nik, w.no_kk, w.alamat, w.rt, w.rw, j.nama_surat, j.syarat_berkas');
         $builder->join('warga w', 'w.nik = p.nik_warga');
         $builder->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat');
         $builder->where('p.id_pengajuan', $id_pengajuan);
@@ -73,7 +73,7 @@ class AdminController extends BaseApiController
         // Ambil detail warga dan jenis surat untuk notifikasi WA
         $db = \Config\Database::connect();
         $pengajuanDetail = $db->table('pengajuan_surat p')
-                              ->select('p.kode_tracking, w.nama_lengkap, w.no_hp, j.nama_surat')
+                              ->select('p.kode_tracking, p.no_hp, w.nama_lengkap, j.nama_surat')
                               ->join('warga w', 'w.nik = p.nik_warga')
                               ->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat')
                               ->where('p.id_pengajuan', $id_pengajuan)
@@ -219,6 +219,97 @@ class AdminController extends BaseApiController
         }
 
         return $this->respondSuccess(null, 'Status dokumen berhasil diperbarui');
+    }
+
+    // ==================================================
+    // MANAJEMEN AKUN ADMIN
+    // ==================================================
+    public function getAkun()
+    {
+        $db = \Config\Database::connect();
+        
+        helper('jwt');
+        $authHeader = $this->request->getServer('HTTP_AUTHORIZATION');
+        try {
+            $token = getJWTFromRequest($authHeader);
+            $decoded = validateJWTFromRequest($token);
+            $idUser = $decoded->id;
+        } catch (\Exception $e) {
+            return $this->respondError('Sesi tidak valid', 401);
+        }
+
+        $user = $db->table('admin')
+                   ->select('id_user, username, nama_petugas, role')
+                   ->where('id_user', $idUser)
+                   ->get()
+                   ->getRowArray();
+
+        if (!$user) {
+            return $this->respondError('Data akun tidak ditemukan', 404);
+        }
+
+        return $this->respondSuccess($user, 'Berhasil memuat data akun');
+    }
+
+    public function updateAkun()
+    {
+        $rules = [
+            'username'     => 'required|min_length[4]',
+            'password_lama'=> 'permit_empty|min_length[6]',
+            'password_baru'=> 'permit_empty|min_length[6]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->respondError('Validasi gagal', 400, $this->validator->getErrors());
+        }
+
+        helper('jwt');
+        $authHeader = $this->request->getServer('HTTP_AUTHORIZATION');
+        try {
+            $token = getJWTFromRequest($authHeader);
+            $decoded = validateJWTFromRequest($token);
+            $idUser = $decoded->id;
+        } catch (\Exception $e) {
+            return $this->respondError('Sesi tidak valid', 401);
+        }
+
+        $userModel = new \App\Models\AdminModel();
+        $user = $userModel->find($idUser);
+
+        if (!$user) {
+            return $this->respondError('Pengguna tidak ditemukan', 404);
+        }
+
+        // Cek jika username diganti dan sudah terpakai
+        $usernameBaru = $this->request->getVar('username');
+        if ($usernameBaru !== $user['username']) {
+            $existingUser = $userModel->where('username', $usernameBaru)->first();
+            if ($existingUser) {
+                return $this->respondError('Username sudah digunakan oleh akun lain', 400);
+            }
+        }
+
+        $updateData = [
+            'username'     => $usernameBaru
+        ];
+
+        // Jika user ingin mengganti password
+        $passwordLama = $this->request->getVar('password_lama');
+        $passwordBaru = $this->request->getVar('password_baru');
+
+        if (!empty($passwordLama) || !empty($passwordBaru)) {
+            if (empty($passwordLama) || empty($passwordBaru)) {
+                return $this->respondError('Untuk mengganti sandi, harap isi sandi lama dan sandi baru', 400);
+            }
+            if (!password_verify($passwordLama, $user['password'])) {
+                return $this->respondError('Sandi lama yang Anda masukkan salah', 400);
+            }
+            $updateData['password'] = password_hash($passwordBaru, PASSWORD_DEFAULT);
+        }
+
+        $userModel->update($idUser, $updateData);
+
+        return $this->respondSuccess(null, 'Profil berhasil diperbarui');
     }
 
     // ==================================================

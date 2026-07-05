@@ -53,7 +53,6 @@ class PengajuanController extends BaseApiController
     {
         $rules = [
             'nik'            => 'required|min_length[16]|max_length[16]',
-            'nama_lengkap'   => 'required',
             'no_kk'          => 'required',
             'no_hp'          => 'required',
             'id_jenis_surat' => 'required|numeric',
@@ -70,19 +69,30 @@ class PengajuanController extends BaseApiController
 
         $nik = $this->request->getVar('nik');
         
-        // Gunakan db->table update langsung untuk memperbarui nomor HP (jika ada perubahan)
         $db = \Config\Database::connect();
         $wargaBuilder = $db->table('warga');
         
-        // Kita hanya mengizinkan insert jika NIK sudah ada, tetapi validasi front-end harusnya sudah mencegah ini
-        if ($wargaBuilder->where('nik', $nik)->countAllResults() > 0) {
-            $wargaBuilder->where('nik', $nik)->update(['no_hp' => $this->request->getVar('no_hp')]);
-        } else {
+        // Cek keberadaan NIK warga
+        if ($wargaBuilder->where('nik', $nik)->countAllResults() == 0) {
             return $this->respondError('Gagal: NIK tidak terdaftar sebagai Warga Kutasari.', 403);
         }
 
-        // 2. Generate Tracking Code Unik
-        $kodeTracking = 'TRK-' . strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
+        // Ambil data Jenis Surat
+        $jenisSuratModel = new JenisSuratModel();
+        $jenisSurat = $jenisSuratModel->find($this->request->getVar('id_jenis_surat'));
+        if (!$jenisSurat) {
+            return $this->respondError('Jenis surat tidak valid', 400);
+        }
+
+        // 2. Generate Tracking Code Unik dengan Inisial
+        $words = explode(" ", $jenisSurat['nama_surat']);
+        $initials = "";
+        foreach ($words as $w) {
+            if (strlen($w) > 0) {
+                $initials .= strtoupper($w[0]);
+            }
+        }
+        $kodeTracking = $initials . '-' . strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
 
         // Penanganan Upload Berkas Dinamis
         $dataInputArr = json_decode($this->request->getVar('data_input'), true) ?: [];
@@ -105,6 +115,7 @@ class PengajuanController extends BaseApiController
         $pengajuanData = [
             'kode_tracking'  => $kodeTracking,
             'nik_warga'      => $nik,
+            'no_hp'          => $this->request->getVar('no_hp'),
             'id_jenis_surat' => $this->request->getVar('id_jenis_surat'),
             'data_input'     => json_encode($dataInputArr), // Sudah termasuk URL file
             'status'         => 'menunggu'
@@ -125,16 +136,13 @@ class PengajuanController extends BaseApiController
         ]);
 
         // 5. Kirim Notifikasi WA ke Pemohon
-        $jenisSuratModel = new JenisSuratModel();
-        $jenisSurat = $jenisSuratModel->find($this->request->getVar('id_jenis_surat'));
         $namaSurat = $jenisSurat ? $jenisSurat['nama_surat'] : 'Surat Keterangan';
-
-        $noHp = $this->request->getVar('no_hp');
-        $namaLengkap = $this->request->getVar('nama_lengkap');
+        $warga = $wargaBuilder->where('nik', $nik)->get()->getRowArray();
+        $namaWarga = $warga ? $warga['nama_lengkap'] : 'Warga';
         
-        $dataInputArr = json_decode($this->request->getVar('data_input'), true) ?: [];
+        $noHp = $this->request->getVar('no_hp');
 
-        $pesan = "Halo Sdr/i *" . $namaLengkap . "*,\n\n";
+        $pesan = "Halo Sdr/i *" . $namaWarga . "*,\n\n";
         $pesan .= "Pengajuan *" . $namaSurat . "* Anda telah berhasil diterima dan masuk ke dalam antrean sistem *Desa Kutasari*.\n\n";
         $pesan .= "📋 *DETAIL DATA:*\n";
         $pesan .= "• NIK: " . $nik . "\n";

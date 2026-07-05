@@ -2,8 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\UsersModel;
-use App\Models\JwtBlacklistModel;
+use App\Models\AdminModel;
 use Exception;
 
 class AuthController extends BaseApiController
@@ -22,7 +21,7 @@ class AuthController extends BaseApiController
         $username = $this->request->getVar('username');
         $password = $this->request->getVar('password');
 
-        $userModel = new UsersModel();
+        $userModel = new AdminModel();
         $user = $userModel->where('username', $username)->first();
 
         if (is_null($user)) {
@@ -58,10 +57,9 @@ class AuthController extends BaseApiController
             // Validate token before blacklisting to ensure it's a real token
             validateJWTFromRequest($token);
 
-            $blacklistModel = new JwtBlacklistModel();
-            $blacklistModel->insert([
-                'token' => $token
-            ]);
+            // Karena fitur JwtBlacklist telah dihapus (simplified architecture),
+            // kita cukup me-return success, dan biarkan frontend yang menghapus token di storage.
+
 
             return $this->respondSuccess(null, 'Logout berhasil, sesi telah dihancurkan');
         } catch (Exception $e) {

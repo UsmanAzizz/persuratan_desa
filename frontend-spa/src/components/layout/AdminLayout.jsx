@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, LogOut, Shield, ChevronRight, LifeBuoy, Smartphone, BarChart, Users } from 'lucide-react';
+import { LayoutDashboard, FileText, LogOut, Shield, ChevronRight, LifeBuoy, Smartphone, BarChart, Users, Settings } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
 import { useHeaderStore } from '../../store/useHeaderStore';
 
@@ -14,8 +14,8 @@ const SidebarItem = ({ icon, label, to, active }) => (
     }`}
   >
     {icon}
-    <span className="text-sm tracking-wide">{label}</span>
-    {active && <ChevronRight className="w-4 h-4 ml-auto opacity-70" />}
+    <span className="text-sm tracking-wide whitespace-nowrap">{label}</span>
+    {active && <ChevronRight className="w-4 h-4 ml-auto opacity-70 shrink-0" />}
   </Link>
 );
 
@@ -104,6 +104,12 @@ export const AdminLayout = () => {
               icon={<Smartphone className="w-5 h-5" />} 
               label="Pengaturan WA" 
               active={currentPath === '/admin/pengaturan-wa'} 
+            />
+            <SidebarItem 
+              to="/admin/pengaturan-akun" 
+              icon={<Settings className="w-5 h-5" />} 
+              label="Pengaturan Akun" 
+              active={currentPath === '/admin/pengaturan-akun'} 
             />
             <SidebarItem 
               to="/admin/laporan" 

@@ -19,7 +19,7 @@ class InitSeeder extends Seeder
         ];
 
         // Mencegah duplikasi saat seeder dijalankan ulang
-        $this->db->table('users')->ignore(true)->insertBatch($usersData);
+        $this->db->table('admin')->ignore(true)->insertBatch($usersData);
 
         // 2. Seed Master Data: Jenis Surat
         $jenisSuratData = [

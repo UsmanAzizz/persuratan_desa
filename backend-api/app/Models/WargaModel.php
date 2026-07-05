@@ -11,7 +11,7 @@ class WargaModel extends Model
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
-    protected $allowedFields    = ['nik', 'no_kk', 'nama_lengkap', 'no_hp', 'alamat', 'rt', 'rw', 'created_at'];
+    protected $allowedFields    = ['nik', 'no_kk', 'nama_lengkap', 'alamat', 'rt', 'rw', 'created_at'];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

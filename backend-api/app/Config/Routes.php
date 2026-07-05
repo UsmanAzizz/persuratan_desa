@@ -26,7 +26,11 @@ $routes->group('api/v1', function($routes) {
         // Rute intervensi status
         $routes->put('pengajuan/(:num)/status', 'AdminController::updateStatus/$1');
         
-        // Rute Proxy WhatsApp Gateway
+        // Modul Pengaturan Akun Admin
+        $routes->get('akun', 'AdminController::getAkun');
+        $routes->put('akun', 'AdminController::updateAkun');
+
+        // WA Gateway Proxy WhatsApp Gateway
         $routes->get('wa/status', 'AdminController::waStatus');
         $routes->get('wa/qr', 'AdminController::waQr');
         $routes->post('wa/logout', 'AdminController::waLogout');
