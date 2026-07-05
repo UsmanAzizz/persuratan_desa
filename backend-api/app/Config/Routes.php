@@ -49,10 +49,11 @@ $routes->group('api/v1', function($routes) {
     // Modul Warga (Area Publik)
     $routes->group('pengajuan', function($routes) {
         $routes->get('jenis-surat', 'PengajuanController::getJenisSurat');
-    $routes->get('cek-nik/(:segment)', 'PengajuanController::cekNik/$1');
-    $routes->post('buat', 'PengajuanController::buat');
+        $routes->get('cek-nik/(:segment)', 'PengajuanController::cekNik/$1');
+        $routes->post('buat', 'PengajuanController::buat');
         $routes->get('track/(:segment)', 'PengajuanController::track/$1');
-    $routes->get('download/(:segment)', 'PengajuanController::download/$1');
+        $routes->get('download/(:segment)', 'PengajuanController::download/$1');
+        $routes->get('validasi/(:segment)', 'PengajuanController::validasi/$1');
     });
 
 });

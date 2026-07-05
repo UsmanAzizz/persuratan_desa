@@ -9,6 +9,7 @@ import { AdminLayout } from '../components/layout/AdminLayout';
 import { Home } from '../pages/public/Home';
 import { FormPengajuan } from '../pages/public/FormPengajuan';
 import { TrackStatus } from '../pages/public/TrackStatus';
+import { ValidasiSurat } from '../pages/public/ValidasiSurat';
 
 // Admin Pages
 import { Login } from '../pages/auth/Login';
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
       {
         path: 'track',
         element: <TrackStatus />
+      },
+      {
+        path: 'validasi/:token',
+        element: <ValidasiSurat />
       }
     ]
   },

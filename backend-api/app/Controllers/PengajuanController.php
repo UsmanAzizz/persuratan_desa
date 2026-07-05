@@ -227,4 +227,22 @@ class PengajuanController extends BaseApiController
 
         return $this->response->download($filePath, null);
     }
+
+    public function validasi($token)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('pengajuan_surat p');
+        $builder->select('p.kode_tracking, p.status, p.created_at, w.nama_lengkap, w.nik, j.nama_surat');
+        $builder->join('warga w', 'w.nik = p.nik_warga');
+        $builder->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat');
+        $builder->where('p.qr_token', $token);
+        
+        $pengajuan = $builder->get()->getRowArray();
+
+        if (!$pengajuan) {
+            return $this->respondError('Dokumen tidak ditemukan atau QR Code tidak valid', 404);
+        }
+
+        return $this->respondSuccess($pengajuan, 'Dokumen valid');
+    }
 }
