@@ -7,7 +7,6 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
-use App\Models\JwtBlacklistModel;
 use Exception;
 
 class JwtAuthFilter implements FilterInterface
@@ -21,15 +20,6 @@ class JwtAuthFilter implements FilterInterface
         try {
             helper('jwt');
             $encodedToken = getJWTFromRequest($authenticationHeader);
-            
-            // Check if token is blacklisted
-            $blacklistModel = new JwtBlacklistModel();
-            $isBlacklisted = $blacklistModel->where('token', $encodedToken)->first();
-            
-            if ($isBlacklisted) {
-                throw new Exception('Token is invalid (Logged out)');
-            }
-
             validateJWTFromRequest($encodedToken);
             
             return $request;
