@@ -135,20 +135,6 @@ class AdminController extends BaseApiController
                 'qr_base64' => $qrBase64
             ];
             
-            // Tambahan untuk SKCK (Input manual RT)
-            if ($jenisSurat['id_jenis'] == 4) {
-                $noSuratRt = $this->request->getVar('no_surat_rt');
-                $tglSuratRt = $this->request->getVar('tgl_surat_rt');
-                
-                if (!empty($noSuratRt) || !empty($tglSuratRt)) {
-                    $viewData['data_input']['no_surat_rt'] = $noSuratRt;
-                    $viewData['data_input']['tgl_surat_rt'] = $tglSuratRt;
-                    
-                    // Simpan permanen ke tabel pengajuan_surat
-                    $updateData['data_input'] = json_encode($viewData['data_input']);
-                }
-            }
-            
             helper('indo');
             
             // Peta ID Surat ke File View

@@ -441,6 +441,36 @@ export const FormPengajuan = () => {
                         </div>
                       )}
 
+                      {formData.id_jenis_surat == 4 && ( // SKCK
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="no_surat_rt" className="text-sm font-medium text-slate-700">Nomor Surat Pengantar RT <span className="text-rose-500">*</span></label>
+                            <input 
+                              type="text"
+                              id="no_surat_rt"
+                              className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
+                              placeholder="01/RT.01/2026"
+                              required
+                              value={dynamicFields.no_surat_rt || ''}
+                              onChange={handleDynamicFieldChange}
+                              disabled={!isVerified}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="tgl_surat_rt" className="text-sm font-medium text-slate-700">Tanggal Surat RT <span className="text-rose-500">*</span></label>
+                            <input 
+                              type="date"
+                              id="tgl_surat_rt"
+                              className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
+                              required
+                              value={dynamicFields.tgl_surat_rt || ''}
+                              onChange={handleDynamicFieldChange}
+                              disabled={!isVerified}
+                            />
+                          </div>
+                        </div>
+                      )}
+
                       <div className="flex flex-col gap-1.5">
                         <label htmlFor="keperluan" className="text-sm font-medium text-slate-700">Tujuan / Keperluan Surat <span className="text-rose-500">*</span></label>
                         <textarea 
