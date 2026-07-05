@@ -135,7 +135,15 @@ export const PengaturanWA = () => {
                       <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
                     </div>
                     <h4 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">Menyinkronkan...</h4>
-                    <p className="text-slate-500 text-sm leading-relaxed max-w-xs">Ponsel berhasil di-scan. Sedang mengambil data sesi...</p>
+                    <p className="text-slate-500 text-sm leading-relaxed max-w-xs mb-6">Ponsel berhasil di-scan. Sedang mengambil data sesi (ini bisa memakan waktu beberapa menit jika pesan WA Anda banyak)...</p>
+                    <Button 
+                      onClick={handleLogout}
+                      disabled={loading}
+                      variant="outline"
+                      className="rounded-xl border-rose-200 text-rose-600 font-bold hover:bg-rose-50 px-6 py-2"
+                    >
+                      Batalkan & Ulangi Scan
+                    </Button>
                   </div>
                 )}
 
