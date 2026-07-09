@@ -37,7 +37,12 @@ jobs:
         password: ${{ secrets.VPS_PASSWORD }}
         port: 22
         script: |
-          # Ganti "/lokasi/folder/proyek/anda" dengan lokasi folder proyek di VPS Anda
+          # Perbarui Node.js ke versi 20 menggunakan package 'n' (karena VPS masih pakai versi 18)
+          npm install -g n
+          n 20
+          hash -r
+          
+          # Eksekusi rilis
           cd /var/www/persuratan_desa_kutasari
           git pull origin main
           cd frontend-spa
