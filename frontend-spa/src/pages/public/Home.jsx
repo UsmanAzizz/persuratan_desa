@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, FileText, MapPin, Mail, Phone, ChevronRight, Sparkles, Building2, FileBadge, FileCheck, X, CheckCircle2, Store, Users } from 'lucide-react';
+import { ArrowRight, FileText, MapPin, Mail, Phone, ChevronRight, Sparkles, Building2, FileBadge, FileCheck, X, CheckCircle2, Store, Users, Car, Volume2, Heart } from 'lucide-react';
 import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
@@ -10,14 +10,23 @@ export const Home = () => {
 
   const services = [
     { 
-      title: 'Surat Keterangan Usaha', 
-      desc: 'Pengajuan legalitas untuk izin usaha mikro warga.', 
-      icon: <Store />,
+      title: 'Surat Keterangan Catatan Kepolisian (SKCK)', 
+      desc: 'Surat pengantar untuk pembuatan SKCK di kepolisian.', 
+      icon: <FileBadge />,
       reqs: [
-        'Fotokopi KTP Pemohon (1 Lembar)',
-        'Fotokopi Kartu Keluarga (1 Lembar)',
-        'Surat Pengantar dari RT/RW Setempat',
-        'Foto Lokasi Usaha Tampak Depan (Opsional)'
+        'Surat Pengantar RT/RW',
+        'Fotokopi KTP',
+        'Fotokopi Kartu Keluarga (KK)'
+      ]
+    },
+    { 
+      title: 'Surat Keterangan Tidak Mampu (SKTM)', 
+      desc: 'Pengajuan dokumen keringanan biaya pendidikan atau kesehatan.', 
+      icon: <FileText />,
+      reqs: [
+        'Surat Pengantar RT/RW',
+        'Fotokopi KTP',
+        'Fotokopi Kartu Keluarga (KK)'
       ]
     },
     { 
@@ -25,22 +34,61 @@ export const Home = () => {
       desc: 'Dokumen yang menyatakan kedudukan dan tempat tinggal.', 
       icon: <MapPin />,
       reqs: [
-        'Fotokopi KTP Pemohon (1 Lembar)',
-        'Fotokopi Kartu Keluarga (1 Lembar)',
-        'Surat Pengantar dari RT/RW Setempat',
-        'Surat Pernyataan Jaminan Tempat Tinggal (Bagi Pendatang)'
+        'Surat Pengantar RT/RW',
+        'Fotokopi KTP',
+        'Fotokopi Kartu Keluarga (KK)'
+      ]
+    },
+    { 
+      title: 'Surat Keterangan Usaha (SKU)', 
+      desc: 'Pengajuan legalitas untuk izin usaha mikro warga.', 
+      icon: <Store />,
+      reqs: [
+        'Surat Pengantar RT/RW',
+        'Fotokopi KTP',
+        'Fotokopi Kartu Keluarga (KK)',
+        'Data atau keterangan mengenai usaha yang dijalankan'
+      ]
+    },
+    { 
+      title: 'Surat Keterangan Ahli Waris', 
+      desc: 'Keterangan resmi pembagian hak waris keluarga.', 
+      icon: <Users />,
+      reqs: [
+        'Surat Pengantar RT/RW',
+        'Fotokopi Kartu Keluarga (KK)',
+        'Fotokopi KTP Ahli Waris',
+        'Fotokopi KTP Pemohon'
+      ]
+    },
+    { 
+      title: 'Surat Pindah', 
+      desc: 'Surat pengantar mutasi atau pindah domisili.', 
+      icon: <Car />,
+      reqs: [
+        'Surat Pengantar RT/RW',
+        'Fotokopi KTP',
+        'Fotokopi Kartu Keluarga (KK)'
+      ]
+    },
+    { 
+      title: 'Surat Izin Keramaian', 
+      desc: 'Rekomendasi izin penyelenggaraan acara/keramaian.', 
+      icon: <Volume2 />,
+      reqs: [
+        'Surat Pengantar RT/RW',
+        'Fotokopi KTP',
+        'Fotokopi Kartu Keluarga (KK)'
       ]
     },
     { 
       title: 'Surat Pengantar Nikah', 
       desc: 'Persyaratan administratif untuk melangsungkan pernikahan.', 
-      icon: <Users />,
+      icon: <Heart />,
       reqs: [
-        'Fotokopi KTP Calon Pengantin Pria & Wanita (2 Lembar)',
-        'Fotokopi Kartu Keluarga CPW & CPP (2 Lembar)',
-        'Fotokopi KTP Kedua Orang Tua (2 Lembar)',
-        'Surat Pengantar dari RT/RW Setempat',
-        'Pas Foto 2x3 dan 3x4 Latar Biru (Masing-masing 4 Lembar)'
+        'Surat Pengantar RT/RW',
+        'Fotokopi KTP',
+        'Fotokopi Kartu Keluarga (KK)'
       ]
     }
   ];
@@ -158,7 +206,7 @@ export const Home = () => {
           <p className="text-slate-600 text-lg font-medium">Daftar layanan dokumen kependudukan dan perizinan yang tersedia untuk warga.</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {services.map((item, idx) => (
             <Card key={idx} className="border-[3px] border-slate-100 bg-white rounded-[2rem] shadow-sm hover:border-blue-600 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <CardBody className="p-8 space-y-5">
