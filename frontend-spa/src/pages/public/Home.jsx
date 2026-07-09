@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, FileText, MapPin, Mail, Phone, ChevronRight, Sparkles, Building2, FileBadge, FileCheck, X, CheckCircle2, Store, Users, Car, Volume2, Heart } from 'lucide-react';
+import { ArrowRight, FileText, MapPin, Mail, Phone, ChevronRight, Sparkles, Building2, FileBadge, FileCheck, X, CheckCircle2, Store, Users, Car, Volume2, UserPlus, Stamp, PenTool, MailPlus, ScrollText, CheckCircle } from 'lucide-react';
 import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
@@ -84,7 +84,7 @@ export const Home = () => {
     { 
       title: 'Surat Pengantar Nikah', 
       desc: 'Persyaratan administratif untuk melangsungkan pernikahan.', 
-      icon: <Heart />,
+      icon: <UserPlus />,
       reqs: [
         'Surat Pengantar RT/RW',
         'Fotokopi KTP',
@@ -110,14 +110,64 @@ export const Home = () => {
       {/* Hero Section - Bright Theme with Right Side Ornaments */}
       <section className="relative bg-white overflow-hidden border-b border-slate-200 flex items-center">
         {/* Top Left Improved Layered Ornaments */}
-        <div className="absolute -top-32 -left-32 w-96 h-28 bg-blue-600 rounded-full transform rotate-45"></div>
-        <div className="absolute -top-8 -left-24 w-64 h-12 border-[3px] border-slate-900 rounded-full transform rotate-45 opacity-20"></div>
-        <div className="absolute top-12 left-10 w-4 h-4 bg-yellow-400 rounded-full opacity-90"></div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.5, rotate: 45 }} 
+          animate={{ opacity: 1, scale: 1, rotate: 45 }} 
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute -top-32 -left-32 w-96 h-28 bg-blue-600 rounded-full"
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.5, rotate: 45 }} 
+          animate={{ opacity: 0.2, scale: 1, rotate: 45 }} 
+          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+          className="absolute -top-8 -left-24 w-64 h-12 border-[3px] border-slate-900 rounded-full"
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0 }} 
+          animate={{ opacity: 0.9, scale: 1 }} 
+          transition={{ duration: 0.5, delay: 0.4, type: "spring" }}
+          className="absolute top-12 left-10 w-4 h-4 bg-yellow-400 rounded-full"
+        />
         
         {/* Massive Right Side Ornaments */}
-        <div className="absolute -bottom-48 -right-32 w-96 h-[800px] bg-slate-900 rounded-full transform rotate-45"></div>
-        <div className="absolute -top-32 -right-20 w-80 h-[800px] bg-blue-600 rounded-full transform rotate-45"></div>
-        <div className="absolute top-1/2 right-32 w-48 h-[400px] bg-blue-200/50 rounded-full transform rotate-45 -translate-y-1/2"></div>
+        <motion.div 
+          initial={{ opacity: 0, x: 150, rotate: 45 }} 
+          animate={{ opacity: 1, x: 0, rotate: 45 }} 
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="absolute -bottom-48 -right-32 w-96 h-[800px] bg-slate-900 rounded-full"
+        />
+        <motion.div 
+          initial={{ opacity: 0, x: 150, rotate: 45 }} 
+          animate={{ opacity: 1, x: 0, rotate: 45 }} 
+          transition={{ duration: 1, delay: 0.15, ease: "easeOut" }}
+          className="absolute -top-32 -right-20 w-80 h-[800px] bg-blue-600 rounded-full"
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8, rotate: 45, y: "-50%" }} 
+          animate={{ opacity: 1, scale: 1, rotate: 45, y: "-50%" }} 
+          transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+          className="absolute top-1/2 right-32 w-48 h-[400px] bg-blue-200/50 rounded-full"
+        />
+
+        {/* Dot Matrix Pattern - Top (Empty Area) */}
+        <div className="absolute top-24 right-[20%] lg:right-[25%] opacity-30 pointer-events-none hidden md:block">
+          <svg width="120" height="120" fill="none" viewBox="0 0 120 120">
+            <pattern id="dots-top" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+              <circle fill="#64748b" cx="3" cy="3" r="3"></circle>
+            </pattern>
+            <rect x="0" y="0" width="120" height="120" fill="url(#dots-top)"></rect>
+          </svg>
+        </div>
+        
+        {/* Dot Matrix Pattern - Bottom (Empty Area) */}
+        <div className="absolute bottom-24 left-[45%] lg:left-[50%] opacity-30 pointer-events-none hidden md:block">
+          <svg width="160" height="96" fill="none" viewBox="0 0 160 96">
+            <pattern id="dots-bottom" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+              <circle fill="#3b82f6" cx="3" cy="3" r="3"></circle>
+            </pattern>
+            <rect x="0" y="0" width="160" height="96" fill="url(#dots-bottom)"></rect>
+          </svg>
+        </div>
         
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 relative z-10">
           {/* Text Content */}
@@ -157,14 +207,14 @@ export const Home = () => {
                   whileHover={{ scale: 1.05 }}
                   whileFocus={{ scale: 1.05 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-full px-8 py-4 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-base transition-colors cursor-pointer"
+                  className="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 font-bold rounded-2xl px-8 py-4 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 text-base transition-colors cursor-pointer"
                 >
                   Buat Pengajuan Baru
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
               </Link>
               <Link to="/track">
-                <button className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800 font-bold rounded-full px-8 py-4 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 transition-transform active:scale-95 text-base cursor-pointer">
+                <button className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800 font-bold rounded-2xl px-8 py-4 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 transition-transform active:scale-95 text-base cursor-pointer">
                   Cek Status Surat
                 </button>
               </Link>
@@ -208,14 +258,14 @@ export const Home = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {services.map((item, idx) => (
-            <Card key={idx} className="border-[3px] border-slate-100 bg-white rounded-[2rem] shadow-sm hover:border-blue-600 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-              <CardBody className="p-8 space-y-5">
-                <div className="w-16 h-16 rounded-[1.5rem] bg-blue-50 flex items-center justify-center text-blue-700 border-2 border-blue-100">
+            <Card key={idx} className="border-[3px] border-slate-100 bg-white rounded-[2rem] shadow-sm hover:border-blue-600 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
+              <CardBody className="p-8 flex flex-col h-full">
+                <div className="w-16 h-16 rounded-[1.5rem] bg-blue-50 flex items-center justify-center text-blue-700 border-2 border-blue-100 mb-5 shrink-0">
                   {React.cloneElement(item.icon, { className: 'w-8 h-8' })}
                 </div>
-                <h3 className="text-xl font-black text-slate-900">{item.title}</h3>
-                <p className="text-slate-600 text-base leading-relaxed font-medium">{item.desc}</p>
-                <div className="pt-4">
+                <h3 className="text-xl font-black text-slate-900 min-h-[5.5rem] mb-2">{item.title}</h3>
+                <p className="text-slate-600 text-base leading-relaxed font-medium mb-5">{item.desc}</p>
+                <div className="pt-4 mt-auto">
                   <div 
                     onClick={() => setSelectedService(item)}
                     className="inline-flex items-center text-slate-700 font-bold text-sm bg-slate-100 px-5 py-2.5 rounded-full hover:bg-slate-200 transition-colors cursor-pointer w-max"
