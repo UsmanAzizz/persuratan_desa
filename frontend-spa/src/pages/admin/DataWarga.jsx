@@ -342,7 +342,13 @@ export const DataWarga = () => {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-slate-700">Dusun <span className="text-rose-500">*</span></label>
-                  <input type="text" name="dusun" value={formData.dusun} onChange={handleInputChange} required className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+                  <select name="dusun" value={formData.dusun} onChange={handleInputChange} required className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
+                    <option value="">Pilih Dusun</option>
+                    <option value="Tawangsari">Tawangsari</option>
+                    <option value="Grugak">Grugak</option>
+                    <option value="Kotabaru">Kotabaru</option>
+                    <option value="Curug">Curug</option>
+                  </select>
                 </div>
 
                 <div className="space-y-1.5">

@@ -137,7 +137,7 @@ export const Home = () => {
               <h2 className="text-2xl font-black text-slate-800 uppercase tracking-wide">Profil Desa</h2>
             </div>
             <p className="text-slate-600 text-lg leading-relaxed text-justify pt-2 font-medium">
-              Terletak di Kecamatan Cipari, Kabupaten Cilacap, Desa Kutasari merupakan wilayah yang menjunjung tinggi nilai gotong royong dan pelayanan masyarakat yang prima. Kami terus berupaya meningkatkan tertib administrasi demi kesejahteraan dan kemudahan akses bagi lebih dari 5.000 penduduk kami.
+              Desa Kutasari merupakan salah satu desa yang berada di Kecamatan Cipari, Kabupaten Cilacap, Provinsi Jawa Tengah. Desa ini memiliki luas wilayah sekitar 1.053,574 hektar dengan jumlah penduduk sekitar 6.610 jiwa. Secara administratif, Desa Kutasari terbagi menjadi empat dusun, yaitu: Dusun Tawangsari, Dusun Grugak, Dusun Kotabaru, dan Dusun Curug. Pemerintah Desa Kutasari berkomitmen memberikan pelayanan administrasi yang cepat, mudah, dan transparan kepada seluruh masyarakat melalui berbagai layanan surat menyurat yang dapat diakses sesuai dengan persyaratan yang telah ditetapkan.
             </p>
           </div>
           
@@ -195,7 +195,7 @@ export const Home = () => {
                 <div className="p-3 bg-slate-800 border-2 border-slate-700 rounded-2xl"><MapPin className="w-6 h-6 text-blue-400" /></div>
                 <div className="pt-1">
                   <h4 className="font-bold text-lg">Alamat Balai Desa</h4>
-                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">Jl. Kemerdekaan No. 45, Desa Kutasari<br />Kecamatan Cipari, Kab. Cilacap</p>
+                  <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">Tawangsari, Desa Kutasari<br />Kecamatan Cipari, Kab. Cilacap, Jawa Tengah 53262</p>
                 </div>
               </div>
 
