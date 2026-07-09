@@ -9,7 +9,7 @@ export const DataWarga = () => {
   const [wargaList, setWargaList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  
+
   // Modal states
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -119,7 +119,7 @@ export const DataWarga = () => {
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_json(ws);
-        
+
         // Pemetaan sederhana, asumsi header excel sesuai dengan field DB
         const payload = data.map(row => {
           // Normalize keys
@@ -160,12 +160,12 @@ export const DataWarga = () => {
   return (
     <div className="w-full h-full flex-1 flex flex-col space-y-6 min-h-0">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
-        
+
         <div className="relative">
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input 
-            type="text" 
-            placeholder="Cari NIK / Nama..." 
+          <input
+            type="text"
+            placeholder="Cari NIK / Nama..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 pr-4 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 w-full md:w-64 shadow-sm"
@@ -173,27 +173,27 @@ export const DataWarga = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileUpload} 
-            accept=".xlsx, .xls, .csv" 
-            className="hidden" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".xlsx, .xls, .csv"
+            className="hidden"
           />
-          <button 
+          <button
             onClick={downloadTemplate}
             className="flex items-center gap-2 bg-slate-50 text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm border border-slate-200 cursor-pointer"
           >
             Download Template
           </button>
-          <button 
+          <button
             onClick={() => fileInputRef.current?.click()}
             className="flex items-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm border border-emerald-200 cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4" />
             Import
           </button>
-          <button 
+          <button
             onClick={() => handleOpenModal()}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm shadow-blue-500/30 cursor-pointer"
           >
@@ -245,14 +245,14 @@ export const DataWarga = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button 
+                        <button
                           onClick={() => handleOpenModal(w)}
                           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                           title="Ubah"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDelete(w.nik)}
                           className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           title="Hapus"
@@ -276,14 +276,14 @@ export const DataWarga = () => {
               <h2 className="text-xl font-bold text-slate-900">
                 {isEditing ? 'Ubah Data Warga' : 'Tambah Data Warga Baru'}
               </h2>
-              <button 
+              <button
                 onClick={() => setShowModal(false)}
                 className="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-100 transition-colors"
               >
                 ✕
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
               <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
@@ -294,7 +294,7 @@ export const DataWarga = () => {
                   <label className="text-sm font-medium text-slate-700">No KK <span className="text-rose-500">*</span></label>
                   <input type="text" name="no_kk" value={formData.no_kk} onChange={handleInputChange} required minLength={16} maxLength={16} className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
                 </div>
-                
+
                 <div className="space-y-1.5 md:col-span-2">
                   <label className="text-sm font-medium text-slate-700">Nama Lengkap <span className="text-rose-500">*</span></label>
                   <input type="text" name="nama_lengkap" value={formData.nama_lengkap} onChange={handleInputChange} required className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
@@ -375,7 +375,7 @@ export const DataWarga = () => {
                 </button>
               </div>
             </form>
-          </div>
+          </div>undo
         </div>
       )}
     </div>
