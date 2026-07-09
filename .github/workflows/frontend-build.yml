@@ -38,7 +38,7 @@ jobs:
         port: 22
         script: |
           # Ganti "/lokasi/folder/proyek/anda" dengan lokasi folder proyek di VPS Anda
-          cd /var/www/persuratan_desa
+          cd /var/www/persuratan_desa_kutasari
           git pull origin main
           cd frontend-spa
           npm install
