@@ -28,3 +28,18 @@ jobs:
 
     - name: Build project
       run: npm run build
+
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_IP }}
+        username: root
+        password: ${{ secrets.VPS_PASSWORD }}
+        port: 22
+        script: |
+          # Ganti "/lokasi/folder/proyek/anda" dengan lokasi folder proyek di VPS Anda
+          cd /lokasi/folder/proyek/anda
+          git pull origin main
+          cd frontend-spa
+          npm install
+          npm run build
