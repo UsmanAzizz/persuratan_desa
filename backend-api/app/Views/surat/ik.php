@@ -55,17 +55,17 @@
             text-align: center;
         }
         .ttd-image {
-            height: 100px;
-            width: auto;
-            position: absolute;
-            left: 75px;
-            top: -10px;
-            z-index: -1;
+            width: 200px;
+            height: auto;
+            margin: -20px auto -15px auto;
+            display: block;
         }
         .ttd-name {
             font-weight: bold;
             text-decoration: underline;
             margin-top: 0;
+            position: relative;
+            z-index: 10;
         }
         /* clearfix */
         .clear {
@@ -99,7 +99,7 @@
             <tr>
                 <td>2</td>
                 <td>Tempat Tanggal lahir</td>
-                <td>: <?= htmlspecialchars($warga['tempat_lahir'] ?? '-') ?>, <?= date('d-m-Y', strtotime($warga['tanggal_lahir'] ?? '1990-01-01')) ?></td>
+                <td>: <?= htmlspecialchars($warga['tempat_lahir'] ?? '-') ?>, <?= tgl_indo($warga['tanggal_lahir'] ?? '1990-01-01') ?></td>
             </tr>
             <tr>
                 <td>3</td>
@@ -127,7 +127,7 @@
             </tr>
             <tr>
                 <td>Tanggal</td>
-                <td>: <?= isset($data_input['tanggal_hajat']) ? date('d-m-Y', strtotime($data_input['tanggal_hajat'])) : '-' ?></td>
+                <td>: <?= isset($data_input['tanggal_hajat']) ? tgl_indo($data_input['tanggal_hajat']) : '-' ?></td>
             </tr>
             <tr>
                 <td>Hiburan</td>
@@ -139,7 +139,7 @@
     </div>
 
     <div class="ttd-container">
-        <p style="margin-bottom: 0;">Kutasari, <?= date('d-m-Y') ?></p>
+        <p style="margin-bottom: 0;">Kutasari, <?= tgl_indo(date('Y-m-d')) ?></p>
         <p style="margin-top: 0; margin-bottom: 0;">KEPALA DESA KUTASARI</p>
         
         <?php
@@ -149,11 +149,11 @@
                 $ttdBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($ttdPath));
             }
         ?>
-        <div style="height: 70px; position: relative;">
-            <?php if($ttdBase64): ?>
-                <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
-            <?php endif; ?>
-        </div>
+        <?php if($ttdBase64): ?>
+            <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
+        <?php else: ?>
+            <div style="height: 100px;"></div>
+        <?php endif; ?>
         
         <p class="ttd-name">KUSNENDAR</p>
     </div>
