@@ -53,11 +53,12 @@
             width: 300px;
             float: right;
             text-align: center;
+            page-break-inside: avoid;
         }
         .ttd-image {
-            width: 200px;
-            height: auto;
-            margin: -20px auto -15px auto;
+            height: 80px;
+            width: auto;
+            margin: 0 auto;
             display: block;
         }
         .ttd-name {

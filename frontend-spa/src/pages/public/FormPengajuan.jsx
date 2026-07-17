@@ -130,7 +130,7 @@ export const FormPengajuan = () => {
       ...prev,
       nik: '1234567890123456',
       no_kk: '1234567890123456',
-      no_hp: '08123456789',
+      no_hp: '+6281315968818',
       id_jenis_surat: selected.id_jenis,
       keperluan: 'Keperluan Dummy / Testing'
     }));
@@ -173,7 +173,7 @@ export const FormPengajuan = () => {
           ...prev,
           nama_lengkap: warga.nama_lengkap,
           no_kk: warga.no_kk,
-          no_hp: warga.no_hp || '08123456789',
+          no_hp: warga.no_hp || '+6281315968818',
           alamat: warga.alamat
         }));
         setIsVerified(true);
