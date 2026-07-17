@@ -36,7 +36,7 @@ export const TrackStatus = () => {
     setSearchParams({ code: trackCode });
     
     try {
-      const res = await apiClient.get(`/pengajuan/track/${trackCode}`);
+      const res = await apiClient.get(`/pengajuan/track/${encodeURIComponent(trackCode)}`);
       if (res.data.success) {
         setData(res.data.data);
       }

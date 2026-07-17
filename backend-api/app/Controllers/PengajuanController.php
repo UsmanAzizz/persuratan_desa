@@ -84,10 +84,12 @@ class PengajuanController extends BaseApiController
             return $this->respondError('Jenis surat tidak valid', 400);
         }
 
-        // 2. Generate Tracking Code Unik dengan Inisial
-        $words = explode(" ", $jenisSurat['nama_surat']);
+        // 2. Generate Tracking Code Unik dengan Inisial (Hanya abjad)
+        $namaSuratClean = preg_replace('/[^a-zA-Z\s]/', '', $jenisSurat['nama_surat']);
+        $words = explode(" ", $namaSuratClean);
         $initials = "";
         foreach ($words as $w) {
+            $w = trim($w);
             if (strlen($w) > 0) {
                 $initials .= strtoupper($w[0]);
             }
