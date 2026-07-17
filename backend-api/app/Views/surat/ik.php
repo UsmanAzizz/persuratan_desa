@@ -45,19 +45,23 @@
             float: right;
             text-align: center;
             page-break-inside: avoid;
+            position: relative;
         }
         .ttd-image {
-            height: 80px;
+            position: absolute;
+            height: 120px;
             width: auto;
-            margin: 0 auto;
-            display: block;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
         }
         .ttd-name {
             font-weight: bold;
             text-decoration: underline;
             margin-top: 0;
             position: relative;
-            z-index: 10;
+            z-index: 2;
         }
         /* clearfix */
         .clear {
@@ -81,7 +85,7 @@
                     <img src="<?= $logoBase64 ?>" style="width: 80px; height: auto;" />
                 <?php endif; ?>
             </td>
-            <td width="85%" style="text-align: center; padding-right: 15%;">
+            <td width="85%" style="text-align: center; padding-right: 50px;">
                 <div style="font-weight: bold; font-size: 14pt; margin: 0;">PEMERINTAH KABUPATEN CILACAP</div>
                 <div style="font-weight: bold; font-size: 14pt; margin: 0;">KECAMATAN CIPARI</div>
                 <div style="font-weight: bold; font-size: 18pt; margin: 0;">DESA KUTASARI</div>
@@ -159,9 +163,9 @@
         ?>
         <?php if($ttdBase64): ?>
             <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
-        <?php else: ?>
-            <div style="height: 100px;"></div>
         <?php endif; ?>
+        
+        <div style="height: 100px;"></div>
         
         <p class="ttd-name">KUSNENDAR</p>
     </div>
