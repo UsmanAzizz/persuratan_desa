@@ -118,6 +118,83 @@ export const FormPengajuan = () => {
     setIsVerified(false);
   };
 
+  const handleFillDummy = async (e) => {
+    const kodeSurat = e.target.value;
+    if (!kodeSurat) return;
+
+    const selected = jenisSurat.find(j => j.kode_surat === kodeSurat);
+    if (!selected) return;
+
+    // Fill basic
+    setFormData(prev => ({
+      ...prev,
+      nik: '1234567890123456',
+      no_kk: '1234567890123456',
+      no_hp: '08123456789',
+      id_jenis_surat: selected.id_jenis,
+      keperluan: 'Keperluan Dummy / Testing'
+    }));
+
+    setSelectedKodeSurat(kodeSurat);
+    
+    let syaratArr = [];
+    try {
+      syaratArr = JSON.parse(selected.syarat_berkas);
+      setSelectedSyarat(Array.isArray(syaratArr) ? syaratArr : []);
+    } catch(err) {
+      setSelectedSyarat([]);
+    }
+    
+    // Fill dynamic fields based on type
+    const dummyFields = {};
+    if (kodeSurat === 'IK') {
+      dummyFields.hari_hajat = 'Selasa';
+      dummyFields.tanggal_hajat = '2026-07-17';
+      dummyFields.jenis_hiburan = 'Hadroh';
+    } else if (kodeSurat === 'SKW') {
+      dummyFields.nama_pewaris = 'Siti Maimunah';
+      dummyFields.nama_pasangan = 'Abdul Rozak';
+    } else if (kodeSurat === 'N1') {
+      dummyFields.status_perkawinan = 'Jejaka/Perawan';
+      dummyFields.nama_ayah_kandung = 'Sutejo';
+      dummyFields.nama_ibu_kandung = 'Ngatinah';
+    } else if (kodeSurat === 'SKU') {
+      dummyFields.nama_usaha = 'Warung Berkah Kutasari';
+    }
+    setDynamicFields(dummyFields);
+    
+    // Simulate verification & file loading
+    setIsVerifying(true);
+    try {
+      const res = await apiClient.get(`/pengajuan/cek-nik/1234567890123456`, { showSuccessToast: false });
+      if (res.data.success) {
+        const warga = res.data.data;
+        setFormData(prev => ({
+          ...prev,
+          nama_lengkap: warga.nama_lengkap,
+          no_kk: warga.no_kk,
+          no_hp: warga.no_hp || '08123456789',
+          alamat: warga.alamat
+        }));
+        setIsVerified(true);
+        
+        // Load dummy file from public folder
+        const resFile = await fetch('/TTD_KADES.png');
+        const blob = await resFile.blob();
+        const dummyFile = new File([blob], 'TTD_KADES.png', { type: 'image/png' });
+        
+        const filesObj = {};
+        syaratArr.forEach(s => { filesObj[s] = dummyFile; });
+        setFileData(filesObj);
+      }
+    } catch (err) {
+      console.error('Gagal meload warga dummy', err);
+      setIsVerified(false);
+    }
+    setIsVerifying(false);
+    e.target.value = ''; // Reset dropdown
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isVerified) return;
@@ -209,10 +286,18 @@ export const FormPengajuan = () => {
 
   return (
     <div className="w-full px-4 sm:px-6 py-2 select-none relative z-10">
-      <div className="mb-3 text-center max-w-4xl mx-auto">
+      <div className="mb-3 text-center max-w-4xl mx-auto relative flex flex-col items-center justify-center gap-2">
         <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
           Formulir Pengajuan Surat
         </h1>
+        <div className="absolute right-0 top-0">
+          <select onChange={handleFillDummy} className="text-xs px-2 py-1 bg-amber-100 text-amber-800 border border-amber-300 rounded shadow-sm focus:outline-none font-medium cursor-pointer">
+            <option value="">🚀 Auto-Fill Dummy...</option>
+            {jenisSurat.map(j => (
+              <option key={j.id_jenis} value={j.kode_surat}>Dummy {j.kode_surat}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 items-stretch w-full">
