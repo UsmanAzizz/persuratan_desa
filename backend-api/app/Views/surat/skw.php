@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Keterangan Ijin Khajat</title>
+    <title>Surat Keterangan Ahli Waris</title>
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -29,15 +29,16 @@
             margin: 0;
         }
         .konten {
-            text-align: justify;
+            margin-bottom: 30px;
         }
         .table-data {
+            width: 100%;
             margin-left: 20px;
             margin-bottom: 15px;
         }
         .table-data td {
             vertical-align: top;
-            padding: 2px 5px;
+            padding: 2px 0;
         }
         .ttd-container {
             margin-top: 40px;
@@ -59,7 +60,6 @@
             position: relative;
             z-index: 10;
         }
-        /* clearfix */
         .clear {
             clear: both;
         }
@@ -91,8 +91,8 @@
     </table>
 
     <div class="judul-surat">
-        <h4>KETERANGAN IJIN KHAJAT</h4>
-        <p>Nomor : <?= $id_pengajuan ?> / IK / <?= date('Y', strtotime($created_at)) ?></p>
+        <h4>SURAT KETERANGAN AHLI WARIS</h4>
+        <p>Nomor : <?= $id_pengajuan ?> / SKW / <?= date('Y', strtotime($created_at)) ?></p>
     </div>
 
     <div class="konten">
@@ -100,50 +100,46 @@
         
         <table class="table-data">
             <tr>
-                <td>1</td>
-                <td width="150">Nama dan alias</td>
+                <td width="20">1</td>
+                <td width="150">Nama Lengkap</td>
                 <td>: <?= htmlspecialchars($warga['nama_lengkap']) ?></td>
             </tr>
             <tr>
                 <td>2</td>
-                <td>Tempat Tanggal lahir</td>
+                <td>Tempat Tgl lahir</td>
                 <td>: <?= htmlspecialchars($warga['tempat_lahir'] ?? '-') ?>, <?= tgl_indo($warga['tanggal_lahir'] ?? '1990-01-01') ?></td>
             </tr>
             <tr>
                 <td>3</td>
+                <td>NIK</td>
+                <td>: <?= htmlspecialchars($warga['nik']) ?></td>
+            </tr>
+            <tr>
+                <td>4</td>
                 <td>Pekerjaan</td>
                 <td>: <?= htmlspecialchars($warga['pekerjaan'] ?? '-') ?></td>
             </tr>
             <tr>
-                <td>4</td>
-                <td>Alamat tinggal</td>
-                <td>: <?= htmlspecialchars($warga['alamat']) ?> RT <?= htmlspecialchars($warga['rt']) ?>/RW <?= htmlspecialchars($warga['rw']) ?></td>
-            </tr>
-            <tr>
                 <td>5</td>
-                <td>Keperluan</td>
-                <td>: <?= htmlspecialchars($data_input['keperluan'] ?? '-') ?></td>
+                <td>Alamat tempat tinggal</td>
+                <td>: <?= htmlspecialchars($warga['alamat']) ?></td>
             </tr>
         </table>
 
-        <p>Orang tersebut di atas benar warga kami, kepadanya diberikan ijin untuk menyelenggarakan hajat pada ketentuan :</p>
+        <p>Nama tersebut di atas adalah benar-benar Ahli Waris dari :</p>
+
+        <table class="table-data">
+            <tr>
+                <td width="170">Nama Pewaris (Almarhum)</td>
+                <td>: <strong><?= htmlspecialchars($data_input['nama_pewaris'] ?? '-') ?></strong></td>
+            </tr>
+            <tr>
+                <td>Nama Pasangan</td>
+                <td>: <?= htmlspecialchars($data_input['nama_pasangan'] ?? '-') ?></td>
+            </tr>
+        </table>
         
-        <table class="table-data" style="margin-left: 0;">
-            <tr>
-                <td width="100">Hari</td>
-                <td>: <?= htmlspecialchars($data_input['hari_hajat'] ?? '-') ?></td>
-            </tr>
-            <tr>
-                <td>Tanggal</td>
-                <td>: <?= isset($data_input['tanggal_hajat']) ? tgl_indo($data_input['tanggal_hajat']) : '-' ?></td>
-            </tr>
-            <tr>
-                <td>Hiburan</td>
-                <td>: <?= htmlspecialchars($data_input['jenis_hiburan'] ?? '-') ?></td>
-            </tr>
-        </table>
-
-        <p>Demikian Surat Keterangan ini untuk menjadikan periksa guna seperlunya.</p>
+        <p>Demikian Surat Keterangan Ahli Waris ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya.</p>
     </div>
 
     <div class="ttd-container">
@@ -165,7 +161,7 @@
         
         <p class="ttd-name">KUSNENDAR</p>
     </div>
-
+    
     <div class="clear"></div>
 
 </body>

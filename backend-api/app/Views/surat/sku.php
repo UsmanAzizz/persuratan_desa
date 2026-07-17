@@ -9,21 +9,12 @@
             font-size: 12pt;
             line-height: 1.5;
             margin: 0;
-            padding: 2cm 2cm;
+            padding: 0.5cm 1cm;
         }
         .kop-surat {
-            text-align: center;
-            border-bottom: 3px double black;
-            padding-bottom: 10px;
+            border-bottom: 3px solid black;
+            padding-bottom: 5px;
             margin-bottom: 20px;
-        }
-        .kop-surat h3, .kop-surat h2 {
-            margin: 0;
-            font-weight: bold;
-        }
-        .kop-surat p {
-            margin: 0;
-            font-size: 11pt;
         }
         .judul-surat {
             text-align: center;
@@ -75,12 +66,28 @@
 </head>
 <body>
 
-    <div class="kop-surat">
-        <h3>PEMERINTAH KABUPATEN CILACAP</h3>
-        <h3>KECAMATAN CIPARI</h3>
-        <h2>DESA KUTASARI</h2>
-        <p>Alamat : Jln Ir Soekarno No 02 Kutasari</p>
-    </div>
+    <table class="kop-surat" width="100%">
+        <tr>
+            <td width="15%" style="text-align: left; vertical-align: middle;">
+                <?php
+                    $logoPath = FCPATH . 'assets/images/logo_Cilacap.png';
+                    $logoBase64 = '';
+                    if (file_exists($logoPath)) {
+                        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+                    }
+                ?>
+                <?php if($logoBase64): ?>
+                    <img src="<?= $logoBase64 ?>" style="width: 80px; height: auto;" />
+                <?php endif; ?>
+            </td>
+            <td width="85%" style="text-align: center; padding-right: 15%;">
+                <div style="font-weight: bold; font-size: 14pt; margin: 0;">PEMERINTAH KABUPATEN CILACAP</div>
+                <div style="font-weight: bold; font-size: 14pt; margin: 0;">KECAMATAN CIPARI</div>
+                <div style="font-weight: bold; font-size: 18pt; margin: 0;">DESA KUTASARI</div>
+                <div style="font-size: 10pt; margin: 0;">Alamat : Jalan Ir. Soekarno Nomor 02 Kutasari <strong>CIPARI</strong> Kode Pos 53262</div>
+            </td>
+        </tr>
+    </table>
 
     <div class="judul-surat">
         <h4>SURAT KETERANGAN USAHA</h4>
