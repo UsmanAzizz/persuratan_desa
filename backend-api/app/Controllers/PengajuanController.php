@@ -150,7 +150,12 @@ class PengajuanController extends BaseApiController
         $pesan .= "• NIK: " . $nik . "\n";
         foreach ($dataInputArr as $key => $val) {
             $label = ucwords(str_replace('_', ' ', $key));
-            $pesan .= "• " . $label . ": " . $val . "\n";
+            // Sembunyikan path upload dari pesan WA agar tidak terlihat aneh
+            if (is_string($val) && strpos($val, '/uploads/') === 0) {
+                $pesan .= "• " . $label . ": [Berkas Terlampir]\n";
+            } else {
+                $pesan .= "• " . $label . ": " . $val . "\n";
+            }
         }
         
         $pesan .= "\nKODE PELACAKAN: *" . $kodeTracking . "*\n\n";
