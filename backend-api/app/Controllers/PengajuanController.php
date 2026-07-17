@@ -155,8 +155,8 @@ class PengajuanController extends BaseApiController
         
         $pesan .= "\nKODE PELACAKAN: *" . $kodeTracking . "*\n\n";
         $pesan .= "Untuk memantau progres permohonan surat Anda secara real-time, silakan kunjungi tautan di bawah ini:\n";
-        // Asumsi frontend berjalan di localhost:5173
-        $pesan .= "http://localhost:5173/track?code=" . $kodeTracking . "\n\n";
+        $frontendUrl = getenv('FRONTEND_URL') ?: 'https://persuratan-desa-kutasari.snowline.cloud';
+        $pesan .= $frontendUrl . "/track?code=" . $kodeTracking . "\n\n";
         $pesan .= "_(Catatan: Mohon simpan pesan dan tautan ini untuk mengambil dokumen Anda nanti di balai desa)_";
 
         // Eksekusi API Node.js Gateway
