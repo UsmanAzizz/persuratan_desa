@@ -53,23 +53,19 @@
             width: 300px;
             float: right;
             text-align: center;
-            position: relative;
         }
         .ttd-image {
-            width: 150px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
+            height: 100px;
+            width: auto;
             position: absolute;
-            top: 25px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 75px;
+            top: -10px;
             z-index: -1;
         }
         .ttd-name {
-            margin-top: 80px; 
             font-weight: bold;
             text-decoration: underline;
+            margin-top: 0;
         }
         .clear {
             clear: both;
@@ -127,10 +123,21 @@
     </div>
 
     <div class="ttd-container">
-        <p>Kutasari, <?= date('d-m-Y') ?></p>
-        <p>KEPALA DESA KUTASARI</p>
+        <p style="margin-bottom: 0;">Kutasari, <?= date('d-m-Y') ?></p>
+        <p style="margin-top: 0; margin-bottom: 0;">KEPALA DESA KUTASARI</p>
         
-        <img src="<?= FCPATH ?>assets/images/TTD_KADES.png" alt="Tanda Tangan Kades" class="ttd-image" />
+        <?php
+            $ttdPath = FCPATH . 'assets/images/TTD_KADES.png';
+            $ttdBase64 = '';
+            if (file_exists($ttdPath)) {
+                $ttdBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($ttdPath));
+            }
+        ?>
+        <div style="height: 70px; position: relative;">
+            <?php if($ttdBase64): ?>
+                <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
+            <?php endif; ?>
+        </div>
         
         <p class="ttd-name">KUSNENDAR</p>
     </div>
