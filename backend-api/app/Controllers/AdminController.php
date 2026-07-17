@@ -137,15 +137,18 @@ class AdminController extends BaseApiController
             
             helper('indo');
             
-            // Peta ID Surat ke File View
+            // Peta Kode Surat ke File View
             $slugMap = [
-                1 => 'sku',  // ID 1: SKU
-                2 => 'skd',  // ID 2: SK Domisili
-                3 => 'skck', // ID 3: Pengantar SKCK
-                4 => 'sktm'  // ID 4: SKTM
+                'SKU' => 'sku',
+                'SKD' => 'skd',
+                'SKCK' => 'skck',
+                'SKTM' => 'sktm',
+                'IK' => 'ik',
+                'SKW' => 'skw',
+                'N1' => 'n1'
             ];
             
-            $viewFile = 'surat/' . ($slugMap[$jenisSurat['id_jenis']] ?? 'skd');
+            $viewFile = 'surat/' . ($slugMap[$jenisSurat['kode_surat']] ?? 'skd');
             $html = view($viewFile, $viewData);
             
             // 4. Generate PDF dengan DomPDF

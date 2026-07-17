@@ -425,50 +425,61 @@ export const FormPengajuan = () => {
                         </>
                       )}
                       
-                      {formData.id_jenis_surat == 1 && ( // SKU
-                        <div className="flex flex-col gap-1.5">
-                          <label htmlFor="nama_usaha" className="text-sm font-medium text-slate-700">Nama Usaha <span className="text-rose-500">*</span></label>
-                          <input 
-                            type="text"
-                            id="nama_usaha"
-                            className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
-                            placeholder="Contoh: Warung Sembako Berkah"
-                            required
-                            value={dynamicFields.nama_usaha || ''}
-                            onChange={handleDynamicFieldChange}
-                            disabled={!isVerified}
-                          />
-                        </div>
+                      {selectedKodeSurat === 'IK' && (
+                        <>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="hari_hajat" className="text-sm font-medium text-slate-700">Hari Penyelenggaraan <span className="text-rose-500">*</span></label>
+                            <select id="hari_hajat" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" value={dynamicFields.hari_hajat || ''} onChange={handleDynamicFieldChange} disabled={!isVerified} required>
+                              <option value="">-- Pilih Hari --</option>
+                              <option value="Senin">Senin</option><option value="Selasa">Selasa</option><option value="Rabu">Rabu</option><option value="Kamis">Kamis</option><option value="Jumat">Jumat</option><option value="Sabtu">Sabtu</option><option value="Minggu">Minggu</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="tanggal_hajat" className="text-sm font-medium text-slate-700">Tanggal Penyelenggaraan <span className="text-rose-500">*</span></label>
+                            <input type="date" id="tanggal_hajat" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" required value={dynamicFields.tanggal_hajat || ''} onChange={handleDynamicFieldChange} disabled={!isVerified} />
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="jenis_hiburan" className="text-sm font-medium text-slate-700">Jenis Hiburan <span className="text-rose-500">*</span></label>
+                            <input type="text" id="jenis_hiburan" placeholder="Contoh: Organ Tunggal" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" required value={dynamicFields.jenis_hiburan || ''} onChange={handleDynamicFieldChange} disabled={!isVerified} />
+                          </div>
+                        </>
                       )}
 
-                      {formData.id_jenis_surat == 3 && ( // SKCK
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {selectedKodeSurat === 'SKW' && (
+                        <>
                           <div className="flex flex-col gap-1.5">
-                            <label htmlFor="no_surat_rt" className="text-sm font-medium text-slate-700">Nomor Surat Pengantar RT <span className="text-rose-500">*</span></label>
-                            <input 
-                              type="text"
-                              id="no_surat_rt"
-                              className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
-                              placeholder="01/RT.01/2026"
-                              required
-                              value={dynamicFields.no_surat_rt || ''}
-                              onChange={handleDynamicFieldChange}
-                              disabled={!isVerified}
-                            />
+                            <label htmlFor="nama_pewaris" className="text-sm font-medium text-slate-700">Nama Almarhum/Almarhumah (Pewaris) <span className="text-rose-500">*</span></label>
+                            <input type="text" id="nama_pewaris" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" required value={dynamicFields.nama_pewaris || ''} onChange={handleDynamicFieldChange} disabled={!isVerified} />
                           </div>
                           <div className="flex flex-col gap-1.5">
-                            <label htmlFor="tgl_surat_rt" className="text-sm font-medium text-slate-700">Tanggal Surat RT <span className="text-rose-500">*</span></label>
-                            <input 
-                              type="date"
-                              id="tgl_surat_rt"
-                              className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
-                              required
-                              value={dynamicFields.tgl_surat_rt || ''}
-                              onChange={handleDynamicFieldChange}
-                              disabled={!isVerified}
-                            />
+                            <label htmlFor="nama_pasangan" className="text-sm font-medium text-slate-700">Nama Pasangan Pewaris (Suami/Istri) <span className="text-rose-500">*</span></label>
+                            <input type="text" id="nama_pasangan" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" required value={dynamicFields.nama_pasangan || ''} onChange={handleDynamicFieldChange} disabled={!isVerified} />
                           </div>
-                        </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-slate-700">Catatan: Data Anak/Ahli Waris akan dilengkapi saat pencetakan di balai desa karena membutuhkan validasi lebih lanjut.</label>
+                          </div>
+                        </>
+                      )}
+
+                      {selectedKodeSurat === 'N1' && (
+                        <>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="status_perkawinan" className="text-sm font-medium text-slate-700">Status Perkawinan Calon <span className="text-rose-500">*</span></label>
+                            <select id="status_perkawinan" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" required value={dynamicFields.status_perkawinan || ''} onChange={handleDynamicFieldChange} disabled={!isVerified}>
+                              <option value="">-- Pilih Status --</option>
+                              <option value="Jejaka/Perawan">Jejaka / Perawan</option>
+                              <option value="Duda/Janda">Duda / Janda</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="nama_ayah_kandung" className="text-sm font-medium text-slate-700">Nama Ayah Kandung <span className="text-rose-500">*</span></label>
+                            <input type="text" id="nama_ayah_kandung" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" required value={dynamicFields.nama_ayah_kandung || ''} onChange={handleDynamicFieldChange} disabled={!isVerified} />
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <label htmlFor="nama_ibu_kandung" className="text-sm font-medium text-slate-700">Nama Ibu Kandung <span className="text-rose-500">*</span></label>
+                            <input type="text" id="nama_ibu_kandung" className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm" required value={dynamicFields.nama_ibu_kandung || ''} onChange={handleDynamicFieldChange} disabled={!isVerified} />
+                          </div>
+                        </>
                       )}
 
                       <div className="flex flex-col gap-1.5">

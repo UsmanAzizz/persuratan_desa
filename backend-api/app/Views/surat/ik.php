@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Surat Keterangan Usaha</title>
+    <title>Keterangan Ijin Khajat</title>
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -13,7 +13,7 @@
         }
         .kop-surat {
             text-align: center;
-            border-bottom: 3px double black;
+            border-bottom: 3px solid black;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
@@ -41,7 +41,7 @@
             text-align: justify;
         }
         .table-data {
-            margin-left: 0;
+            margin-left: 20px;
             margin-bottom: 15px;
         }
         .table-data td {
@@ -67,10 +67,11 @@
             z-index: -1;
         }
         .ttd-name {
-            margin-top: 80px; 
+            margin-top: 80px; /* Space for signature image */
             font-weight: bold;
             text-decoration: underline;
         }
+        /* clearfix */
         .clear {
             clear: both;
         }
@@ -82,54 +83,70 @@
         <h3>PEMERINTAH KABUPATEN CILACAP</h3>
         <h3>KECAMATAN CIPARI</h3>
         <h2>DESA KUTASARI</h2>
-        <p>Alamat : Jln Ir Soekarno No 02 Kutasari</p>
+        <p>Alamat : Jalan Ir. Soekarno Nomor 02 Kutasari <strong>CIPARI</strong> Kode Pos 53262</p>
     </div>
 
     <div class="judul-surat">
-        <h4>SURAT KETERANGAN USAHA</h4>
-        <p>Nomor : <?= $id_pengajuan ?> / VII / <?= date('Y', strtotime($created_at)) ?></p>
+        <h4>KETERANGAN IJIN KHAJAT</h4>
+        <p>Nomor : <?= $id_pengajuan ?> / IK / <?= date('Y', strtotime($created_at)) ?></p>
     </div>
 
     <div class="konten">
-        <p>Yang bertanda tangan di bawah ini Kepala Desa Kutasari, Kecamatan Cipari, Kabupaten Cilacap, Menerangkan bahwa :</p>
+        <p>Yang bertanda tangan di bawah ini Kepala Desa Kutasari, Kecamatan Cipari, Kabupaten Cilacap, menerangkan dengan sebenarnya bahwa :</p>
         
         <table class="table-data">
             <tr>
-                <td width="150">Nama</td>
+                <td>1</td>
+                <td width="150">Nama dan alias</td>
                 <td>: <?= htmlspecialchars($warga['nama_lengkap']) ?></td>
             </tr>
             <tr>
-                <td>Tempat tgl lahir</td>
+                <td>2</td>
+                <td>Tempat Tanggal lahir</td>
                 <td>: <?= htmlspecialchars($warga['tempat_lahir'] ?? '-') ?>, <?= date('d-m-Y', strtotime($warga['tanggal_lahir'] ?? '1990-01-01')) ?></td>
             </tr>
             <tr>
+                <td>3</td>
                 <td>Pekerjaan</td>
                 <td>: <?= htmlspecialchars($warga['pekerjaan'] ?? '-') ?></td>
             </tr>
             <tr>
-                <td>Alamat</td>
+                <td>4</td>
+                <td>Alamat tinggal</td>
                 <td>: <?= htmlspecialchars($warga['alamat']) ?> RT <?= htmlspecialchars($warga['rt']) ?>/RW <?= htmlspecialchars($warga['rw']) ?></td>
             </tr>
             <tr>
-                <td><br/>Keperluan</td>
-                <td><br/>: <?= htmlspecialchars($data_input['keperluan'] ?? '-') ?></td>
+                <td>5</td>
+                <td>Keperluan</td>
+                <td>: <?= htmlspecialchars($data_input['keperluan'] ?? '-') ?></td>
             </tr>
         </table>
 
-        <p>Orang tersebut diatas benar - benar Warga Desa kami yang mempunyai usaha :</p>
-        <p style="font-weight: bold; text-align: center; font-size: 14pt;">
-            <?= htmlspecialchars($data_input['nama_usaha'] ?? $data_input['data_usaha'] ?? '-') ?>
-        </p>
+        <p>Orang tersebut di atas benar warga kami, kepadanya diberikan ijin untuk menyelenggarakan hajat pada ketentuan :</p>
+        
+        <table class="table-data" style="margin-left: 0;">
+            <tr>
+                <td width="100">Hari</td>
+                <td>: <?= htmlspecialchars($data_input['hari_hajat'] ?? '-') ?></td>
+            </tr>
+            <tr>
+                <td>Tanggal</td>
+                <td>: <?= isset($data_input['tanggal_hajat']) ? date('d-m-Y', strtotime($data_input['tanggal_hajat'])) : '-' ?></td>
+            </tr>
+            <tr>
+                <td>Hiburan</td>
+                <td>: <?= htmlspecialchars($data_input['jenis_hiburan'] ?? '-') ?></td>
+            </tr>
+        </table>
 
-        <p style="text-indent: 1cm; margin-top: 20px;">
-            Demikian surat keterangan ini kami buat dalam keadaan sebenarnya dan kemudian kepada yang berkepentingan untuk menjadi periksa dan maklum adanya.
-        </p>
+        <p>Demikian Surat Keterangan ini untuk menjadikan periksa guna seperlunya.</p>
     </div>
 
     <div class="ttd-container">
         <p>Kutasari, <?= date('d-m-Y') ?></p>
         <p>KEPALA DESA KUTASARI</p>
         
+        <!-- Stempel Digital TTD -->
         <img src="<?= FCPATH ?>assets/images/TTD_KADES.png" alt="Tanda Tangan Kades" class="ttd-image" />
         
         <p class="ttd-name">KUSNENDAR</p>

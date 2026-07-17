@@ -43,6 +43,21 @@ class InitSeeder extends Seeder
                 'kode_surat'    => 'SKTM',
                 'syarat_berkas' => json_encode(['ktp', 'kk', 'pengantar_rt_rw', 'foto_rumah']),
             ],
+            [
+                'nama_surat'    => 'Surat Izin Keramaian / Khajat',
+                'kode_surat'    => 'IK',
+                'syarat_berkas' => json_encode(['ktp', 'kk', 'pengantar_rt_rw']),
+            ],
+            [
+                'nama_surat'    => 'Surat Keterangan Ahli Waris',
+                'kode_surat'    => 'SKW',
+                'syarat_berkas' => json_encode(['ktp_ahli_waris', 'kk_ahli_waris', 'pengantar_rt_rw', 'surat_kematian']),
+            ],
+            [
+                'nama_surat'    => 'Surat Pengantar Perkawinan (N1)',
+                'kode_surat'    => 'N1',
+                'syarat_berkas' => json_encode(['ktp', 'kk', 'pengantar_rt_rw']),
+            ],
         ];
 
         $this->db->table('jenis_surat')->ignore(true)->insertBatch($jenisSuratData);
