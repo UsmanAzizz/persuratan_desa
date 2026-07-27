@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Clock, Activity, CheckCircle, XCircle, FileText, Image as ImageIcon, Maximize2, X, Download, Loader2 } from 'lucide-react';
 import { useHeaderStore } from '../../store/useHeaderStore';
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '') : 'http://localhost:8080';
+
 export const DetailPengajuan = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -70,6 +72,11 @@ export const DetailPengajuan = () => {
   // Fetch PDF Preview
   useEffect(() => {
     if (activeTab === 'preview' && !pdfUrl && data?.status !== 'menunggu') {
+      if ((data?.status === 'selesai' || data?.status === 'disetujui_kades') && data?.file_path) {
+        setPdfUrl(`${BASE_URL}/${data.file_path}`);
+        return;
+      }
+
       const fetchPreview = async () => {
         try {
           const response = await apiClient.get(`/admin/pengajuan/${id}/preview`, {
@@ -83,7 +90,7 @@ export const DetailPengajuan = () => {
       };
       fetchPreview();
     }
-  }, [activeTab, id, pdfUrl, data?.status]);
+  }, [activeTab, id, pdfUrl, data?.status, data?.file_path]);
 
   // Clean up ObjectURL
   useEffect(() => {

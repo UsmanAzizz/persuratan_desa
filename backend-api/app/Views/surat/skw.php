@@ -157,7 +157,7 @@
                 $ttdBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($ttdPath));
             }
         ?>
-        <?php if($ttdBase64): ?>
+        <?php if(isset($qr_base64) && $ttdBase64): ?>
             <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
         <?php endif; ?>
         

@@ -56,8 +56,8 @@ export const ValidasiKades = () => {
       });
       if (res.data.success) {
         if (aksi === 'tolak') setShowRejectModal(false);
-        // Refresh data
-        await fetchDetail();
+        // Refresh halaman agar iframe PDF merender ulang
+        window.location.reload();
       }
     } catch (e) {
       alert(e.response?.data?.message || 'Gagal menyimpan aksi');
