@@ -1,0 +1,56 @@
+STRUKTUR DATABASE DAN RELASI APLIKASI PERSURATAN DESA KUTASARI (UPDATED)
+
+Berdasarkan implementasi kode terbaru (Migration):
+
+1. ENTITAS MASTER DATA
+
+Tabel: warga
+- nik VARCHAR(16) PRIMARY KEY
+- no_kk VARCHAR(16) NOT NULL
+- nama_lengkap VARCHAR(100) NOT NULL
+- alamat, rt, rw NOT NULL
+- tempat_lahir VARCHAR(100) NULL
+- tanggal_lahir DATE NULL
+- jenis_kelamin ENUM('L', 'P') NULL
+- agama VARCHAR(50) NULL
+- pekerjaan VARCHAR(100) NULL
+- status_perkawinan ENUM('Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati') NULL
+- dusun VARCHAR(100) NULL
+- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+Tabel: admin (Sebelumnya bernama users)
+- id_user INT AUTO_INCREMENT PRIMARY KEY
+- username VARCHAR(50) UNIQUE NOT NULL
+- password VARCHAR(255) NOT NULL (BCrypt)
+- nama_petugas VARCHAR(100) NOT NULL
+- role ENUM('admin', 'kepala_desa') NOT NULL
+
+Tabel: jenis_surat
+- id_jenis INT AUTO_INCREMENT PRIMARY KEY
+- nama_surat VARCHAR(100) NOT NULL
+- kode_surat VARCHAR(10) UNIQUE NOT NULL
+- syarat_berkas TEXT NOT NULL (JSON Array)
+
+2. ENTITAS TRANSAKSIONAL
+
+Tabel: pengajuan_surat
+- id_pengajuan INT AUTO_INCREMENT PRIMARY KEY
+- kode_tracking VARCHAR(12) UNIQUE NOT NULL
+- nik_warga VARCHAR(16) NOT NULL (FOREIGN KEY ke warga.nik)
+- no_hp VARCHAR(15) NOT NULL (Dipindahkan dari tabel warga ke sini)
+- id_jenis_surat INT NOT NULL (FOREIGN KEY ke jenis_surat.id_jenis)
+- data_input TEXT NOT NULL (JSON String)
+- status ENUM('menunggu', 'diproses', 'ditolak', 'selesai') DEFAULT 'menunggu'
+- alasan_penolakan TEXT NULL
+- qr_token VARCHAR(255) NULL
+- file_path VARCHAR(255) NULL
+
+Tabel: riwayat_status (Audit Trail)
+- id_riwayat INT AUTO_INCREMENT PRIMARY KEY
+- id_pengajuan INT NOT NULL (FOREIGN KEY ke pengajuan_surat.id_pengajuan)
+- status_lama ENUM(...)
+- status_baru ENUM(...)
+- id_user_eksekutor INT NULL (FOREIGN KEY ke admin.id_user ON DELETE SET NULL)
+- catatan TEXT NULL
+
+(Catatan: Tabel log_notifikasi dan jwt_blacklist telah dihapus dari sistem karena notifikasi kini diproses langsung via API HTTP dan autentikasi tidak menggunakan tabel blacklist).

@@ -1,0 +1,27 @@
+PEDOMAN DESAIN ANTARMUKA DAN PENGALAMAN PENGGUNA (UI/UX)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Dokumen ini dapat digunakan sebagai referensi penjelasan Perancangan Antarmuka (Bab 3) pada skripsi Anda.
+
+1. PRINSIP DESAIN ANTARMUKA
+Aplikasi dirancang dengan gaya "Formal-Modern".
+- Kejelasan dan Legalitas: Mengingat ini adalah platform tata usaha pemerintahan desa, elemen dekoratif dihilangkan. Fokus 100% pada keterbacaan data warga dan formulir kependudukan.
+- Penyajian Status Transparan: Pada halaman pelacakan warga, status surat ditampilkan menggunakan konsep "Timeline Tracker" (Menunggu -> Diproses -> Selesai) secara gamblang agar mudah dipahami masyarakat desa.
+- Responsivitas: Antarmuka dibangun berlandaskan *Mobile-First Design* mengingat mayoritas masyarakat (warga) mengakses portal publik menggunakan Smartphone.
+
+2. PALET WARNA (COLOR PALETTE)
+Aplikasi memanfaatkan framework Tailwind CSS dengan penataan berikut:
+- Slate 800 (#1E293B): Digunakan sebagai warna otoritatif untuk Header/Navbar, judul halaman, dan menu-menu pada panel Admin.
+- Blue 600 (#2563EB): Digunakan sebagai warna Call-to-Action utama (Misal: Tombol "Kirim Pengajuan Surat" atau "Cari Kode Tracking").
+- Slate 50 (#F8FAFC): Digunakan sebagai warna dasar latar belakang (Background) agar kontras dengan form berlatar putih bersih (White).
+- Emerald 700 (#047857): Penanda status "Selesai" atau "Dokumen Valid" (Success Badge).
+- Rose 700 (#BE123C): Penanda status kritis (Misal: Surat "Ditolak" atau pesan error validasi form).
+
+3. TIPOGRAFI
+- Web Font: Menggunakan font Sans-Serif (Inter atau Roboto) yang bersih dan tajam agar tetap terbaca meski di layar ponsel berukuran kecil (karena form kependudukan memiliki field yang padat).
+- Font Cetak (PDF): Khusus untuk hasil *generate* dokumen surat berbentuk PDF, font disesuaikan dengan standar legalitas tata usaha desa, yaitu *Times New Roman* ukuran 12pt.
+
+4. KOMPONEN VISUAL & INTERAKSI (ANIMASI)
+- Transisi Halus (Framer Motion): Pergantian antar halaman menggunakan efek *Fade-in* & *Fade-out* yang ringan. Tidak ada animasi berlebihan yang mengurangi kesan formalitas pemerintahan desa.
+- Skeleton Loading / Shimmer Effect: Saat Admin atau Warga melakukan *request* ke server (seperti memuat tabel antrean), sistem menampilkan placeholder kerangka abu-abu bergradasi untuk meredam persepsi kelelahan menunggu (mengurangi *cognitive load*).
+- Empty State: Jika tabel antrean kosong, tampilan diganti dengan ikon dokumen bergradasi abu-abu dan teks informatif "Belum ada antrean surat masuk", bukan layar putih kosong.

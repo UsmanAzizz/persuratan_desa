@@ -25,6 +25,7 @@ $routes->group('api/v1', function($routes) {
         $routes->get('pengajuan/(:num)', 'AdminController::getPengajuanDetail/$1');
         // Rute intervensi status
         $routes->put('pengajuan/(:num)/status', 'AdminController::updateStatus/$1');
+        $routes->get('pengajuan/(:num)/preview', 'AdminController::previewPdf/$1');
         
         // Modul Pengaturan Akun Admin
         $routes->get('akun', 'AdminController::getAkun');
@@ -54,6 +55,13 @@ $routes->group('api/v1', function($routes) {
         $routes->get('track/(:segment)', 'PengajuanController::track/$1');
         $routes->get('download/(:segment)', 'PengajuanController::download/$1');
         $routes->get('validasi/(:segment)', 'PengajuanController::validasi/$1');
+    });
+
+    // Modul Validasi Kades (Tanpa Login)
+    $routes->group('kades', function($routes) {
+        $routes->get('detail/(:segment)', 'PublicController::kadesDetail/$1');
+        $routes->get('preview/(:segment)', 'PublicController::kadesPreview/$1');
+        $routes->post('aksi/(:segment)', 'PublicController::kadesAksi/$1');
     });
 
 });

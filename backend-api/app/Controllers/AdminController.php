@@ -73,7 +73,7 @@ class AdminController extends BaseApiController
         // Ambil detail warga dan jenis surat untuk notifikasi WA
         $db = \Config\Database::connect();
         $pengajuanDetail = $db->table('pengajuan_surat p')
-                              ->select('p.kode_tracking, p.no_hp, w.nama_lengkap, j.nama_surat')
+                              ->select('p.kode_tracking, p.no_hp, w.nama_lengkap, j.nama_surat, j.kode_surat')
                               ->join('warga w', 'w.nik = p.nik_warga')
                               ->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat')
                               ->where('p.id_pengajuan', $id_pengajuan)
@@ -107,7 +107,35 @@ class AdminController extends BaseApiController
             $updateData['alasan_penolakan'] = $catatan;
         }
 
+        if ($statusBaru === 'diproses') {
+            $updateData['token_validasi'] = bin2hex(random_bytes(16));
+        }
+
         if ($statusBaru === 'selesai') {
+            // 0. Generate Nomor Surat Otomatis (Permendagri No. 1 Tahun 2023)
+            $klasifikasiMap = [
+                'SKD' => '470',
+                'SKU' => '500',
+                'SKTM' => '460',
+                'SKCK' => '330',
+                'IK' => '330',
+                'SKW' => '470',
+                'N1' => '474.2'
+            ];
+            $kodeSurat = $pengajuanDetail['kode_surat'] ?? '';
+            $kodeKlasifikasi = $klasifikasiMap[$kodeSurat] ?? '400';
+            $tahunIni = date('Y');
+            
+            $countTahunIni = $db->table('pengajuan_surat')
+                                ->where('status', 'selesai')
+                                ->where('YEAR(created_at)', $tahunIni)
+                                ->countAllResults();
+            $nomorUrut = str_pad($countTahunIni + 1, 3, '0', STR_PAD_LEFT);
+            $kodeDesa = 'DS.KTS';
+            
+            $nomorSurat = $kodeKlasifikasi . '/' . $nomorUrut . '/' . $kodeDesa . '/' . $tahunIni;
+            $updateData['nomor_surat'] = $nomorSurat;
+
             // 1. Buat Token QR
             $qrToken = bin2hex(random_bytes(16));
             $updateData['qr_token'] = $qrToken;
@@ -132,7 +160,8 @@ class AdminController extends BaseApiController
                 'data_input' => json_decode($pengajuanLama['data_input'], true),
                 'id_pengajuan' => $pengajuanLama['id_pengajuan'],
                 'created_at' => $pengajuanLama['created_at'],
-                'qr_base64' => $qrBase64
+                'qr_base64' => $qrBase64,
+                'nomor_surat' => $nomorSurat
             ];
             
             helper('indo');
@@ -186,7 +215,7 @@ class AdminController extends BaseApiController
             $pesan .= "Pemberitahuan dari *Desa Kutasari* mengenai permohonan *" . $pengajuanDetail['nama_surat'] . "* Anda (Kode: " . $pengajuanDetail['kode_tracking'] . ").\n\n";
             
             if ($statusBaru === 'diproses') {
-                $pesan .= "⏳ Berkas Anda saat ini sedang dalam tahap *DIPROSES* oleh staf administrasi.";
+                $pesan .= "⏳ Berkas Anda saat ini sedang dalam tahap *DIPROSES* dan menunggu persetujuan Kepala Desa.";
             } else if ($statusBaru === 'selesai') {
                 $pesan .= "✅ Berkas Anda telah *SELESAI* diproses! Silakan datang ke balai desa pada jam kerja untuk mengambil dokumen tersebut.";
             } else if ($statusBaru === 'ditolak') {
@@ -199,31 +228,127 @@ class AdminController extends BaseApiController
             $frontendUrl = getenv('FRONTEND_URL') ?: 'https://persuratan-desa-kutasari.snowline.cloud';
             $pesan .= $frontendUrl . "/track?code=" . $pengajuanDetail['kode_tracking'];
 
-            // Kirim ke Node.js Gateway (Gunakan 127.0.0.1 untuk mencegah isu resolve IPv6)
             $waUrl = 'http://127.0.0.1:3030/wa/send';
-            $waData = [
+            
+            // Kirim WA ke Pemohon
+            $waDataPemohon = [
                 'target' => $pengajuanDetail['no_hp'],
                 'message' => $pesan
             ];
-            
             $ch = curl_init($waUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($waData));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($waDataPemohon));
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-            curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout diperpanjang
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             $result = curl_exec($ch);
-            
-            if(curl_errno($ch)){
-                log_message('error', 'WA Gateway Error: ' . curl_error($ch));
-            } else {
-                log_message('info', 'WA Gateway Response: ' . $result);
-            }
-            
             curl_close($ch);
+            
+            // Kirim WA ke Kades JIKA status diproses
+            if ($statusBaru === 'diproses') {
+                // Ambil nomor kades
+                $kadesAdmin = $db->table('admin')->where('role', 'kades')->orWhereNotNull('no_wa_kades')->first();
+                $noWaKades = $kadesAdmin ? $kadesAdmin['no_wa_kades'] : null;
+                
+                if ($noWaKades) {
+                    $tokenValidasi = $updateData['token_validasi'];
+                    $pesanKades = "🔔 *PEMBERITAHUAN VALIDASI SURAT*\n\n";
+                    $pesanKades .= "Yth. Kepala Desa,\nAda pengajuan surat baru yang membutuhkan persetujuan Anda.\n\n";
+                    $pesanKades .= "Pemohon: *" . $pengajuanDetail['nama_lengkap'] . "*\n";
+                    $pesanKades .= "Jenis Surat: *" . $pengajuanDetail['nama_surat'] . "*\n\n";
+                    $pesanKades .= "Silakan klik link berikut untuk melihat draf dan menyetujui surat:\n";
+                    $pesanKades .= $frontendUrl . "/validasi-kades/" . $tokenValidasi;
+                    
+                    $waDataKades = [
+                        'target' => $noWaKades,
+                        'message' => $pesanKades
+                    ];
+                    $ch2 = curl_init($waUrl);
+                    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch2, CURLOPT_POST, true);
+                    curl_setopt($ch2, CURLOPT_POSTFIELDS, json_encode($waDataKades));
+                    curl_setopt($ch2, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                    curl_setopt($ch2, CURLOPT_TIMEOUT, 10);
+                    $result2 = curl_exec($ch2);
+                    curl_close($ch2);
+                }
+            }
         }
 
         return $this->respondSuccess(null, 'Status dokumen berhasil diperbarui');
+    }
+
+    // ==================================================
+    // PREVIEW PDF (Tanpa download, return base64 / stream)
+    // ==================================================
+    public function previewPdf($id_pengajuan)
+    {
+        $db = \Config\Database::connect();
+        $pengajuan = $db->table('pengajuan_surat p')
+                        ->join('warga w', 'w.nik = p.nik_warga')
+                        ->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat')
+                        ->where('p.id_pengajuan', $id_pengajuan)
+                        ->get()
+                        ->getRowArray();
+
+        if (!$pengajuan) {
+            return $this->respondError('Pengajuan tidak ditemukan', 404);
+        }
+
+        // Siapkan Data
+        $warga = $db->table('warga')->where('nik', $pengajuan['nik_warga'])->get()->getRowArray();
+        
+        $viewData = [
+            'warga' => $warga,
+            'data_input' => json_decode($pengajuan['data_input'], true),
+            'id_pengajuan' => $pengajuan['id_pengajuan'],
+            'created_at' => $pengajuan['created_at'],
+            'qr_base64' => null, // Default null untuk diproses
+            'nomor_surat' => '[Belum Diterbitkan]' // Default
+        ];
+
+        // Jika selesai, tampilkan QR dan nomor surat
+        if ($pengajuan['status'] === 'selesai' || $pengajuan['status'] === 'disetujui_kades') {
+            $viewData['nomor_surat'] = $pengajuan['nomor_surat'] ?: '[Belum Diterbitkan]';
+            if ($pengajuan['qr_token']) {
+                $qrOptions = new \chillerlan\QRCode\QROptions([
+                    'version'         => 5,
+                    'outputInterface' => \chillerlan\QRCode\Output\QRMarkupSVG::class,
+                    'eccLevel'        => \chillerlan\QRCode\Common\EccLevel::L,
+                    'outputBase64'    => true,
+                ]);
+                $qrcode = new \chillerlan\QRCode\QRCode($qrOptions);
+                $qrUrl = base_url('validasi/' . $pengajuan['qr_token']);
+                $viewData['qr_base64'] = $qrcode->render($qrUrl);
+            }
+        }
+
+        helper('indo');
+        
+        // Peta Kode Surat ke File View
+        $slugMap = [
+            'SKU' => 'sku',
+            'SKD' => 'skd',
+            'SKCK' => 'skck',
+            'SKTM' => 'sktm',
+            'IK' => 'ik',
+            'SKW' => 'skw',
+            'N1' => 'n1'
+        ];
+        
+        $viewFile = 'surat/' . ($slugMap[$pengajuan['kode_surat']] ?? 'skd');
+        $html = view($viewFile, $viewData);
+        
+        // Generate PDF dengan DomPDF
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        
+        $pdfOutput = $dompdf->output();
+        
+        return $this->response->setHeader('Content-Type', 'application/pdf')
+                              ->setBody($pdfOutput);
     }
 
     // ==================================================
@@ -244,7 +369,7 @@ class AdminController extends BaseApiController
         }
 
         $user = $db->table('admin')
-                   ->select('id_user, username, nama_petugas, role')
+                   ->select('id_user, username, no_wa_kades, nama_petugas, role')
                    ->where('id_user', $idUser)
                    ->get()
                    ->getRowArray();
@@ -297,6 +422,11 @@ class AdminController extends BaseApiController
         $updateData = [
             'username'     => $usernameBaru
         ];
+
+        $noWaKades = $this->request->getVar('no_wa_kades');
+        if ($noWaKades !== null) {
+            $updateData['no_wa_kades'] = $noWaKades;
+        }
 
         // Jika user ingin mengganti password
         $passwordLama = $this->request->getVar('password_lama');

@@ -95,7 +95,7 @@
 
     <div class="judul-surat">
         <h4>SURAT KETERANGAN USAHA</h4>
-        <p>Nomor : <?= $id_pengajuan ?> / VII / <?= date('Y', strtotime($created_at)) ?></p>
+        <p>Nomor : <?= $nomor_surat ?? '......../......../........' ?></p>
     </div>
 
     <div class="konten">

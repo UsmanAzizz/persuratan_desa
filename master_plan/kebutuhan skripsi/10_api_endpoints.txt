@@ -1,0 +1,55 @@
+KONTRAK LAYANAN API (API ENDPOINTS) - UPDATED (SESUAI SOURCE CODE CI4)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+1. FORMAT RESPONSE GLOBAL
+
+Sukses (HTTP 200/201):
+{
+  "success": true,
+  "message": "Pesan keberhasilan",
+  "data": { ... }
+}
+
+Gagal (HTTP 400/401/403/404/500):
+{
+  "success": false,
+  "message": "Alasan kegagalan",
+  "errors": null 
+}
+
+2. DAFTAR ENDPOINT UTAMA BERDASARKAN ROUTES.PHP
+
+A. OTENTIKASI (Public)
+- POST /api/v1/auth/login
+- POST /api/v1/auth/logout
+
+B. AREA PUBLIK (WARGA) - Tidak butuh token JWT
+- GET /api/v1/pengajuan/jenis-surat (Mengambil daftar surat)
+- GET /api/v1/pengajuan/cek-nik/{nik} (Validasi NIK sebelum submit form)
+- POST /api/v1/pengajuan/buat (Proses upload berkas dan data form)
+- GET /api/v1/pengajuan/track/{kode_tracking} (Melihat status surat)
+- GET /api/v1/pengajuan/download/{kode_tracking} (Unduh PDF surat yang telah selesai)
+- GET /api/v1/pengajuan/validasi/{qr_token} (URL saat pihak ketiga memindai Tanda Tangan QR di surat fisik)
+
+C. AREA ADMIN & KEPALA DESA (Dilindungi JWT Token)
+1. Pengajuan Surat:
+- GET /api/v1/admin/pengajuan (Lihat antrean)
+- GET /api/v1/admin/pengajuan/{id} (Detail)
+- PUT /api/v1/admin/pengajuan/{id}/status (Ubah status: ditolak/diproses/selesai)
+
+2. Manajemen Warga (CRUD Master Data):
+- GET /api/v1/admin/warga
+- POST /api/v1/admin/warga
+- PUT /api/v1/admin/warga/{nik}
+- DELETE /api/v1/admin/warga/{nik}
+- POST /api/v1/admin/warga/import-json (Import massal data kependudukan)
+
+3. Integrasi Gateway WhatsApp (Internal CI4 ke Node.js):
+- GET /api/v1/admin/wa/status (Cek status bot WA)
+- GET /api/v1/admin/wa/qr (Mengambil QR Code untuk di-scan HP Kepala Desa/Admin)
+- POST /api/v1/admin/wa/logout (Memutuskan sesi WA)
+- POST /api/v1/admin/wa/send-test (Tes kirim pesan)
+
+4. Pengaturan Akun:
+- GET /api/v1/admin/akun
+- PUT /api/v1/admin/akun

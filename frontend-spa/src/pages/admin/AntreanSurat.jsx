@@ -57,9 +57,10 @@ export const AntreanSurat = () => {
   const getStatusBadge = (status) => {
     switch(status) {
       case 'selesai': return <Badge className="bg-emerald-100 text-emerald-700 border border-emerald-200">Selesai</Badge>;
-      case 'ditolak': return <Badge className="bg-rose-100 text-rose-700 border border-rose-200">Ditolak</Badge>;
-      case 'diproses': return <Badge className="bg-blue-100 text-blue-700 border border-blue-200">Diproses</Badge>;
-      default: return <Badge className="bg-amber-100 text-amber-700 border border-amber-200">Menunggu</Badge>;
+      case 'ditolak': return <Badge className="bg-rose-100 text-rose-700 border border-rose-200">Ditolak Admin</Badge>;
+      case 'ditolak_kades': return <Badge className="bg-rose-100 text-rose-700 border border-rose-200">Ditolak Kades</Badge>;
+      case 'diproses': return <Badge className="bg-amber-100 text-amber-700 border border-amber-200">Diproses Kades</Badge>;
+      default: return <Badge className="bg-slate-100 text-slate-700 border border-slate-200">Menunggu Verifikasi</Badge>;
     }
   };
 
@@ -83,7 +84,7 @@ export const AntreanSurat = () => {
     });
     
     return result;
-  }, [data, filterStatus, sortTime]);
+  }, [data, filterStatus, filterJenis, sortTime]);
 
   return (
     <div className="w-full h-full flex-1 flex flex-col min-h-0 max-w-7xl mx-auto">
@@ -113,9 +114,10 @@ export const AntreanSurat = () => {
             >
               <option value="semua">Semua Status</option>
               <option value="menunggu">Menunggu</option>
-              <option value="diproses">Diproses</option>
-              <option value="selesai">Selesai</option>
-              <option value="ditolak">Ditolak</option>
+              <option value="diproses">Diproses Kades</option>
+              <option value="selesai">Selesai / Terbit</option>
+              <option value="ditolak">Ditolak Admin</option>
+              <option value="ditolak_kades">Ditolak Kades</option>
             </select>
           </div>
 

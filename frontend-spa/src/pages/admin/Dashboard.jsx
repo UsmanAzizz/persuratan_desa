@@ -139,7 +139,7 @@ export const Dashboard = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {recentPending.map((item, idx) => (
-                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                    <tr key={item.id_pengajuan} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="py-4 px-6">
                         <p className="font-bold text-slate-800 text-sm">{item.nama_lengkap}</p>
                         <p className="text-xs text-slate-500 font-mono mt-0.5">{item.kode_tracking}</p>
@@ -158,7 +158,7 @@ export const Dashboard = () => {
                       </td>
                       <td className="py-4 px-6 text-right">
                         <button 
-                          onClick={() => navigate(`/admin/pengajuan/${item.id}`)}
+                          onClick={() => navigate(`/admin/pengajuan/${item.id_pengajuan}`)}
                           className="inline-flex items-center justify-center px-4 py-2 bg-slate-800 hover:bg-blue-600 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
                         >
                           Tinjau Berkas

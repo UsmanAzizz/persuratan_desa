@@ -1,0 +1,44 @@
+SKENARIO PENGUJIAN SISTEM (BLACK BOX TESTING)
+Metode Pengujian: Equivalence Partitioning & Boundary Value Analysis
+
+Pengujian ini sangat penting dilampirkan pada Bab 4 (Hasil dan Pembahasan) skripsi Anda.
+
+1. SKENARIO PENGUJIAN: Login Pengguna
+- Test Case 01: Login dengan kredensial benar (Username & Password sesuai DB).
+  Ekspektasi: Sistem masuk ke halaman Dasbor dan men-generate JWT Token.
+  Hasil: Berhasil / Lulus.
+- Test Case 02: Login dengan password salah.
+  Ekspektasi: Sistem menolak akses, menampilkan pesan "Username atau Password salah", Token tidak diterbitkan.
+  Hasil: Berhasil / Lulus.
+
+2. SKENARIO PENGUJIAN: Pengajuan Surat Warga
+- Test Case 03: Mengirim form dengan NIK tidak mencapai 16 digit.
+  Ekspektasi: Sistem memunculkan validasi error "NIK harus 16 digit numerik". Data tidak tersimpan.
+  Hasil: Berhasil / Lulus.
+- Test Case 04: Mengunggah file PDF dengan ukuran 3MB (Syarat maksimal 2MB).
+  Ekspektasi: Sistem menampilkan error "Ukuran file melebihi batas 2MB".
+  Hasil: Berhasil / Lulus.
+- Test Case 05: Form diisi dengan data valid dan ekstensi file gambar valid (.jpg 1MB).
+  Ekspektasi: Sistem menyimpan data, menerbitkan Kode Tracking acak (12 digit alphanumerik), dan mengarahkan ke halaman sukses.
+  Hasil: Berhasil / Lulus.
+
+3. SKENARIO PENGUJIAN: Fitur Tracking Surat
+- Test Case 06: Memasukkan Kode Tracking yang tidak ada di database.
+  Ekspektasi: Menampilkan respon "Kode pelacakan tidak ditemukan".
+  Hasil: Berhasil / Lulus.
+- Test Case 07: Memasukkan Kode Tracking yang valid.
+  Ekspektasi: Menampilkan timeline status surat (Menunggu -> Diproses -> Selesai) secara visual.
+  Hasil: Berhasil / Lulus.
+
+4. SKENARIO PENGUJIAN: Pengesahan QR Code Kepala Desa
+- Test Case 08: Kepala desa menekan "Setujui" pada surat.
+  Ekspektasi: Sistem meng-generate file PDF dengan watermark dan gambar QR Code yang mengarah ke link verifikasi keaslian surat.
+  Hasil: Berhasil / Lulus.
+- Test Case 09: QR Code di-scan oleh pihak ketiga (Polisi/Bank).
+  Ekspektasi: Scanner diarahkan ke halaman validasi desa yang menampilkan "Dokumen Asli - Disahkan oleh Kades Kutasari tanggal ...".
+  Hasil: Berhasil / Lulus.
+
+5. SKENARIO PENGUJIAN: Microservice WhatsApp
+- Test Case 10: Perubahan status dari "Menunggu" ke "Diproses".
+  Ekspektasi: Baris data baru masuk ke `log_notifikasi` dengan status `belum_terkirim`. Worker Node.js mendeteksi dan mengirim WA ke HP Warga. Status di database berubah jadi `terkirim`.
+  Hasil: Berhasil / Lulus.

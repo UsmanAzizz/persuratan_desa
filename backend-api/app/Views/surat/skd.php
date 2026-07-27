@@ -43,7 +43,7 @@
 
     <div class="title">
         <h4>SURAT KETERANGAN DOMISILI</h4>
-        <p>Nomor : ........ / ........ / ........</p>
+        <p>Nomor : <?= $nomor_surat ?? '......../......../........' ?></p>
     </div>
 
     <div class="content">

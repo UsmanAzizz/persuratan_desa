@@ -96,7 +96,7 @@
 
     <div class="judul-surat">
         <h4>KETERANGAN IJIN KHAJAT</h4>
-        <p>Nomor : <?= $id_pengajuan ?> / IK / <?= date('Y', strtotime($created_at)) ?></p>
+        <p>Nomor : <?= $nomor_surat ?? '......../......../........' ?></p>
     </div>
 
     <div class="konten">

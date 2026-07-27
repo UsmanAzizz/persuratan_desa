@@ -1,0 +1,39 @@
+ALUR SISTEM (BUSINESS PROCESS FLOW)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Berikut adalah narasi alur dari mulai warga melakukan permohonan hingga surat diterbitkan secara digital. Narasi ini dapat Anda gambarkan menjadi Activity Diagram atau Flowchart.
+
+1. FASE PENGAJUAN (WARGA)
+   a. Warga mengakses situs web layanan persuratan desa.
+   b. Warga memilih jenis layanan (Misal: SKTM).
+   c. Warga mengisi form (NIK, Keperluan) dan mengunggah foto KTP/KK.
+   d. Sistem melakukan validasi (Apakah input valid? Apakah ukuran file memenuhi syarat?).
+      - Jika GAGAL: Sistem menampilkan pesan error. Warga diminta upload ulang.
+      - Jika SUKSES: Sistem menerbitkan Kode Tracking dan menyimpan ke database dengan status "menunggu".
+   e. Selesai (Warga menunggu).
+
+2. FASE VERIFIKASI (ADMIN)
+   a. Admin masuk ke halaman Dasbor / Backoffice.
+   b. Admin membuka daftar antrean "Menunggu".
+   c. Admin memeriksa validitas KTP, KK, dan persyaratannya.
+   d. Keputusan Admin:
+      - JIKA DITOLAK: Admin menginput "Alasan Penolakan". Status menjadi "ditolak". Notifikasi WA terkirim ke warga berisi alasan penolakan. Proses Selesai.
+      - JIKA DITERIMA: Admin mengisi field data tambahan (seperti nomor surat, data dusun, pekerjaan).
+   e. Admin menekan tombol "Proses".
+   f. Status berubah menjadi "diproses". Notifikasi WA terkirim bahwa surat sedang diproses.
+
+3. FASE PENGESAHAN (KEPALA DESA)
+   a. Kepala Desa login ke sistem.
+   b. Kepala Desa melihat daftar antrean "Diproses".
+   c. Kepala Desa mem-preview dokumen surat (berbentuk draft PDF).
+   d. Kepala Desa memberikan persetujuan (Approve).
+   e. Sistem memproses HTML-to-PDF Parser dan menyematkan QR Code Tanda Tangan Digital.
+   f. Status berubah menjadi "selesai".
+   g. File PDF yang sudah sah diunggah ke storage sistem.
+   h. Sistem mengirimkan WhatsApp notifikasi akhir ke Warga ("Surat Anda sudah selesai dan dapat diunduh menggunakan Kode Tracking X").
+
+4. FASE PENERIMAAN SURAT (WARGA)
+   a. Warga mendapatkan notifikasi.
+   b. Warga membuka situs dan memasukkan Kode Tracking.
+   c. Warga dapat mengunduh soft-copy file PDF secara mandiri atau datang ke balai desa untuk meminta hasil cetak.
+   d. Proses keseluruhan Selesai.

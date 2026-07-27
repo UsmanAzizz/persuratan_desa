@@ -45,7 +45,7 @@
 
     <div class="title">
         <h4>SURAT PENGANTAR CATATAN KEPOLISIAN</h4>
-        <p>Nomor : ........ / ........ / ........</p>
+        <p>Nomor : <?= $nomor_surat ?? '......../......../........' ?></p>
     </div>
 
     <div class="content">

@@ -1,0 +1,52 @@
+SKENARIO INTERAKSI SISTEM (UNTUK SEQUENCE DIAGRAM) - UPDATED
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Dokumen ini mendeskripsikan secara tekstual urutan interaksi aktor dan komponen sistem. Anda dapat menggunakan teks ini untuk menggambar Sequence Diagram.
+
+1. SEQUENCE DIAGRAM: LOGIN ADMIN/KADES
+Aktor: Admin / Kades
+Lifelines (Objek Sistem): Frontend (UI), Backend (Controller Auth), Database, LocalStorage
+
+Alur:
+1. Admin memasukkan Username dan Password di Frontend (UI).
+2. Frontend mengirim `POST /api/v1/auth/login` ke Backend.
+3. Backend menerima request dan melakukan query `SELECT * FROM admin WHERE username = ?` ke Database.
+4. Database mengembalikan data user (berisi hashed password).
+5. Backend melakukan proses verifikasi kecocokan *BCrypt Hash*.
+   - Jika cocok: Backend men-generate JWT Token.
+   - Jika gagal: Backend merespons pesan Error 401.
+6. Backend merespons ke Frontend dengan Token dan Data Profile.
+7. Frontend menyimpan JWT Token ke LocalStorage / Zustand State.
+8. Frontend me-redirect pengguna ke halaman Dashboard Backoffice.
+
+2. SEQUENCE DIAGRAM: PENGAJUAN SURAT OLEH WARGA
+Aktor: Warga
+Lifelines: Frontend (Portal Warga), Backend (Controller Pengajuan), Backend (File Storage), Database
+
+Alur:
+1. Warga mengisi Form Data dan meng-upload berkas Foto KTP/KK di Frontend.
+2. Frontend me-request `POST /api/v1/pengajuan` (Multipart/form-data) ke Backend.
+3. Backend memvalidasi NIK warga ke tabel `warga` di Database.
+4. Database merespons bahwa NIK valid dan terdaftar.
+5. Backend memproses file upload dan menyimpannya di File Storage (lokal).
+6. Backend meng-generate Kode Tracking acak (12 digit).
+7. Backend me-request `INSERT INTO pengajuan_surat` dengan data nomor HP pemohon.
+8. Database merespons sukses `HTTP 201`.
+9. Frontend menampilkan sukses dialog beserta informasi Kode Tracking kepada Warga.
+
+3. SEQUENCE DIAGRAM: PROSES PENGESAHAN & NOTIFIKASI WA (HTTP POST)
+Aktor: Kepala Desa
+Lifelines: Frontend (Dashboard Kades), Backend CI4, PDF Generator, Database, Express Node.js (WA Gateway), API WhatsApp Web
+
+Alur Pengesahan & Notifikasi Instan:
+1. Kades menekan tombol "Setujui" pada draft PDF di Frontend.
+2. Frontend me-request `POST /api/v1/pengajuan/approve` ke Backend CI4.
+3. Backend memanggil modul PDF Generator untuk menanamkan (embed) QR Code Tanda Tangan ke dalam PDF.
+4. Backend menyimpan file final PDF ke File Storage.
+5. Backend meng-update status `pengajuan_surat` menjadi `selesai` di Database.
+6. Backend CI4 melakukan pemanggilan HTTP Request `POST /wa/send` (mengirim Nomor HP dan Pesan) secara sinkron/asinkron ke Express Node.js Gateway.
+7. Node.js Gateway mem-parsing target dan pesan, lalu memanggil API WhatsApp Web JS.
+8. WhatsApp merespons status terkirim.
+9. Node.js Gateway merespons sukses `HTTP 200` ke Backend CI4.
+10. Backend CI4 mengirimkan respons sukses ke Frontend.
+11. Frontend meng-update tabel UI Kades.

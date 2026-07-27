@@ -10,5 +10,5 @@ class AdminModel extends Model
     protected $primaryKey       = 'id_user';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $allowedFields    = ['username', 'password', 'nama_petugas', 'role'];
+    protected $allowedFields    = ['username', 'password', 'no_wa_kades', 'nama_petugas', 'role'];
 }

@@ -1,0 +1,27 @@
+PENJELASAN KONSEP TEKNOLOGI (TINJAUAN PUSTAKA BAB 2)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Dokumen ini disusun untuk membantu Anda menjawab pertanyaan dosen penguji atau dimasukkan ke dalam Bab 2 (Tinjauan Pustaka) terkait teknologi yang digunakan pada aplikasi ini.
+
+1. TECHNOLOGY STACK (TUMPUKAN TEKNOLOGI)
+Aplikasi ini dibangun menggunakan arsitektur Decoupled (Terpisah).
+- Frontend (Client-Side): React JS dengan compiler Vite. Menggunakan Tailwind CSS untuk antarmuka, dan Zustand untuk manajemen state (*session*).
+- Backend (Server-Side API): PHP Framework CodeIgniter 4 (CI4). CI4 bertindak murni sebagai penyedia REST API (*Headless*).
+- Gateway Notifikasi: Node.js dengan framework Express dan library *whatsapp-web.js*. Berjalan sebagai servis terpisah di port 3030 untuk mengirim pesan WhatsApp secara *real-time*.
+- Database: MySQL 8.0.
+
+2. DATABASE MIGRATION (MIGRASI BASIS DATA)
+- Pengertian: Migration adalah teknik version control (pengendalian versi) untuk skema basis data. Di aplikasi ini, CI4 mengelola tabel melalui file-file class PHP (berada di folder app/Database/Migrations).
+- Cara Kerja & Keuntungan: Bukannya membuat tabel MySQL secara manual via phpMyAdmin, programmer cukup menjalankan perintah `php spark migrate`. CodeIgniter akan mengeksekusi file PHP tersebut menjadi query `CREATE TABLE` atau `ALTER TABLE`. 
+- Relevansi: Sangat berguna dalam skripsi karena menjamin jika aplikasi ini didemonstrasikan di komputer dosen/kampus, struktur database dapat direplikasi 100% presisi tanpa takut ada kolom yang terlewat. Contoh di sistem ini: pemindahan field `no_hp` ke tabel pengajuan dan penambahan field kependudukan (`agama`, `tempat_lahir`, dll) terekam rapi di *migration*.
+
+3. DATABASE SEEDER (PENYEMAIAN DATA)
+- Pengertian: Seeder adalah skrip otomatis untuk mengisi database dengan "Data Dummy" atau data awal secara terprogram (berada di app/Database/Seeds).
+- Relevansi: Setelah *migration* membuat tabel-tabel kosong, *Seeder* akan menyisipkan akun Admin bawaan (username: admin) dan beberapa warga fiktif agar sistem bisa langsung digunakan dan diuji coba (*Black-Box testing*) tanpa harus mendaftar satu per satu secara manual.
+
+4. JSON WEB TOKEN (JWT)
+- Sistem ini tidak menggunakan sistem Login Session konvensional PHP (di mana data disimpan di memori server). Sistem ini menggunakan JWT.
+- Keuntungan: JWT membuat backend CI4 bersifat *Stateless* (tidak menyimpan memori login). Token enkripsi disimpan di sisi peramban pengguna (*browser local storage*). Hal ini membuat beban server sangat ringan dan aman dari peretasan sesi lintas-situs (CSRF).
+
+5. MICROSERVICE & REST API
+- Gateway WA Node.js bertindak sebagai *Microservice* (layanan mikro). Daripada memaksa CI4 PHP mengeksekusi script WhatsApp yang berat dan rentan macet (blocking), tugas pengiriman pesan diserahkan kepada Node.js melalui pemanggilan REST API (`POST /wa/send`).

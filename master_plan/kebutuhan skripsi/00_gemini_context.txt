@@ -1,0 +1,536 @@
+DRAF LATAR BELAKANG DAN RUMUSAN MASALAH (BAB 1)
+Topik: Pembangunan Sistem Layanan Persuratan Desa Berbasis Web dengan Verifikasi Tanda Tangan Digital (QR Code) dan Integrasi WhatsApp Gateway
+
+1. LATAR BELAKANG MASALAH
+Pelayanan administrasi kependudukan di tingkat desa, seperti pembuatan Surat Keterangan Usaha (SKU), Surat Keterangan Catatan Kepolisian (SKCK), dan Surat Keterangan Tidak Mampu (SKTM), merupakan ujung tombak pelayanan publik. Di Desa Kutasari, mekanisme pengajuan persuratan ini umumnya masih dilakukan secara konvensional (manual), di mana warga harus hadir langsung secara fisik ke balai desa dengan membawa tumpukan dokumen fisik persyaratan. 
+
+Metode konvensional ini memunculkan beberapa permasalahan:
+a. Tidak Efisien: Warga seringkali harus bolak-balik karena ketidaktahuan kelengkapan berkas, atau karena figur pengambil keputusan (Kepala Desa) sedang tidak berada di tempat dinas.
+b. Lambatnya Arus Informasi: Masyarakat kesulitan mengetahui sejauh mana progres/status permohonan berkas administrasi mereka.
+c. Validitas Dokumen Cetak: Keaslian dokumen kertas yang ditandatangani secara basah sering menjadi celah dalam pemalsuan surat keterangan desa.
+
+Oleh karena itu, dibutuhkan terobosan teknologi berupa Sistem Informasi Pelayanan Persuratan Desa secara daring (online). Untuk menjawab masalah keterbukaan informasi dan legalitas, sistem ini harus dilengkapi dengan pemindai notifikasi otomatis berbasis WhatsApp (WhatsApp Gateway) serta integrasi Tanda Tangan Elektronik/Digital (menggunakan teknologi QR Code terenkripsi) yang dapat diverifikasi keasliannya secara langsung secara *real-time* dari mana pun. 
+
+2. RUMUSAN MASALAH
+Berdasarkan identifikasi permasalahan di atas, maka rumusan masalah dalam penelitian ini adalah:
+1. Bagaimana merancang dan membangun sistem informasi layanan persuratan kependudukan Desa Kutasari berbasis website yang terintegrasi?
+2. Bagaimana cara mengimplementasikan notifikasi *real-time* otomatis (WhatsApp Gateway) guna menginformasikan status pengajuan dokumen secara langsung ke gawai milik warga pemohon?
+3. Bagaimana mengimplementasikan sistem validasi keamanan dan pengesahan surat berbasis *QR Code* (Tanda Tangan Digital) yang diverifikasi oleh Kepala Desa secara mandiri melalui dasbor *online*?
+
+3. BATASAN MASALAH (RUANG LINGKUP)
+Untuk menghindari meluasnya pembahasan sistem, ditetapkan batasan masalah sebagai berikut:
+1. Sistem ini hanya memfasilitasi pembuatan 4 jenis administrasi surat utama yang paling sering dimohonkan (misal: SKU, SKCK, SKD, dan SKTM).
+2. Mekanisme notifikasi WhatsApp mengandalkan pustaka lokal Node.js (whatsapp-web.js) bertindak sebagai servis terpisah tanpa pihak ketiga (Third Party API berbayar).
+3. Pengesahan menggunakan QR Code bertindak sebagai verifikator tautan digital ke basis data (URL link Checker), bukan otentikasi biometrik.
+4. Akses sistem dibagi menjadi 3 aktor/role: Warga Pemohon (tanpa login, menggunakan NIK dan Nomor Tracking), Admin Balai Desa (verifikator berkas kotor), dan Kepala Desa (Otoritas penyetuju dan penandatangan dokumen QR).
+PENJELASAN KONSEP TEKNOLOGI (TINJAUAN PUSTAKA BAB 2)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Dokumen ini disusun untuk membantu Anda menjawab pertanyaan dosen penguji atau dimasukkan ke dalam Bab 2 (Tinjauan Pustaka) terkait teknologi yang digunakan pada aplikasi ini.
+
+1. TECHNOLOGY STACK (TUMPUKAN TEKNOLOGI)
+Aplikasi ini dibangun menggunakan arsitektur Decoupled (Terpisah).
+- Frontend (Client-Side): React JS dengan compiler Vite. Menggunakan Tailwind CSS untuk antarmuka, dan Zustand untuk manajemen state (*session*).
+- Backend (Server-Side API): PHP Framework CodeIgniter 4 (CI4). CI4 bertindak murni sebagai penyedia REST API (*Headless*).
+- Gateway Notifikasi: Node.js dengan framework Express dan library *whatsapp-web.js*. Berjalan sebagai servis terpisah di port 3030 untuk mengirim pesan WhatsApp secara *real-time*.
+- Database: MySQL 8.0.
+
+2. DATABASE MIGRATION (MIGRASI BASIS DATA)
+- Pengertian: Migration adalah teknik version control (pengendalian versi) untuk skema basis data. Di aplikasi ini, CI4 mengelola tabel melalui file-file class PHP (berada di folder app/Database/Migrations).
+- Cara Kerja & Keuntungan: Bukannya membuat tabel MySQL secara manual via phpMyAdmin, programmer cukup menjalankan perintah `php spark migrate`. CodeIgniter akan mengeksekusi file PHP tersebut menjadi query `CREATE TABLE` atau `ALTER TABLE`. 
+- Relevansi: Sangat berguna dalam skripsi karena menjamin jika aplikasi ini didemonstrasikan di komputer dosen/kampus, struktur database dapat direplikasi 100% presisi tanpa takut ada kolom yang terlewat. Contoh di sistem ini: pemindahan field `no_hp` ke tabel pengajuan dan penambahan field kependudukan (`agama`, `tempat_lahir`, dll) terekam rapi di *migration*.
+
+3. DATABASE SEEDER (PENYEMAIAN DATA)
+- Pengertian: Seeder adalah skrip otomatis untuk mengisi database dengan "Data Dummy" atau data awal secara terprogram (berada di app/Database/Seeds).
+- Relevansi: Setelah *migration* membuat tabel-tabel kosong, *Seeder* akan menyisipkan akun Admin bawaan (username: admin) dan beberapa warga fiktif agar sistem bisa langsung digunakan dan diuji coba (*Black-Box testing*) tanpa harus mendaftar satu per satu secara manual.
+
+4. JSON WEB TOKEN (JWT)
+- Sistem ini tidak menggunakan sistem Login Session konvensional PHP (di mana data disimpan di memori server). Sistem ini menggunakan JWT.
+- Keuntungan: JWT membuat backend CI4 bersifat *Stateless* (tidak menyimpan memori login). Token enkripsi disimpan di sisi peramban pengguna (*browser local storage*). Hal ini membuat beban server sangat ringan dan aman dari peretasan sesi lintas-situs (CSRF).
+
+5. MICROSERVICE & REST API
+- Gateway WA Node.js bertindak sebagai *Microservice* (layanan mikro). Daripada memaksa CI4 PHP mengeksekusi script WhatsApp yang berat dan rentan macet (blocking), tugas pengiriman pesan diserahkan kepada Node.js melalui pemanggilan REST API (`POST /wa/send`).
+ANALISA KEBUTUHAN FUNGSIONAL DAN NON-FUNGSIONAL (UPDATED)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+A. KEBUTUHAN FUNGSIONAL
+Kebutuhan fungsional adalah hal-hal pokok yang harus bisa dilakukan oleh sistem.
+
+1. Modul Warga (Area Publik)
+   - F-01: Warga dapat melihat daftar jenis surat yang tersedia beserta persyaratannya tanpa login.
+   - F-02: Sistem harus memvalidasi NIK warga sebelum menampilkan formulir kelengkapan (Cek NIK di database).
+   - F-03: Sistem harus memungkinkan warga mengajukan surat dengan mengisi NIK, Nomor HP Aktif (untuk WA), dan upload dokumen PDF/Foto.
+   - F-04: Warga dapat melacak status surat dan mengunduh PDF hasil persetujuan secara mandiri (menggunakan URL Download / Kode Tracking).
+
+2. Modul Admin Desa
+   - F-05: Sistem mengharuskan login berbasis JWT.
+   - F-06: Admin dapat mengelola (CRUD) master data Kependudukan Warga, termasuk mengimpor (Import JSON) data secara massal.
+   - F-07: Admin dapat melihat, memverifikasi, mengubah status pengajuan surat, atau menolaknya (dengan memberikan alasan).
+   - F-08: Admin memiliki halaman kontrol "WhatsApp Gateway" untuk memindai (Scan) QR Code, menyambungkan nomor WA Balai Desa, dan mengecek status bot WA tersebut.
+
+3. Modul Kepala Desa
+   - F-09: Kepala Desa dapat melakukan verifikasi akhir pada surat berstatus 'diproses'.
+   - F-10: Kepala Desa dapat membubuhkan persetujuan yang secara otomatis me-generate Tanda Tangan Digital berupa QR Code (URL Validasi Surat) di PDF.
+   - F-11: Sistem secara asinkron memicu pengiriman pesan WhatsApp ke pemohon setelah surat disetujui.
+
+B. KEBUTUHAN NON-FUNGSIONAL
+
+1. Keamanan (Security)
+   - NF-01: Autentikasi sesi harus menggunakan JSON Web Token (JWT).
+   - NF-02: Password database di-hash dengan BCrypt.
+   - NF-03: Routing Admin dan Kepala Desa dilindungi oleh filter JWT pada CodeIgniter 4.
+
+2. Kinerja (Performance) & Arsitektur
+   - NF-04: Pengiriman pesan WA dipisah secara teknis (*Microservice*) ke Node.js Gateway agar proses PHP FPM tidak mengalami *bottleneck*.
+   - NF-05: Sistem validasi *file upload* harus menangkal *malicious payload* dengan batas maksimal ukuran yang wajar (2MB).
+
+3. Ketersediaan (Availability)
+   - NF-06: Arsitektur *Decoupled* membuat perbaikan Frontend (React Vite) tidak mengganggu jam operasional Backend API.
+ARSITEKTUR APLIKASI DAN TEKNOLOGI YANG DIGUNAKAN (UPDATED)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+1. FILOSOFI ARSITEKTUR
+Sistem menggunakan arsitektur Decoupled/Hybrid (Clean Architecture), di mana Presentation (Frontend) dipisah secara penuh dari Application, Domain, dan Infrastructure (Backend API). Server bersifat stateless.
+
+2. FRONTEND (React JS + Vite)
+- Pola Arsitektur: Feature-Sliced Design direduksi menjadi Layered Architecture.
+- Presentation Layer: Komponen UI murni tanpa logika bisnis (src/pages, src/components).
+- Application Layer: Menggunakan `zustand` untuk State Management, mengelola token JWT dan siklus autentikasi.
+- Infrastructure Layer: Menggunakan `axios` untuk HTTP request, dilengkapi interceptor untuk menyematkan Bearer Token.
+
+3. BACKEND CORE (PHP CodeIgniter 4)
+- Headless API: Sepenuhnya melayani REST API dengan format output global JSON (tanpa rendering HTML).
+- Domain Driven Design (DDD): Controller hanya mengatur rute dan sanitasi input dasar. Pemrosesan query dan logika berada pada Model/Service.
+- Validasi Keamanan: Pemeriksaan file terunggah (.pdf, .jpg, .png max 2MB) dan pemisahan variabel environment.
+
+4. MICROSERVICE WHATSAPP GATEWAY (Node.js REST API)
+- Layanan notifikasi WhatsApp berjalan terisolasi menggunakan `whatsapp-web.js` dan Express.js.
+- Mekanisme Interaksi: Tidak lagi menggunakan *database polling*. Gateway ini membuka REST API internal di port 3030 (`POST /wa/send`). 
+- Alur Kerja: Ketika Backend PHP selesai mengubah status surat, PHP secara langsung melakukan HTTP POST ke Node.js Gateway, yang kemudian secara instan mengirimkan pesan WhatsApp ke nomor tujuan pemohon. Pendekatan ini lebih cepat dan tidak membebani database.
+SKENARIO USE CASE (USE CASE & SCENARIOS) - UPDATED
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+DAFTAR AKTOR:
+1. Warga (Tidak perlu login)
+2. Admin Desa
+3. Kepala Desa
+4. Sistem / API Gateway (Aktor Pasif)
+
+DAFTAR USE CASE & SKENARIO:
+
+1. USE CASE: Mengajukan Surat
+- Aktor Utama: Warga
+- Deskripsi: Warga mengajukan permohonan pembuatan surat (SKCK, SKU, SKTM, dll).
+- Skenario Normal:
+  1. Warga membuka halaman utama portal desa.
+  2. Warga memilih jenis surat.
+  3. Warga memasukkan NIK, No HP Aktif, dan mengunggah dokumen persyaratan.
+  4. Sistem memvalidasi NIK, menyertakan atribut kependudukan warga secara otomatis.
+  5. Sistem memberikan "Kode Tracking" kepada warga.
+
+2. USE CASE: Melacak Status Surat
+- Aktor Utama: Warga
+- Skenario Normal:
+  1. Warga memasukkan Kode Tracking di kolom pencarian.
+  2. Sistem menampilkan detail surat dan status saat ini (menunggu / diproses / selesai).
+
+3. USE CASE: Verifikasi Berkas (Admin)
+- Aktor Utama: Admin Desa
+- Skenario Normal:
+  1. Admin membuka menu dasbor pengajuan.
+  2. Admin melihat surat dengan status "menunggu".
+  3. Admin memverifikasi lampiran berkas dan mengisi data administratif tambahan.
+  4. Admin menekan tombol "Verifikasi & Proses".
+  5. Sistem mengubah status menjadi "diproses" dan backend secara langsung memicu API Notifikasi (WA Gateway) untuk mengirim WhatsApp ke warga.
+
+4. USE CASE: Pengesahan Surat dengan TTD QR Code
+- Aktor Utama: Kepala Desa
+- Skenario Normal:
+  1. Kepala Desa membuka menu "Surat Menunggu Pengesahan".
+  2. Kepala Desa memeriksa draft PDF surat.
+  3. Kepala Desa menekan tombol "Setujui & Tandatangani".
+  4. Sistem me-generate QR Code validasi tersandi SHA-256 dan menempelkannya ke dokumen PDF.
+  5. Sistem merubah status pengajuan menjadi "selesai".
+  6. Backend memicu API Notifikasi WhatsApp ke gawai pemohon berisi instruksi pengambilan file.
+ALUR SISTEM (BUSINESS PROCESS FLOW)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Berikut adalah narasi alur dari mulai warga melakukan permohonan hingga surat diterbitkan secara digital. Narasi ini dapat Anda gambarkan menjadi Activity Diagram atau Flowchart.
+
+1. FASE PENGAJUAN (WARGA)
+   a. Warga mengakses situs web layanan persuratan desa.
+   b. Warga memilih jenis layanan (Misal: SKTM).
+   c. Warga mengisi form (NIK, Keperluan) dan mengunggah foto KTP/KK.
+   d. Sistem melakukan validasi (Apakah input valid? Apakah ukuran file memenuhi syarat?).
+      - Jika GAGAL: Sistem menampilkan pesan error. Warga diminta upload ulang.
+      - Jika SUKSES: Sistem menerbitkan Kode Tracking dan menyimpan ke database dengan status "menunggu".
+   e. Selesai (Warga menunggu).
+
+2. FASE VERIFIKASI (ADMIN)
+   a. Admin masuk ke halaman Dasbor / Backoffice.
+   b. Admin membuka daftar antrean "Menunggu".
+   c. Admin memeriksa validitas KTP, KK, dan persyaratannya.
+   d. Keputusan Admin:
+      - JIKA DITOLAK: Admin menginput "Alasan Penolakan". Status menjadi "ditolak". Notifikasi WA terkirim ke warga berisi alasan penolakan. Proses Selesai.
+      - JIKA DITERIMA: Admin mengisi field data tambahan (seperti nomor surat, data dusun, pekerjaan).
+   e. Admin menekan tombol "Proses".
+   f. Status berubah menjadi "diproses". Notifikasi WA terkirim bahwa surat sedang diproses.
+
+3. FASE PENGESAHAN (KEPALA DESA)
+   a. Kepala Desa login ke sistem.
+   b. Kepala Desa melihat daftar antrean "Diproses".
+   c. Kepala Desa mem-preview dokumen surat (berbentuk draft PDF).
+   d. Kepala Desa memberikan persetujuan (Approve).
+   e. Sistem memproses HTML-to-PDF Parser dan menyematkan QR Code Tanda Tangan Digital.
+   f. Status berubah menjadi "selesai".
+   g. File PDF yang sudah sah diunggah ke storage sistem.
+   h. Sistem mengirimkan WhatsApp notifikasi akhir ke Warga ("Surat Anda sudah selesai dan dapat diunduh menggunakan Kode Tracking X").
+
+4. FASE PENERIMAAN SURAT (WARGA)
+   a. Warga mendapatkan notifikasi.
+   b. Warga membuka situs dan memasukkan Kode Tracking.
+   c. Warga dapat mengunduh soft-copy file PDF secara mandiri atau datang ke balai desa untuk meminta hasil cetak.
+   d. Proses keseluruhan Selesai.
+SKENARIO INTERAKSI SISTEM (UNTUK SEQUENCE DIAGRAM) - UPDATED
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Dokumen ini mendeskripsikan secara tekstual urutan interaksi aktor dan komponen sistem. Anda dapat menggunakan teks ini untuk menggambar Sequence Diagram.
+
+1. SEQUENCE DIAGRAM: LOGIN ADMIN/KADES
+Aktor: Admin / Kades
+Lifelines (Objek Sistem): Frontend (UI), Backend (Controller Auth), Database, LocalStorage
+
+Alur:
+1. Admin memasukkan Username dan Password di Frontend (UI).
+2. Frontend mengirim `POST /api/v1/auth/login` ke Backend.
+3. Backend menerima request dan melakukan query `SELECT * FROM admin WHERE username = ?` ke Database.
+4. Database mengembalikan data user (berisi hashed password).
+5. Backend melakukan proses verifikasi kecocokan *BCrypt Hash*.
+   - Jika cocok: Backend men-generate JWT Token.
+   - Jika gagal: Backend merespons pesan Error 401.
+6. Backend merespons ke Frontend dengan Token dan Data Profile.
+7. Frontend menyimpan JWT Token ke LocalStorage / Zustand State.
+8. Frontend me-redirect pengguna ke halaman Dashboard Backoffice.
+
+2. SEQUENCE DIAGRAM: PENGAJUAN SURAT OLEH WARGA
+Aktor: Warga
+Lifelines: Frontend (Portal Warga), Backend (Controller Pengajuan), Backend (File Storage), Database
+
+Alur:
+1. Warga mengisi Form Data dan meng-upload berkas Foto KTP/KK di Frontend.
+2. Frontend me-request `POST /api/v1/pengajuan` (Multipart/form-data) ke Backend.
+3. Backend memvalidasi NIK warga ke tabel `warga` di Database.
+4. Database merespons bahwa NIK valid dan terdaftar.
+5. Backend memproses file upload dan menyimpannya di File Storage (lokal).
+6. Backend meng-generate Kode Tracking acak (12 digit).
+7. Backend me-request `INSERT INTO pengajuan_surat` dengan data nomor HP pemohon.
+8. Database merespons sukses `HTTP 201`.
+9. Frontend menampilkan sukses dialog beserta informasi Kode Tracking kepada Warga.
+
+3. SEQUENCE DIAGRAM: PROSES PENGESAHAN & NOTIFIKASI WA (HTTP POST)
+Aktor: Kepala Desa
+Lifelines: Frontend (Dashboard Kades), Backend CI4, PDF Generator, Database, Express Node.js (WA Gateway), API WhatsApp Web
+
+Alur Pengesahan & Notifikasi Instan:
+1. Kades menekan tombol "Setujui" pada draft PDF di Frontend.
+2. Frontend me-request `POST /api/v1/pengajuan/approve` ke Backend CI4.
+3. Backend memanggil modul PDF Generator untuk menanamkan (embed) QR Code Tanda Tangan ke dalam PDF.
+4. Backend menyimpan file final PDF ke File Storage.
+5. Backend meng-update status `pengajuan_surat` menjadi `selesai` di Database.
+6. Backend CI4 melakukan pemanggilan HTTP Request `POST /wa/send` (mengirim Nomor HP dan Pesan) secara sinkron/asinkron ke Express Node.js Gateway.
+7. Node.js Gateway mem-parsing target dan pesan, lalu memanggil API WhatsApp Web JS.
+8. WhatsApp merespons status terkirim.
+9. Node.js Gateway merespons sukses `HTTP 200` ke Backend CI4.
+10. Backend CI4 mengirimkan respons sukses ke Frontend.
+11. Frontend meng-update tabel UI Kades.
+PEDOMAN DESAIN ANTARMUKA DAN PENGALAMAN PENGGUNA (UI/UX)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+Dokumen ini dapat digunakan sebagai referensi penjelasan Perancangan Antarmuka (Bab 3) pada skripsi Anda.
+
+1. PRINSIP DESAIN ANTARMUKA
+Aplikasi dirancang dengan gaya "Formal-Modern".
+- Kejelasan dan Legalitas: Mengingat ini adalah platform tata usaha pemerintahan desa, elemen dekoratif dihilangkan. Fokus 100% pada keterbacaan data warga dan formulir kependudukan.
+- Penyajian Status Transparan: Pada halaman pelacakan warga, status surat ditampilkan menggunakan konsep "Timeline Tracker" (Menunggu -> Diproses -> Selesai) secara gamblang agar mudah dipahami masyarakat desa.
+- Responsivitas: Antarmuka dibangun berlandaskan *Mobile-First Design* mengingat mayoritas masyarakat (warga) mengakses portal publik menggunakan Smartphone.
+
+2. PALET WARNA (COLOR PALETTE)
+Aplikasi memanfaatkan framework Tailwind CSS dengan penataan berikut:
+- Slate 800 (#1E293B): Digunakan sebagai warna otoritatif untuk Header/Navbar, judul halaman, dan menu-menu pada panel Admin.
+- Blue 600 (#2563EB): Digunakan sebagai warna Call-to-Action utama (Misal: Tombol "Kirim Pengajuan Surat" atau "Cari Kode Tracking").
+- Slate 50 (#F8FAFC): Digunakan sebagai warna dasar latar belakang (Background) agar kontras dengan form berlatar putih bersih (White).
+- Emerald 700 (#047857): Penanda status "Selesai" atau "Dokumen Valid" (Success Badge).
+- Rose 700 (#BE123C): Penanda status kritis (Misal: Surat "Ditolak" atau pesan error validasi form).
+
+3. TIPOGRAFI
+- Web Font: Menggunakan font Sans-Serif (Inter atau Roboto) yang bersih dan tajam agar tetap terbaca meski di layar ponsel berukuran kecil (karena form kependudukan memiliki field yang padat).
+- Font Cetak (PDF): Khusus untuk hasil *generate* dokumen surat berbentuk PDF, font disesuaikan dengan standar legalitas tata usaha desa, yaitu *Times New Roman* ukuran 12pt.
+
+4. KOMPONEN VISUAL & INTERAKSI (ANIMASI)
+- Transisi Halus (Framer Motion): Pergantian antar halaman menggunakan efek *Fade-in* & *Fade-out* yang ringan. Tidak ada animasi berlebihan yang mengurangi kesan formalitas pemerintahan desa.
+- Skeleton Loading / Shimmer Effect: Saat Admin atau Warga melakukan *request* ke server (seperti memuat tabel antrean), sistem menampilkan placeholder kerangka abu-abu bergradasi untuk meredam persepsi kelelahan menunggu (mengurangi *cognitive load*).
+- Empty State: Jika tabel antrean kosong, tampilan diganti dengan ikon dokumen bergradasi abu-abu dan teks informatif "Belum ada antrean surat masuk", bukan layar putih kosong.
+STRUKTUR DATABASE DAN RELASI APLIKASI PERSURATAN DESA KUTASARI (UPDATED)
+
+Berdasarkan implementasi kode terbaru (Migration):
+
+1. ENTITAS MASTER DATA
+
+Tabel: warga
+- nik VARCHAR(16) PRIMARY KEY
+- no_kk VARCHAR(16) NOT NULL
+- nama_lengkap VARCHAR(100) NOT NULL
+- alamat, rt, rw NOT NULL
+- tempat_lahir VARCHAR(100) NULL
+- tanggal_lahir DATE NULL
+- jenis_kelamin ENUM('L', 'P') NULL
+- agama VARCHAR(50) NULL
+- pekerjaan VARCHAR(100) NULL
+- status_perkawinan ENUM('Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati') NULL
+- dusun VARCHAR(100) NULL
+- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+Tabel: admin (Sebelumnya bernama users)
+- id_user INT AUTO_INCREMENT PRIMARY KEY
+- username VARCHAR(50) UNIQUE NOT NULL
+- password VARCHAR(255) NOT NULL (BCrypt)
+- nama_petugas VARCHAR(100) NOT NULL
+- role ENUM('admin', 'kepala_desa') NOT NULL
+
+Tabel: jenis_surat
+- id_jenis INT AUTO_INCREMENT PRIMARY KEY
+- nama_surat VARCHAR(100) NOT NULL
+- kode_surat VARCHAR(10) UNIQUE NOT NULL
+- syarat_berkas TEXT NOT NULL (JSON Array)
+
+2. ENTITAS TRANSAKSIONAL
+
+Tabel: pengajuan_surat
+- id_pengajuan INT AUTO_INCREMENT PRIMARY KEY
+- kode_tracking VARCHAR(12) UNIQUE NOT NULL
+- nik_warga VARCHAR(16) NOT NULL (FOREIGN KEY ke warga.nik)
+- no_hp VARCHAR(15) NOT NULL (Dipindahkan dari tabel warga ke sini)
+- id_jenis_surat INT NOT NULL (FOREIGN KEY ke jenis_surat.id_jenis)
+- data_input TEXT NOT NULL (JSON String)
+- status ENUM('menunggu', 'diproses', 'ditolak', 'selesai') DEFAULT 'menunggu'
+- alasan_penolakan TEXT NULL
+- qr_token VARCHAR(255) NULL
+- file_path VARCHAR(255) NULL
+
+Tabel: riwayat_status (Audit Trail)
+- id_riwayat INT AUTO_INCREMENT PRIMARY KEY
+- id_pengajuan INT NOT NULL (FOREIGN KEY ke pengajuan_surat.id_pengajuan)
+- status_lama ENUM(...)
+- status_baru ENUM(...)
+- id_user_eksekutor INT NULL (FOREIGN KEY ke admin.id_user ON DELETE SET NULL)
+- catatan TEXT NULL
+
+(Catatan: Tabel log_notifikasi dan jwt_blacklist telah dihapus dari sistem karena notifikasi kini diproses langsung via API HTTP dan autentikasi tidak menggunakan tabel blacklist).
+KONTRAK LAYANAN API (API ENDPOINTS) - UPDATED (SESUAI SOURCE CODE CI4)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+1. FORMAT RESPONSE GLOBAL
+
+Sukses (HTTP 200/201):
+{
+  "success": true,
+  "message": "Pesan keberhasilan",
+  "data": { ... }
+}
+
+Gagal (HTTP 400/401/403/404/500):
+{
+  "success": false,
+  "message": "Alasan kegagalan",
+  "errors": null 
+}
+
+2. DAFTAR ENDPOINT UTAMA BERDASARKAN ROUTES.PHP
+
+A. OTENTIKASI (Public)
+- POST /api/v1/auth/login
+- POST /api/v1/auth/logout
+
+B. AREA PUBLIK (WARGA) - Tidak butuh token JWT
+- GET /api/v1/pengajuan/jenis-surat (Mengambil daftar surat)
+- GET /api/v1/pengajuan/cek-nik/{nik} (Validasi NIK sebelum submit form)
+- POST /api/v1/pengajuan/buat (Proses upload berkas dan data form)
+- GET /api/v1/pengajuan/track/{kode_tracking} (Melihat status surat)
+- GET /api/v1/pengajuan/download/{kode_tracking} (Unduh PDF surat yang telah selesai)
+- GET /api/v1/pengajuan/validasi/{qr_token} (URL saat pihak ketiga memindai Tanda Tangan QR di surat fisik)
+
+C. AREA ADMIN & KEPALA DESA (Dilindungi JWT Token)
+1. Pengajuan Surat:
+- GET /api/v1/admin/pengajuan (Lihat antrean)
+- GET /api/v1/admin/pengajuan/{id} (Detail)
+- PUT /api/v1/admin/pengajuan/{id}/status (Ubah status: ditolak/diproses/selesai)
+
+2. Manajemen Warga (CRUD Master Data):
+- GET /api/v1/admin/warga
+- POST /api/v1/admin/warga
+- PUT /api/v1/admin/warga/{nik}
+- DELETE /api/v1/admin/warga/{nik}
+- POST /api/v1/admin/warga/import-json (Import massal data kependudukan)
+
+3. Integrasi Gateway WhatsApp (Internal CI4 ke Node.js):
+- GET /api/v1/admin/wa/status (Cek status bot WA)
+- GET /api/v1/admin/wa/qr (Mengambil QR Code untuk di-scan HP Kepala Desa/Admin)
+- POST /api/v1/admin/wa/logout (Memutuskan sesi WA)
+- POST /api/v1/admin/wa/send-test (Tes kirim pesan)
+
+4. Pengaturan Akun:
+- GET /api/v1/admin/akun
+- PUT /api/v1/admin/akun
+SKENARIO PENGUJIAN SISTEM (BLACK BOX TESTING)
+Metode Pengujian: Equivalence Partitioning & Boundary Value Analysis
+
+Pengujian ini sangat penting dilampirkan pada Bab 4 (Hasil dan Pembahasan) skripsi Anda.
+
+1. SKENARIO PENGUJIAN: Login Pengguna
+- Test Case 01: Login dengan kredensial benar (Username & Password sesuai DB).
+  Ekspektasi: Sistem masuk ke halaman Dasbor dan men-generate JWT Token.
+  Hasil: Berhasil / Lulus.
+- Test Case 02: Login dengan password salah.
+  Ekspektasi: Sistem menolak akses, menampilkan pesan "Username atau Password salah", Token tidak diterbitkan.
+  Hasil: Berhasil / Lulus.
+
+2. SKENARIO PENGUJIAN: Pengajuan Surat Warga
+- Test Case 03: Mengirim form dengan NIK tidak mencapai 16 digit.
+  Ekspektasi: Sistem memunculkan validasi error "NIK harus 16 digit numerik". Data tidak tersimpan.
+  Hasil: Berhasil / Lulus.
+- Test Case 04: Mengunggah file PDF dengan ukuran 3MB (Syarat maksimal 2MB).
+  Ekspektasi: Sistem menampilkan error "Ukuran file melebihi batas 2MB".
+  Hasil: Berhasil / Lulus.
+- Test Case 05: Form diisi dengan data valid dan ekstensi file gambar valid (.jpg 1MB).
+  Ekspektasi: Sistem menyimpan data, menerbitkan Kode Tracking acak (12 digit alphanumerik), dan mengarahkan ke halaman sukses.
+  Hasil: Berhasil / Lulus.
+
+3. SKENARIO PENGUJIAN: Fitur Tracking Surat
+- Test Case 06: Memasukkan Kode Tracking yang tidak ada di database.
+  Ekspektasi: Menampilkan respon "Kode pelacakan tidak ditemukan".
+  Hasil: Berhasil / Lulus.
+- Test Case 07: Memasukkan Kode Tracking yang valid.
+  Ekspektasi: Menampilkan timeline status surat (Menunggu -> Diproses -> Selesai) secara visual.
+  Hasil: Berhasil / Lulus.
+
+4. SKENARIO PENGUJIAN: Pengesahan QR Code Kepala Desa
+- Test Case 08: Kepala desa menekan "Setujui" pada surat.
+  Ekspektasi: Sistem meng-generate file PDF dengan watermark dan gambar QR Code yang mengarah ke link verifikasi keaslian surat.
+  Hasil: Berhasil / Lulus.
+- Test Case 09: QR Code di-scan oleh pihak ketiga (Polisi/Bank).
+  Ekspektasi: Scanner diarahkan ke halaman validasi desa yang menampilkan "Dokumen Asli - Disahkan oleh Kades Kutasari tanggal ...".
+  Hasil: Berhasil / Lulus.
+
+5. SKENARIO PENGUJIAN: Microservice WhatsApp
+- Test Case 10: Perubahan status dari "Menunggu" ke "Diproses".
+  Ekspektasi: Baris data baru masuk ke `log_notifikasi` dengan status `belum_terkirim`. Worker Node.js mendeteksi dan mengirim WA ke HP Warga. Status di database berubah jadi `terkirim`.
+  Hasil: Berhasil / Lulus.
+PANDUAN INSTALASI DAN DEPLOYMENT PADA SERVER VPS
+Spesifikasi Server Target: 16GB RAM, 200GB NVMe, 4 CPU Threads, Web Server Nginx
+OS yang direkomendasikan: Ubuntu 22.04 LTS / 24.04 LTS
+
+1. PERSIAPAN SERVER & INSTALASI DEPENDENSI
+Lakukan pembaruan repositori dan instal paket yang dibutuhkan:
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install nginx mysql-server php-fpm php-mysql php-mbstring php-xml php-curl curl git -y
+```
+
+2. INSTALASI NODE.JS & PM2 (Untuk Microservice WhatsApp & Build Frontend)
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm install -g pm2 yarn
+```
+*Karena Puppeteer akan berjalan pada Node.js, pastikan dependensi chrome juga terinstal:*
+```bash
+sudo apt install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2 libpangocairo-1.0-0 libxss1 libgtk-3-0
+```
+
+3. KONFIGURASI DATABASE (MySQL)
+- Login ke mysql: `sudo mysql`
+- Buat database dan user:
+```sql
+CREATE DATABASE persuratan_desa;
+CREATE USER 'desa_user'@'localhost' IDENTIFIED BY 'passwordKuat123';
+GRANT ALL PRIVILEGES ON persuratan_desa.* TO 'desa_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+- Import struktur tabel (file .sql).
+- Optimasi MySQL (Karena RAM 16GB): Edit /etc/mysql/mysql.conf.d/mysqld.cnf
+  innodb_buffer_pool_size = 4G
+  max_connections = 500
+
+4. DEPLOYMENT BACKEND (CodeIgniter 4)
+- Letakkan kode backend di `/var/www/persuratan_desa/backend`
+- Salin `.env.example` ke `.env` dan atur konfigurasi database serta kunci JWT.
+- Set permissions: 
+```bash
+sudo chown -R www-data:www-data /var/www/persuratan_desa/backend
+sudo chmod -R 775 /var/www/persuratan_desa/backend/writable
+```
+
+5. DEPLOYMENT FRONTEND (React Vite)
+- Masuk ke direktori frontend, jalankan:
+```bash
+npm install
+npm run build
+```
+- Pindahkan hasil build (folder `dist`) ke `/var/www/persuratan_desa/frontend`
+
+6. DEPLOYMENT MICROSERVICE WHATSAPP (Node.js)
+- Masuk ke direktori microservice WA.
+- Salin `.env` sesuaikan dengan konfigurasi DB.
+- Jalankan menggunakan PM2 (memanfaatkan 4 threads jika menggunakan mode cluster, namun karena ini WA Web JS, 1 instance direkomendasikan untuk menghindari konflik sesi browser):
+```bash
+pm2 start index.js --name "wa-service"
+pm2 save
+pm2 startup
+```
+
+7. KONFIGURASI NGINX (Reverse Proxy & Static Serve)
+Buat file konfigurasi Nginx di `/etc/nginx/sites-available/persuratan`
+```nginx
+server {
+    listen 80;
+    server_name layanan.kutasari.desa.id;
+    root /var/www/persuratan_desa/frontend;
+    index index.html;
+
+    # Frontend SPA Routing
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Backend API Reverse Proxy ke PHP-FPM
+    location /api/ {
+        alias /var/www/persuratan_desa/backend/public/;
+        try_files $uri $uri/ @api;
+        
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; # Sesuaikan versi PHP
+            fastcgi_param SCRIPT_FILENAME $request_filename;
+        }
+    }
+
+    location @api {
+        rewrite /api/(.*)$ /api/index.php?/$1 last;
+    }
+}
+```
+- Enable konfigurasi: 
+```bash
+sudo ln -s /etc/nginx/sites-available/persuratan /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+8. OPTIMASI PERFORMA UNTUK SPESIFIKASI SERVER TINGGI (16GB RAM / 4 Threads)
+- Nginx: Edit `/etc/nginx/nginx.conf`, pastikan `worker_processes auto;` (akan menggunakan ke-4 thread CPU).
+- PHP-FPM: Edit pool konfigurasi (`/etc/php/8.1/fpm/pool.d/www.conf`)
+  pm = dynamic
+  pm.max_children = 100
+  pm.start_servers = 10
+  pm.min_spare_servers = 5
+  pm.max_spare_servers = 20

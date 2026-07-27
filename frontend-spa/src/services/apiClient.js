@@ -38,7 +38,9 @@ apiClient.interceptors.response.use(
     // If unauthorized, redirect or clear token (can be implemented later)
     if (error.response?.status === 401) {
       localStorage.removeItem('jwt_token');
-      // window.location.href = '/login'; // Optional auto-redirect
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/session-expired';
+      }
     }
 
     return Promise.reject(error);

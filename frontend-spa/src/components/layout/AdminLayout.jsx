@@ -27,8 +27,7 @@ export const AdminLayout = () => {
   useEffect(() => {
     const token = localStorage.getItem('jwt_token');
     if (!token) {
-      addToast('Anda harus masuk (login) terlebih dahulu', 'warning');
-      navigate('/login', { replace: true });
+      navigate('/session-expired', { replace: true });
     }
   }, [location.pathname, navigate, addToast]);
 

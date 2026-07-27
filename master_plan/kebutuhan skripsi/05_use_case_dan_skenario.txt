@@ -1,0 +1,45 @@
+SKENARIO USE CASE (USE CASE & SCENARIOS) - UPDATED
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+DAFTAR AKTOR:
+1. Warga (Tidak perlu login)
+2. Admin Desa
+3. Kepala Desa
+4. Sistem / API Gateway (Aktor Pasif)
+
+DAFTAR USE CASE & SKENARIO:
+
+1. USE CASE: Mengajukan Surat
+- Aktor Utama: Warga
+- Deskripsi: Warga mengajukan permohonan pembuatan surat (SKCK, SKU, SKTM, dll).
+- Skenario Normal:
+  1. Warga membuka halaman utama portal desa.
+  2. Warga memilih jenis surat.
+  3. Warga memasukkan NIK, No HP Aktif, dan mengunggah dokumen persyaratan.
+  4. Sistem memvalidasi NIK, menyertakan atribut kependudukan warga secara otomatis.
+  5. Sistem memberikan "Kode Tracking" kepada warga.
+
+2. USE CASE: Melacak Status Surat
+- Aktor Utama: Warga
+- Skenario Normal:
+  1. Warga memasukkan Kode Tracking di kolom pencarian.
+  2. Sistem menampilkan detail surat dan status saat ini (menunggu / diproses / selesai).
+
+3. USE CASE: Verifikasi Berkas (Admin)
+- Aktor Utama: Admin Desa
+- Skenario Normal:
+  1. Admin membuka menu dasbor pengajuan.
+  2. Admin melihat surat dengan status "menunggu".
+  3. Admin memverifikasi lampiran berkas dan mengisi data administratif tambahan.
+  4. Admin menekan tombol "Verifikasi & Proses".
+  5. Sistem mengubah status menjadi "diproses" dan backend secara langsung memicu API Notifikasi (WA Gateway) untuk mengirim WhatsApp ke warga.
+
+4. USE CASE: Pengesahan Surat dengan TTD QR Code
+- Aktor Utama: Kepala Desa
+- Skenario Normal:
+  1. Kepala Desa membuka menu "Surat Menunggu Pengesahan".
+  2. Kepala Desa memeriksa draft PDF surat.
+  3. Kepala Desa menekan tombol "Setujui & Tandatangani".
+  4. Sistem me-generate QR Code validasi tersandi SHA-256 dan menempelkannya ke dokumen PDF.
+  5. Sistem merubah status pengajuan menjadi "selesai".
+  6. Backend memicu API Notifikasi WhatsApp ke gawai pemohon berisi instruksi pengambilan file.

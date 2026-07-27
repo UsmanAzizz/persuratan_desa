@@ -41,7 +41,7 @@
 
     <div class="title">
         <h4>SURAT KETERANGAN TIDAK MAMPU</h4>
-        <p>Nomor : ........ / ........ / ........ / <?= str_pad($id_pengajuan, 3, '0', STR_PAD_LEFT) ?></p>
+        <p>Nomor : <?= $nomor_surat ?? '......../......../........' ?></p>
     </div>
 
     <div class="content">

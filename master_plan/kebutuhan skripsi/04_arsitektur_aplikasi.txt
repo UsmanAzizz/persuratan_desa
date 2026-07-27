@@ -1,0 +1,21 @@
+ARSITEKTUR APLIKASI DAN TEKNOLOGI YANG DIGUNAKAN (UPDATED)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+1. FILOSOFI ARSITEKTUR
+Sistem menggunakan arsitektur Decoupled/Hybrid (Clean Architecture), di mana Presentation (Frontend) dipisah secara penuh dari Application, Domain, dan Infrastructure (Backend API). Server bersifat stateless.
+
+2. FRONTEND (React JS + Vite)
+- Pola Arsitektur: Feature-Sliced Design direduksi menjadi Layered Architecture.
+- Presentation Layer: Komponen UI murni tanpa logika bisnis (src/pages, src/components).
+- Application Layer: Menggunakan `zustand` untuk State Management, mengelola token JWT dan siklus autentikasi.
+- Infrastructure Layer: Menggunakan `axios` untuk HTTP request, dilengkapi interceptor untuk menyematkan Bearer Token.
+
+3. BACKEND CORE (PHP CodeIgniter 4)
+- Headless API: Sepenuhnya melayani REST API dengan format output global JSON (tanpa rendering HTML).
+- Domain Driven Design (DDD): Controller hanya mengatur rute dan sanitasi input dasar. Pemrosesan query dan logika berada pada Model/Service.
+- Validasi Keamanan: Pemeriksaan file terunggah (.pdf, .jpg, .png max 2MB) dan pemisahan variabel environment.
+
+4. MICROSERVICE WHATSAPP GATEWAY (Node.js REST API)
+- Layanan notifikasi WhatsApp berjalan terisolasi menggunakan `whatsapp-web.js` dan Express.js.
+- Mekanisme Interaksi: Tidak lagi menggunakan *database polling*. Gateway ini membuka REST API internal di port 3030 (`POST /wa/send`). 
+- Alur Kerja: Ketika Backend PHP selesai mengubah status surat, PHP secara langsung melakukan HTTP POST ke Node.js Gateway, yang kemudian secara instan mengirimkan pesan WhatsApp ke nomor tujuan pemohon. Pendekatan ini lebih cepat dan tidak membebani database.

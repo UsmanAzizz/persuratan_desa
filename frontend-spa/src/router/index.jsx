@@ -10,9 +10,11 @@ import { Home } from '../pages/public/Home';
 import { FormPengajuan } from '../pages/public/FormPengajuan';
 import { TrackStatus } from '../pages/public/TrackStatus';
 import { ValidasiSurat } from '../pages/public/ValidasiSurat';
+import { ValidasiKades } from '../pages/public/ValidasiKades';
 
 // Admin Pages
 import { Login } from '../pages/auth/Login';
+import { SessionExpired } from '../pages/auth/SessionExpired';
 import { Dashboard } from '../pages/admin/Dashboard';
 import { AntreanSurat } from '../pages/admin/AntreanSurat';
 import { DetailPengajuan } from '../pages/admin/DetailPengajuan';
@@ -43,12 +45,20 @@ export const router = createBrowserRouter([
       {
         path: 'validasi/:token',
         element: <ValidasiSurat />
+      },
+      {
+        path: 'validasi-kades/:token',
+        element: <ValidasiKades />
       }
     ]
   },
   {
     path: '/login',
     element: <Login />
+  },
+  {
+    path: '/session-expired',
+    element: <SessionExpired />
   },
   {
     path: '/admin',

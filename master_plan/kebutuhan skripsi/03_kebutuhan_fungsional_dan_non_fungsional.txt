@@ -1,0 +1,36 @@
+ANALISA KEBUTUHAN FUNGSIONAL DAN NON-FUNGSIONAL (UPDATED)
+Sistem Informasi Layanan Persuratan Desa Kutasari
+
+A. KEBUTUHAN FUNGSIONAL
+Kebutuhan fungsional adalah hal-hal pokok yang harus bisa dilakukan oleh sistem.
+
+1. Modul Warga (Area Publik)
+   - F-01: Warga dapat melihat daftar jenis surat yang tersedia beserta persyaratannya tanpa login.
+   - F-02: Sistem harus memvalidasi NIK warga sebelum menampilkan formulir kelengkapan (Cek NIK di database).
+   - F-03: Sistem harus memungkinkan warga mengajukan surat dengan mengisi NIK, Nomor HP Aktif (untuk WA), dan upload dokumen PDF/Foto.
+   - F-04: Warga dapat melacak status surat dan mengunduh PDF hasil persetujuan secara mandiri (menggunakan URL Download / Kode Tracking).
+
+2. Modul Admin Desa
+   - F-05: Sistem mengharuskan login berbasis JWT.
+   - F-06: Admin dapat mengelola (CRUD) master data Kependudukan Warga, termasuk mengimpor (Import JSON) data secara massal.
+   - F-07: Admin dapat melihat, memverifikasi, mengubah status pengajuan surat, atau menolaknya (dengan memberikan alasan).
+   - F-08: Admin memiliki halaman kontrol "WhatsApp Gateway" untuk memindai (Scan) QR Code, menyambungkan nomor WA Balai Desa, dan mengecek status bot WA tersebut.
+
+3. Modul Kepala Desa
+   - F-09: Kepala Desa dapat melakukan verifikasi akhir pada surat berstatus 'diproses'.
+   - F-10: Kepala Desa dapat membubuhkan persetujuan yang secara otomatis me-generate Tanda Tangan Digital berupa QR Code (URL Validasi Surat) di PDF.
+   - F-11: Sistem secara asinkron memicu pengiriman pesan WhatsApp ke pemohon setelah surat disetujui.
+
+B. KEBUTUHAN NON-FUNGSIONAL
+
+1. Keamanan (Security)
+   - NF-01: Autentikasi sesi harus menggunakan JSON Web Token (JWT).
+   - NF-02: Password database di-hash dengan BCrypt.
+   - NF-03: Routing Admin dan Kepala Desa dilindungi oleh filter JWT pada CodeIgniter 4.
+
+2. Kinerja (Performance) & Arsitektur
+   - NF-04: Pengiriman pesan WA dipisah secara teknis (*Microservice*) ke Node.js Gateway agar proses PHP FPM tidak mengalami *bottleneck*.
+   - NF-05: Sistem validasi *file upload* harus menangkal *malicious payload* dengan batas maksimal ukuran yang wajar (2MB).
+
+3. Ketersediaan (Availability)
+   - NF-06: Arsitektur *Decoupled* membuat perbaikan Frontend (React Vite) tidak mengganggu jam operasional Backend API.

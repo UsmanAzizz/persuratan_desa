@@ -1,0 +1,109 @@
+PANDUAN INSTALASI DAN DEPLOYMENT PADA SERVER VPS
+Spesifikasi Server Target: 16GB RAM, 200GB NVMe, 4 CPU Threads, Web Server Nginx
+OS yang direkomendasikan: Ubuntu 22.04 LTS / 24.04 LTS
+
+1. PERSIAPAN SERVER & INSTALASI DEPENDENSI
+Lakukan pembaruan repositori dan instal paket yang dibutuhkan:
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install nginx mysql-server php-fpm php-mysql php-mbstring php-xml php-curl curl git -y
+```
+
+2. INSTALASI NODE.JS & PM2 (Untuk Microservice WhatsApp & Build Frontend)
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm install -g pm2 yarn
+```
+*Karena Puppeteer akan berjalan pada Node.js, pastikan dependensi chrome juga terinstal:*
+```bash
+sudo apt install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2 libpangocairo-1.0-0 libxss1 libgtk-3-0
+```
+
+3. KONFIGURASI DATABASE (MySQL)
+- Login ke mysql: `sudo mysql`
+- Buat database dan user:
+```sql
+CREATE DATABASE persuratan_desa;
+CREATE USER 'desa_user'@'localhost' IDENTIFIED BY 'passwordKuat123';
+GRANT ALL PRIVILEGES ON persuratan_desa.* TO 'desa_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+- Import struktur tabel (file .sql).
+- Optimasi MySQL (Karena RAM 16GB): Edit /etc/mysql/mysql.conf.d/mysqld.cnf
+  innodb_buffer_pool_size = 4G
+  max_connections = 500
+
+4. DEPLOYMENT BACKEND (CodeIgniter 4)
+- Letakkan kode backend di `/var/www/persuratan_desa/backend`
+- Salin `.env.example` ke `.env` dan atur konfigurasi database serta kunci JWT.
+- Set permissions: 
+```bash
+sudo chown -R www-data:www-data /var/www/persuratan_desa/backend
+sudo chmod -R 775 /var/www/persuratan_desa/backend/writable
+```
+
+5. DEPLOYMENT FRONTEND (React Vite)
+- Masuk ke direktori frontend, jalankan:
+```bash
+npm install
+npm run build
+```
+- Pindahkan hasil build (folder `dist`) ke `/var/www/persuratan_desa/frontend`
+
+6. DEPLOYMENT MICROSERVICE WHATSAPP (Node.js)
+- Masuk ke direktori microservice WA.
+- Salin `.env` sesuaikan dengan konfigurasi DB.
+- Jalankan menggunakan PM2 (memanfaatkan 4 threads jika menggunakan mode cluster, namun karena ini WA Web JS, 1 instance direkomendasikan untuk menghindari konflik sesi browser):
+```bash
+pm2 start index.js --name "wa-service"
+pm2 save
+pm2 startup
+```
+
+7. KONFIGURASI NGINX (Reverse Proxy & Static Serve)
+Buat file konfigurasi Nginx di `/etc/nginx/sites-available/persuratan`
+```nginx
+server {
+    listen 80;
+    server_name layanan.kutasari.desa.id;
+    root /var/www/persuratan_desa/frontend;
+    index index.html;
+
+    # Frontend SPA Routing
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Backend API Reverse Proxy ke PHP-FPM
+    location /api/ {
+        alias /var/www/persuratan_desa/backend/public/;
+        try_files $uri $uri/ @api;
+        
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; # Sesuaikan versi PHP
+            fastcgi_param SCRIPT_FILENAME $request_filename;
+        }
+    }
+
+    location @api {
+        rewrite /api/(.*)$ /api/index.php?/$1 last;
+    }
+}
+```
+- Enable konfigurasi: 
+```bash
+sudo ln -s /etc/nginx/sites-available/persuratan /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+8. OPTIMASI PERFORMA UNTUK SPESIFIKASI SERVER TINGGI (16GB RAM / 4 Threads)
+- Nginx: Edit `/etc/nginx/nginx.conf`, pastikan `worker_processes auto;` (akan menggunakan ke-4 thread CPU).
+- PHP-FPM: Edit pool konfigurasi (`/etc/php/8.1/fpm/pool.d/www.conf`)
+  pm = dynamic
+  pm.max_children = 100
+  pm.start_servers = 10
+  pm.min_spare_servers = 5
+  pm.max_spare_servers = 20

@@ -10,6 +10,7 @@ export const PengaturanAkun = () => {
   const [formData, setFormData] = useState({
     username: '',
     nama_petugas: '',
+    no_wa_kades: '',
     password_lama: '',
     password_baru: '',
     konfirmasi_password: ''
@@ -28,7 +29,8 @@ export const PengaturanAkun = () => {
         setFormData(prev => ({
           ...prev,
           username: res.data.data.username,
-          nama_petugas: res.data.data.nama_petugas
+          nama_petugas: res.data.data.nama_petugas,
+          no_wa_kades: res.data.data.no_wa_kades || ''
         }));
       }
     } catch (e) {
@@ -67,6 +69,7 @@ export const PengaturanAkun = () => {
       const res = await apiClient.put('/admin/akun', {
         username: formData.username,
         nama_petugas: formData.nama_petugas,
+        no_wa_kades: formData.no_wa_kades,
         password_lama: formData.password_lama,
         password_baru: formData.password_baru
       });
@@ -133,6 +136,27 @@ export const PengaturanAkun = () => {
                     minLength={4}
                     className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-medium text-slate-800 bg-white"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* WA Kades Section */}
+            <div>
+              <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 mb-3">
+                 Nomor WA Kepala Desa
+              </h4>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700">Nomor WhatsApp</label>
+                  <input 
+                    type="text" 
+                    name="no_wa_kades"
+                    value={formData.no_wa_kades}
+                    onChange={handleInputChange}
+                    placeholder="Contoh: 08123456789"
+                    className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-medium text-slate-800 bg-white"
+                  />
+                  <p className="text-xs text-slate-500 mt-1">Nomor ini akan dikirimi link validasi surat (Magic Link) otomatis.</p>
                 </div>
               </div>
             </div>

@@ -173,6 +173,20 @@ export const DetailPengajuan = () => {
           >
             <Activity className="w-4 h-4" /> Tindak Lanjut
           </button>
+          <button
+            disabled={data.status === 'menunggu'}
+            title={data.status === 'menunggu' ? "Preview belum tersedia untuk status menunggu" : ""}
+            onClick={() => setActiveTab('preview')}
+            className={`flex-1 px-6 py-4 font-bold text-sm transition-all flex items-center justify-center gap-2 border-b-2 ${
+              data.status === 'menunggu' 
+                ? 'opacity-50 cursor-not-allowed border-transparent text-slate-400 bg-slate-50'
+                : activeTab === 'preview' 
+                  ? 'border-blue-600 text-blue-700 bg-white cursor-pointer' 
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100 cursor-pointer'
+            }`}
+          >
+            <FileText className="w-4 h-4" /> Preview Surat
+          </button>
         </div>
 
         {/* Tab Content Area */}
@@ -322,8 +336,7 @@ export const DetailPengajuan = () => {
                         required
                       >
                         <option value="menunggu">Menunggu Verifikasi (Masuk Antrean)</option>
-                        <option value="diproses">Sedang Diproses (Proses Tanda Tangan)</option>
-                        <option value="selesai">Selesai / Dapat Diambil</option>
+                        <option value="diproses">Sedang Diproses Kades (Minta TTD)</option>
                         <option value="ditolak">Tolak Berkas (Berkas Tidak Valid)</option>
                       </select>
                     </div>
@@ -355,6 +368,23 @@ export const DetailPengajuan = () => {
               </form>
             </motion.div>
           )}
+          {/* Tab Content: Preview Surat */}
+          {activeTab === 'preview' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full flex flex-col">
+              <div className="bg-slate-100 p-3 border-b border-slate-200 flex justify-between items-center shrink-0">
+                <span className="text-sm font-bold text-slate-600">Preview PDF Surat</span>
+                <span className="text-xs bg-white border border-slate-200 px-3 py-1 rounded-full text-slate-500 font-medium">
+                  {data.status === 'selesai' || data.status === 'disetujui_kades' ? 'Final (Ber-TTD)' : 'Draf (Belum TTD)'}
+                </span>
+              </div>
+              <iframe 
+                src={`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/v1/admin/pengajuan/${id}/preview`} 
+                title="Preview PDF" 
+                className="w-full h-full border-0 bg-white flex-1 min-h-[500px]"
+              />
+            </motion.div>
+          )}
+
         </div>
       </Card>
 

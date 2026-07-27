@@ -96,7 +96,7 @@
 
     <div class="judul-surat">
         <h4>SURAT KETERANGAN PENGANTAR NIKAH (N1)</h4>
-        <p>Nomor : <?= $id_pengajuan ?> / N1 / <?= date('Y', strtotime($created_at)) ?></p>
+        <p>Nomor : <?= $nomor_surat ?? '......../......../........' ?></p>
     </div>
 
     <div class="konten">

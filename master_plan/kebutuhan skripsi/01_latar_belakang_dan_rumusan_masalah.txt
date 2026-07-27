@@ -1,0 +1,25 @@
+DRAF LATAR BELAKANG DAN RUMUSAN MASALAH (BAB 1)
+Topik: Pembangunan Sistem Layanan Persuratan Desa Berbasis Web dengan Verifikasi Tanda Tangan Digital (QR Code) dan Integrasi WhatsApp Gateway
+
+1. LATAR BELAKANG MASALAH
+Pelayanan administrasi kependudukan di tingkat desa, seperti pembuatan Surat Keterangan Usaha (SKU), Surat Keterangan Catatan Kepolisian (SKCK), dan Surat Keterangan Tidak Mampu (SKTM), merupakan ujung tombak pelayanan publik. Di Desa Kutasari, mekanisme pengajuan persuratan ini umumnya masih dilakukan secara konvensional (manual), di mana warga harus hadir langsung secara fisik ke balai desa dengan membawa tumpukan dokumen fisik persyaratan. 
+
+Metode konvensional ini memunculkan beberapa permasalahan:
+a. Tidak Efisien: Warga seringkali harus bolak-balik karena ketidaktahuan kelengkapan berkas, atau karena figur pengambil keputusan (Kepala Desa) sedang tidak berada di tempat dinas.
+b. Lambatnya Arus Informasi: Masyarakat kesulitan mengetahui sejauh mana progres/status permohonan berkas administrasi mereka.
+c. Validitas Dokumen Cetak: Keaslian dokumen kertas yang ditandatangani secara basah sering menjadi celah dalam pemalsuan surat keterangan desa.
+
+Oleh karena itu, dibutuhkan terobosan teknologi berupa Sistem Informasi Pelayanan Persuratan Desa secara daring (online). Untuk menjawab masalah keterbukaan informasi dan legalitas, sistem ini harus dilengkapi dengan pemindai notifikasi otomatis berbasis WhatsApp (WhatsApp Gateway) serta integrasi Tanda Tangan Elektronik/Digital (menggunakan teknologi QR Code terenkripsi) yang dapat diverifikasi keasliannya secara langsung secara *real-time* dari mana pun. 
+
+2. RUMUSAN MASALAH
+Berdasarkan identifikasi permasalahan di atas, maka rumusan masalah dalam penelitian ini adalah:
+1. Bagaimana merancang dan membangun sistem informasi layanan persuratan kependudukan Desa Kutasari berbasis website yang terintegrasi?
+2. Bagaimana cara mengimplementasikan notifikasi *real-time* otomatis (WhatsApp Gateway) guna menginformasikan status pengajuan dokumen secara langsung ke gawai milik warga pemohon?
+3. Bagaimana mengimplementasikan sistem validasi keamanan dan pengesahan surat berbasis *QR Code* (Tanda Tangan Digital) yang diverifikasi oleh Kepala Desa secara mandiri melalui dasbor *online*?
+
+3. BATASAN MASALAH (RUANG LINGKUP)
+Untuk menghindari meluasnya pembahasan sistem, ditetapkan batasan masalah sebagai berikut:
+1. Sistem ini hanya memfasilitasi pembuatan 4 jenis administrasi surat utama yang paling sering dimohonkan (misal: SKU, SKCK, SKD, dan SKTM).
+2. Mekanisme notifikasi WhatsApp mengandalkan pustaka lokal Node.js (whatsapp-web.js) bertindak sebagai servis terpisah tanpa pihak ketiga (Third Party API berbayar).
+3. Pengesahan menggunakan QR Code bertindak sebagai verifikator tautan digital ke basis data (URL link Checker), bukan otentikasi biometrik.
+4. Akses sistem dibagi menjadi 3 aktor/role: Warga Pemohon (tanpa login, menggunakan NIK dan Nomor Tracking), Admin Balai Desa (verifikator berkas kotor), dan Kepala Desa (Otoritas penyetuju dan penandatangan dokumen QR).
