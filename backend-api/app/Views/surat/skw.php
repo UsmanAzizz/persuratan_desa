@@ -52,7 +52,7 @@
             position: absolute;
             height: 150px;
             width: auto;
-            top: 0px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1;
