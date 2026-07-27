@@ -247,7 +247,7 @@ class AdminController extends BaseApiController
             // Kirim WA ke Kades JIKA status diproses
             if ($statusBaru === 'diproses') {
                 // Ambil nomor kades
-                $kadesAdmin = $db->table('admin')->where('role', 'kades')->orWhereNotNull('no_wa_kades')->first();
+                $kadesAdmin = $db->table('admin')->where('role', 'kades')->orWhere('no_wa_kades IS NOT NULL')->get()->getRowArray();
                 $noWaKades = $kadesAdmin ? $kadesAdmin['no_wa_kades'] : null;
                 
                 if ($noWaKades) {
