@@ -5,7 +5,7 @@ import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Clock, Activity, CheckCircle, XCircle, FileText, Image as ImageIcon, Maximize2, X, Download } from 'lucide-react';
+import { ChevronLeft, Clock, Activity, CheckCircle, XCircle, FileText, Image as ImageIcon, Maximize2, X, Download, Loader2 } from 'lucide-react';
 import { useHeaderStore } from '../../store/useHeaderStore';
 
 export const DetailPengajuan = () => {
