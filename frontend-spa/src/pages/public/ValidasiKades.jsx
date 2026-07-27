@@ -237,7 +237,7 @@ export const ValidasiKades = () => {
               </div>
               
               {/* Pratinjau PDF (Desktop - Native Viewer) */}
-              <div className="hidden sm:block w-full flex-1 border-0 overflow-hidden bg-white">
+              <div className="hidden sm:block w-full aspect-[21/29.7] border border-emerald-200 rounded-lg overflow-hidden bg-white shadow-inner mx-auto max-w-4xl">
                 <iframe 
                   src={`/api/v1/kades/preview/${token}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
                   className="w-full h-full pointer-events-none"
@@ -247,7 +247,7 @@ export const ValidasiKades = () => {
               </div>
 
               {/* Pratinjau PDF (Mobile - Isolated Iframe PDF.js) */}
-              <div className="block sm:hidden w-full flex-1 border-0 overflow-hidden bg-white">
+              <div className="block sm:hidden w-full aspect-[21/29.7] border border-emerald-200 rounded-lg overflow-hidden bg-white shadow-inner mx-auto">
                 <iframe 
                   src={`/pdf-viewer.html?file=${encodeURIComponent(`/api/v1/kades/preview/${token}`)}`}
                   className="w-full h-full border-none pointer-events-none"

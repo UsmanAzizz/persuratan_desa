@@ -411,11 +411,23 @@ export const DetailPengajuan = () => {
               </div>
               
               {pdfUrl ? (
-                <iframe 
-                  src={pdfUrl} 
-                  title="Preview PDF" 
-                  className="w-full h-full border-0 bg-white flex-1 min-h-[500px]"
-                />
+                <div 
+                  className="w-full aspect-[21/29.7] border border-slate-200 rounded-lg overflow-hidden bg-white shadow-inner mx-auto max-w-4xl relative group cursor-pointer"
+                  onClick={() => { setViewerTitle("Preview PDF Surat"); setViewerImage(pdfUrl); setViewerOpen(true); }}
+                >
+                  <iframe 
+                    src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
+                    title="Preview PDF" 
+                    className="w-full h-full pointer-events-none"
+                    scrolling="no"
+                  />
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 bg-slate-900/80 text-white px-4 py-2 rounded-full flex items-center gap-2 transform transition-all translate-y-2 group-hover:translate-y-0">
+                      <Maximize2 className="w-4 h-4" />
+                      <span className="text-sm font-medium">Perbesar Layar</span>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="w-full h-full min-h-[500px] flex flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-xl text-slate-400">
                   <Loader2 className="w-8 h-8 animate-spin mb-2" />
