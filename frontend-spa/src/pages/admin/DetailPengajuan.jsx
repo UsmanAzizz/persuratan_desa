@@ -25,6 +25,7 @@ export const DetailPengajuan = () => {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerImage, setViewerImage] = useState(null);
   const [viewerTitle, setViewerTitle] = useState('');
+  const [pdfUrl, setPdfUrl] = useState('');
 
   const BASE_URL = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '') : 'http://localhost:8080';
 
