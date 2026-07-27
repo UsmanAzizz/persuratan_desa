@@ -9,21 +9,17 @@ class KadesFeaturePatch extends Migration
     public function up()
     {
         // 1. Tambah kolom no_wa_kades di admin
-        $fieldsAdmin = [
-            'no_wa_kades' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '50',
-                'null'       => true,
-                'after'      => 'password',
-            ],
-        ];
-        
-        // Gunakan db->query langsung untuk menambah kolom karena CI4 forge addColumn agak rewel jika kolom sudah ada
-        $this->db->query("ALTER TABLE `admin` ADD COLUMN IF NOT EXISTS `no_wa_kades` VARCHAR(50) NULL AFTER `password`");
+        if (!$this->db->fieldExists('no_wa_kades', 'admin')) {
+            $this->db->query("ALTER TABLE `admin` ADD COLUMN `no_wa_kades` VARCHAR(50) NULL AFTER `password`");
+        }
 
         // 2. Tambah nomor_surat dan token_validasi di pengajuan_surat
-        $this->db->query("ALTER TABLE `pengajuan_surat` ADD COLUMN IF NOT EXISTS `nomor_surat` VARCHAR(100) NULL AFTER `kode_tracking`");
-        $this->db->query("ALTER TABLE `pengajuan_surat` ADD COLUMN IF NOT EXISTS `token_validasi` VARCHAR(100) NULL AFTER `alasan_penolakan`");
+        if (!$this->db->fieldExists('nomor_surat', 'pengajuan_surat')) {
+            $this->db->query("ALTER TABLE `pengajuan_surat` ADD COLUMN `nomor_surat` VARCHAR(100) NULL AFTER `kode_tracking`");
+        }
+        if (!$this->db->fieldExists('token_validasi', 'pengajuan_surat')) {
+            $this->db->query("ALTER TABLE `pengajuan_surat` ADD COLUMN `token_validasi` VARCHAR(100) NULL AFTER `alasan_penolakan`");
+        }
 
         // 3. Modifikasi ENUM status di tabel pengajuan_surat agar men-support status Kades
         // Harus menggunakan raw SQL karena ENUM
