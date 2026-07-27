@@ -71,7 +71,7 @@ class PublicController extends BaseApiController
         $pengajuanModel = new PengajuanSuratModel();
         
         $pengajuanDetail = $db->table('pengajuan_surat p')
-                              ->select('p.id_pengajuan, p.kode_tracking, p.status, p.no_hp, p.nik_warga, j.kode_surat, j.nama_surat, w.nama_lengkap')
+                              ->select('p.id_pengajuan, p.kode_tracking, p.status, p.no_hp, p.nik_warga, p.data_input, p.created_at, p.id_jenis_surat, j.kode_surat, j.nama_surat, w.nama_lengkap')
                               ->join('warga w', 'w.nik = p.nik_warga')
                               ->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat')
                               ->where('p.token_validasi', $token)
@@ -115,6 +115,58 @@ class PublicController extends BaseApiController
             // Generate Token Validasi QR
             $qrToken = bin2hex(random_bytes(16));
             $updateData['qr_token'] = $qrToken;
+
+            // Generate QR Code (Base64)
+            $qrOptions = new \chillerlan\QRCode\QROptions([
+                'version'         => 5,
+                'outputInterface' => \chillerlan\QRCode\Output\QRMarkupSVG::class,
+                'eccLevel'        => \chillerlan\QRCode\Common\EccLevel::L,
+                'outputBase64'    => true,
+            ]);
+            $qrcode = new \chillerlan\QRCode\QRCode($qrOptions);
+            $qrUrl = base_url('validasi/' . $qrToken);
+            $qrBase64 = $qrcode->render($qrUrl);
+
+            $warga = $db->table('warga')->where('nik', $pengajuanDetail['nik_warga'])->get()->getRowArray();
+            
+            $viewData = [
+                'warga' => $warga,
+                'data_input' => json_decode($pengajuanDetail['data_input'], true),
+                'id_pengajuan' => $pengajuanDetail['id_pengajuan'],
+                'created_at' => $pengajuanDetail['created_at'],
+                'qr_base64' => $qrBase64,
+                'nomor_surat' => $nomorSurat
+            ];
+            
+            helper('indo');
+            
+            $slugMap = [
+                'SKU' => 'sku',
+                'SKD' => 'skd',
+                'SKCK' => 'skck',
+                'SKTM' => 'sktm',
+                'IK' => 'ik',
+                'SKW' => 'skw',
+                'N1' => 'n1'
+            ];
+            
+            $viewFile = 'surat/' . ($slugMap[$pengajuanDetail['kode_surat']] ?? 'skd');
+            $html = view($viewFile, $viewData);
+            
+            $dompdf = new \Dompdf\Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            $pdfOutput = $dompdf->output();
+            
+            $fileName = 'Surat_' . $pengajuanDetail['kode_tracking'] . '_' . time() . '.pdf';
+            $uploadPath = FCPATH . 'uploads/surat/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+            
+            file_put_contents($uploadPath . $fileName, $pdfOutput);
+            $updateData['file_path'] = 'uploads/surat/' . $fileName;
 
         } else if ($aksi === 'tolak') {
             $statusBaru = 'ditolak_kades';

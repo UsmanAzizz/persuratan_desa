@@ -20,31 +20,7 @@ export const ValidasiKades = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // Fetch PDF Preview
-  useEffect(() => {
-    if (token) {
-      const fetchPdf = async () => {
-        try {
-          const response = await apiClient.get(`/kades/preview/${token}`, {
-            responseType: 'blob'
-          });
-          const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-          setPdfUrl(url);
-        } catch (error) {
-          console.error("Gagal memuat PDF", error);
-        }
-      };
-      fetchPdf();
-    }
-  }, [token]);
-
-  // Clean up ObjectURL
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-    };
-  }, [pdfUrl]);
-
+  // 1. Fetch Detail Surat
   const fetchDetail = async () => {
     try {
       const res = await apiClient.get(`/kades/detail/${token}`);
@@ -259,18 +235,26 @@ export const ValidasiKades = () => {
                   <span className="text-xs font-semibold bg-slate-200 text-slate-600 px-2 py-1 rounded">Draf (Belum TTD)</span>
                 )}
               </div>
-              {pdfUrl ? (
+              
+              {/* Pratinjau PDF (Desktop - Native Viewer) */}
+              <div className="hidden sm:block w-full flex-1 border-0 overflow-hidden bg-white">
                 <iframe 
-                  src={pdfUrl} 
-                  title="Preview PDF" 
-                  className="w-full flex-1 border-0"
+                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/v1/kades/preview/${token}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
+                  className="w-full h-full pointer-events-none"
+                  scrolling="no"
+                  title="Pratinjau Surat Desktop"
                 />
-              ) : (
-                <div className="w-full flex-1 flex flex-col items-center justify-center text-slate-400">
-                  <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                  <p className="text-sm font-medium">Memuat Dokumen...</p>
-                </div>
-              )}
+              </div>
+
+              {/* Pratinjau PDF (Mobile - Isolated Iframe PDF.js) */}
+              <div className="block sm:hidden w-full flex-1 border-0 overflow-hidden bg-white">
+                <iframe 
+                  src={`/pdf-viewer.html?file=${encodeURIComponent(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/v1/kades/preview/${token}`)}`}
+                  className="w-full h-full border-none pointer-events-none"
+                  scrolling="no"
+                  title="Pratinjau Surat Mobile"
+                />
+              </div>
             </div>
           </div>
         </div>
