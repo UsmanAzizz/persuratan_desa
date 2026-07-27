@@ -66,6 +66,31 @@ export const DetailPengajuan = () => {
     };
   }, [id, setHeader, clearHeader, navigate]);
 
+  // Fetch PDF Preview
+  useEffect(() => {
+    if (activeTab === 'preview' && !pdfUrl && data?.status !== 'menunggu') {
+      const fetchPreview = async () => {
+        try {
+          const response = await apiClient.get(`/admin/pengajuan/${id}/preview`, {
+            responseType: 'blob'
+          });
+          const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+          setPdfUrl(url);
+        } catch (error) {
+          console.error("Gagal memuat preview:", error);
+        }
+      };
+      fetchPreview();
+    }
+  }, [activeTab, id, pdfUrl, data?.status]);
+
+  // Clean up ObjectURL
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+  }, [pdfUrl]);
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setUpdating(true);
@@ -368,20 +393,34 @@ export const DetailPengajuan = () => {
               </form>
             </motion.div>
           )}
+
           {/* Tab Content: Preview Surat */}
           {activeTab === 'preview' && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full flex flex-col">
-              <div className="bg-slate-100 p-3 border-b border-slate-200 flex justify-between items-center shrink-0">
-                <span className="text-sm font-bold text-slate-600">Preview PDF Surat</span>
-                <span className="text-xs bg-white border border-slate-200 px-3 py-1 rounded-full text-slate-500 font-medium">
-                  {data.status === 'selesai' || data.status === 'disetujui_kades' ? 'Final (Ber-TTD)' : 'Draf (Belum TTD)'}
-                </span>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="p-6 bg-slate-50 flex flex-col flex-grow min-h-0"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-slate-800">Preview PDF Surat</h3>
+                {data.status === 'selesai' ? (
+                  <span className="text-xs font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Ber-TTD QR</span>
+                ) : (
+                  <span className="text-xs font-semibold bg-slate-200 text-slate-600 px-2 py-1 rounded">Draf (Belum TTD)</span>
+                )}
               </div>
-              <iframe 
-                src={`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/v1/admin/pengajuan/${id}/preview`} 
-                title="Preview PDF" 
-                className="w-full h-full border-0 bg-white flex-1 min-h-[500px]"
-              />
+              
+              {pdfUrl ? (
+                <iframe 
+                  src={pdfUrl} 
+                  title="Preview PDF" 
+                  className="w-full h-full border-0 bg-white flex-1 min-h-[500px]"
+                />
+              ) : (
+                <div className="w-full h-full min-h-[500px] flex flex-col items-center justify-center bg-white border border-dashed border-slate-300 rounded-xl text-slate-400">
+                  <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                  <p className="text-sm font-medium">Memuat Dokumen...</p>
+                </div>
+              )}
             </motion.div>
           )}
 
