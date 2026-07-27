@@ -9,16 +9,41 @@ export const ValidasiKades = () => {
   const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+  const [pdfUrl, setPdfUrl] = useState('');
   
   // Modal Penolakan
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const [pdfKey, setPdfKey] = useState(Date.now()); // Untuk me-refresh iframe PDF
 
   useEffect(() => {
     fetchDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+
+  // Fetch PDF Preview
+  useEffect(() => {
+    if (token) {
+      const fetchPdf = async () => {
+        try {
+          const response = await apiClient.get(`/kades/preview/${token}`, {
+            responseType: 'blob'
+          });
+          const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+          setPdfUrl(url);
+        } catch (error) {
+          console.error("Gagal memuat PDF", error);
+        }
+      };
+      fetchPdf();
+    }
+  }, [token]);
+
+  // Clean up ObjectURL
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+  }, [pdfUrl]);
 
   const fetchDetail = async () => {
     try {
@@ -55,9 +80,8 @@ export const ValidasiKades = () => {
       });
       if (res.data.success) {
         if (aksi === 'tolak') setShowRejectModal(false);
-        // Refresh data dan PDF iframe
+        // Refresh data
         await fetchDetail();
-        setPdfKey(Date.now());
       }
     } catch (e) {
       alert(e.response?.data?.message || 'Gagal menyimpan aksi');
@@ -92,10 +116,6 @@ export const ValidasiKades = () => {
   const isSelesai = data.status === 'selesai' || data.status === 'disetujui_kades';
   const isDitolak = data.status === 'ditolak_kades';
   const isDiproses = data.status === 'diproses';
-
-  // Base URL for PDF Preview
-  // Tambahkan query timestamp agar iframe reload saat state berubah
-  const pdfUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/v1/kades/preview/${token}?t=${pdfKey}`;
 
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
@@ -239,11 +259,18 @@ export const ValidasiKades = () => {
                   <span className="text-xs font-semibold bg-slate-200 text-slate-600 px-2 py-1 rounded">Draf (Belum TTD)</span>
                 )}
               </div>
-              <iframe 
-                src={pdfUrl} 
-                title="Preview PDF" 
-                className="w-full flex-1 border-0"
-              />
+              {pdfUrl ? (
+                <iframe 
+                  src={pdfUrl} 
+                  title="Preview PDF" 
+                  className="w-full flex-1 border-0"
+                />
+              ) : (
+                <div className="w-full flex-1 flex flex-col items-center justify-center text-slate-400">
+                  <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                  <p className="text-sm font-medium">Memuat Dokumen...</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
