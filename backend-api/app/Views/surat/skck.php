@@ -23,9 +23,9 @@
         .signature-box { float: left; width: 30%; text-align: center; }
         .signature-box-right { float: right; width: 35%; text-align: center; }
         .qr-code { float: left; width: 100px; text-align: center; margin-left: 20px; margin-top: 10px; }
-        .qr-code img { width: 90px; height: 90px; }
+        .qr-code img { width: 110px; height: 110px; }
         .clear { clear: both; }
-        .kades-name { font-weight: bold; font-size: 11pt; margin-top: 60px; margin-bottom: 0; text-decoration: underline;}
+        .kades-name { font-weight: bold; font-size: 11pt; margin-top: 30px; margin-bottom: 0; text-decoration: underline;}
     </style>
 </head>
 <body>
@@ -83,19 +83,19 @@
         
         <div class="signature-box">
             <p style="margin:5px 0 0 0;">Pemohon</p>
-            <p class="kades-name" style="text-decoration: underline; display:inline-block; margin-top: 60px;"><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '...................' ?></p>
+            <p class="kades-name" style="text-decoration: underline; display:inline-block; margin-top: 30px;"><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '...................' ?></p>
         </div>
         
         <div class="signature-box">
             <p style="margin:5px 0 0 0;">Mengetahui,</p>
             <?php if(isset($qr_base64)): ?>
-                <img src="<?= $qr_base64 ?>" alt="QR Code" style="width:70px; height:70px; margin-top:5px;">
+                <img src="<?= $qr_base64 ?>" alt="QR Code" style="width:90px; height:90px; margin-top:5px;">
             <?php endif; ?>
         </div>
         
         <div class="signature-box-right">
             <p style="margin:5px 0 0 0;">KEPALA DESA KUTASARI</p>
-            <p class="kades-name" style="text-decoration: underline; margin-top: 60px; display:inline-block;">KUSNENDAR</p><br/>
+            <p class="kades-name" style="text-decoration: underline; margin-top: 30px; display:inline-block;">KUSNENDAR</p><br/>
             <p style="margin:0; display: inline-block; padding-top: 2px;">NIP. -</p>
         </div>
         

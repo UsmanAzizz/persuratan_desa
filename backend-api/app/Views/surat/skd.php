@@ -22,9 +22,9 @@
         .signature-container { width: 100%; margin-top: 40px; position: relative; }
         .signature { float: right; text-align: left; width: 250px; }
         .qr-code { float: left; width: 100px; text-align: center; margin-left: 20px; margin-top: 10px; }
-        .qr-code img { width: 90px; height: 90px; }
+        .qr-code img { width: 110px; height: 110px; }
         .clear { clear: both; }
-        .kades-name { font-weight: bold; font-size: 12pt; margin-top: 70px; margin-bottom: 0;}
+        .kades-name { font-weight: bold; font-size: 12pt; margin-top: 40px; margin-bottom: 0;}
     </style>
 </head>
 <body>

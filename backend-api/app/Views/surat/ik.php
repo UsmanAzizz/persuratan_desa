@@ -49,9 +49,9 @@
         }
         .ttd-image {
             position: absolute;
-            height: 120px;
+            height: 150px;
             width: auto;
-            top: 30px;
+            top: 0px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1;
@@ -165,7 +165,7 @@
             <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
         <?php endif; ?>
         
-        <div style="height: 100px;"></div>
+        <div style="height: 50px;"></div>
         
         <p class="ttd-name">KUSNENDAR</p>
     </div>
