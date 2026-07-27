@@ -239,7 +239,7 @@ export const ValidasiKades = () => {
               {/* Pratinjau PDF (Desktop - Native Viewer) */}
               <div className="hidden sm:block w-full flex-1 border-0 overflow-hidden bg-white">
                 <iframe 
-                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/v1/kades/preview/${token}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
+                  src={`/api/v1/kades/preview/${token}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
                   className="w-full h-full pointer-events-none"
                   scrolling="no"
                   title="Pratinjau Surat Desktop"
@@ -249,7 +249,7 @@ export const ValidasiKades = () => {
               {/* Pratinjau PDF (Mobile - Isolated Iframe PDF.js) */}
               <div className="block sm:hidden w-full flex-1 border-0 overflow-hidden bg-white">
                 <iframe 
-                  src={`/pdf-viewer.html?file=${encodeURIComponent(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/v1/kades/preview/${token}`)}`}
+                  src={`/pdf-viewer.html?file=${encodeURIComponent(`/api/v1/kades/preview/${token}`)}`}
                   className="w-full h-full border-none pointer-events-none"
                   scrolling="no"
                   title="Pratinjau Surat Mobile"
