@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\PengajuanSuratModel;
-use App\Models\RiwayatPengajuanModel;
+use App\Models\RiwayatStatusModel;
 
 class PublicController extends BaseApiController
 {
@@ -129,7 +129,7 @@ class PublicController extends BaseApiController
         $pengajuanModel->update($pengajuanDetail['id_pengajuan'], $updateData);
 
         // Sisipkan Log Riwayat
-        $riwayatModel = new RiwayatPengajuanModel();
+        $riwayatModel = new RiwayatStatusModel();
         $riwayatModel->insert([
             'id_pengajuan'      => $pengajuanDetail['id_pengajuan'],
             'status_lama'       => $pengajuanDetail['status'],
