@@ -16,6 +16,7 @@ const JENIS_SURAT = [
 export const ContohSurat = () => {
   const [activeTab, setActiveTab] = useState(JENIS_SURAT[0].id);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Endpoint PDF (Kirim token via query string agar bisa divalidasi oleh backend, atau backend buka route ini dari filter JWT)
   // Tunggu, backend JWT filter di CI4 tidak membaca $_GET['token']. Dia membaca Authorization Bearer.
@@ -28,15 +29,24 @@ export const ContohSurat = () => {
     let isMounted = true;
     const fetchPdf = async () => {
       setLoading(true);
+      setError(null);
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/pengaturan/contoh-surat/${activeTab}`, {
+        const token = localStorage.getItem('jwt_token');
+        const baseURL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+        const response = await fetch(`${baseURL}/admin/pengaturan/contoh-surat/${activeTab}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
         
-        if (!response.ok) throw new Error('Gagal memuat PDF');
+        if (!response.ok) {
+          let errMsg = 'Gagal memuat pratinjau surat.';
+          try {
+            const errData = await response.json();
+            errMsg = errData.message || errMsg;
+          } catch(e) {}
+          throw new Error(errMsg);
+        }
         
         const blob = await response.blob();
         if (isMounted) {
@@ -45,6 +55,7 @@ export const ContohSurat = () => {
         }
       } catch (err) {
         console.error(err);
+        if (isMounted) setError(err.message);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -97,33 +108,36 @@ export const ContohSurat = () => {
 
         {/* Area Preview PDF */}
         <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <h2 className="font-semibold text-slate-800">
-                Pratinjau: {JENIS_SURAT.find(s => s.id === activeTab)?.nama}
-              </h2>
-            </CardHeader>
-            <CardBody className="p-0 sm:p-6 bg-slate-50">
-              <div className="w-full aspect-[21/29.7] bg-white border border-slate-200 rounded-lg shadow-inner overflow-hidden relative flex items-center justify-center">
-                {loading ? (
-                  <div className="flex flex-col items-center justify-center text-slate-400">
-                    <Loader2 className="w-10 h-10 animate-spin mb-3 text-blue-500" />
-                    <p>Memuat Dokumen...</p>
-                  </div>
-                ) : pdfBlobUrl ? (
-                  <iframe
-                    src={`${pdfBlobUrl}#toolbar=0`}
-                    className="w-full h-full border-0"
-                    title="PDF Preview"
-                  />
-                ) : (
-                  <div className="text-slate-400">Gagal memuat pratinjau surat.</div>
-                )}
+          <div className="w-full h-[800px] sm:aspect-[21/29.7] sm:h-auto bg-white relative flex items-center justify-center overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center text-slate-400">
+                <Loader2 className="w-10 h-10 animate-spin mb-3 text-blue-500" />
+                <p>Memuat Dokumen...</p>
               </div>
-            </CardBody>
-          </Card>
+            ) : pdfBlobUrl ? (
+              <>
+                {/* Pratinjau PDF (Desktop - Native Viewer) */}
+                <iframe
+                  src={`${pdfBlobUrl}#toolbar=0`}
+                  className="hidden sm:block w-full h-full border-0"
+                  title="PDF Preview Desktop"
+                />
+                {/* Pratinjau PDF (Mobile - Isolated Iframe PDF.js) */}
+                <iframe
+                  src={`/pdf-viewer.html?file=${encodeURIComponent(pdfBlobUrl)}`}
+                  className="block sm:hidden w-full h-full border-none pointer-events-none"
+                  scrolling="no"
+                  title="PDF Preview Mobile"
+                />
+              </>
+            ) : (
+              <div className="text-slate-400">{error || 'Gagal memuat pratinjau surat.'}</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default ContohSurat;
