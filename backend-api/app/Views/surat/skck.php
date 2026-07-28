@@ -83,7 +83,7 @@
         
         <div class="signature-box">
             <p style="margin:5px 0 0 0;">Pemohon</p>
-            <p class="kades-name" style="text-decoration: underline; display:inline-block; margin-top: 30px;"><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '...................' ?></p>
+            <p class="kades-name" style="text-decoration: underline; display:inline-block; margin-top: 70px; font-weight: bold;"><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '...................' ?></p>
         </div>
         
         <div class="signature-box">
@@ -95,7 +95,7 @@
         
         <div class="signature-box-right">
             <p style="margin:5px 0 0 0;">KEPALA DESA KUTASARI</p>
-            <p class="kades-name" style="text-decoration: underline; margin-top: 30px; display:inline-block;">KUSNENDAR</p><br/>
+            <p class="kades-name" style="text-decoration: underline; margin-top: 70px; display:inline-block; font-weight: bold;">KUSNENDAR</p><br/>
         </div>
         
         <div class="clear"></div>

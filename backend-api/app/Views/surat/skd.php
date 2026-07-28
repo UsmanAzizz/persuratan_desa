@@ -72,11 +72,10 @@
             <?php endif; ?>
         </div>
         <div class="signature">
-            <table style="width: 100%;">
-                <tr><td><p style="margin:0;">Kutasari , <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p></td></tr>
-            </table>
-            <p style="margin:5px 0 0 0; text-align: center;">Kepala Desa Kutasari</p>
-            <p class="kades-name" style="text-align: center;">KUSNENDAR</p>
+            <p style="margin:0; text-align: center;">Kutasari, <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p>
+            <p style="margin:5px 0 0 0; text-align: center;">KEPALA DESA KUTASARI</p>
+            <div style="height: 80px;"></div>
+            <p class="kades-name" style="text-align: center; margin: 0; font-weight: bold; text-decoration: underline;">KUSNENDAR</p>
         </div>
         <div class="clear"></div>
     </div>
