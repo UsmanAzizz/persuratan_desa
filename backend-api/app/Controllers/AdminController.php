@@ -502,4 +502,62 @@ class AdminController extends BaseApiController
             'message' => $message
         ]);
     }
+
+    // ==================================================
+    // CONTOH SURAT (Untuk Pengaturan SPA)
+    // ==================================================
+    public function contohSuratPdf($kode_surat)
+    {
+        $validTypes = ['sku', 'skd', 'skck', 'sktm', 'skw', 'ik', 'n1'];
+        $kode_surat = strtolower($kode_surat);
+        if (!in_array($kode_surat, $validTypes)) {
+            return $this->respondError('Jenis surat tidak ditemukan', 404);
+        }
+
+        // Dummy data
+        $dummyWarga = [
+            'nik' => '3301234567890001',
+            'nama_lengkap' => 'JOHN DOE (CONTOH)',
+            'tempat_lahir' => 'CILACAP',
+            'tanggal_lahir' => '1990-01-01',
+            'jenis_kelamin' => 'Laki-Laki',
+            'agama' => 'Islam',
+            'pekerjaan' => 'Wiraswasta',
+            'alamat_lengkap' => 'Jl. Ir. Soekarno No. 123, RT 01 RW 02, Desa Kutasari',
+            'status_perkawinan' => 'Belum Kawin'
+        ];
+
+        helper('custom'); 
+        
+        $viewData = [
+            'warga' => $dummyWarga,
+            'pengajuan' => [
+                'nomor_surat' => '140/000/CONTOH/2026',
+                'keperluan' => 'Contoh pengajuan surat untuk pratinjau aplikasi.',
+                'keterangan_lain' => 'Data ini adalah contoh fiktif.',
+                'berlaku_sampai' => date('Y-m-d', strtotime('+1 month')),
+            ],
+            'created_at' => date('Y-m-d H:i:s'),
+            'qr_base64' => 'data:image/png;base64,' . base64_encode(file_get_contents(FCPATH . 'images/logo_Cilacap.jpg')) // Pakai logo aja buat dummy qr agar ada gambar
+        ];
+
+        $dompdf = new \Dompdf\Dompdf();
+        $options = new \Dompdf\Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        $dompdf->setOptions($options);
+
+        try {
+            $html = view("surat/{$kode_surat}", $viewData);
+        } catch (\Exception $e) {
+            return $this->respondError('Template surat gagal dirender', 500);
+        }
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return $this->response->setHeader('Content-Type', 'application/pdf')
+                              ->setBody($dompdf->output());
+    }
 }

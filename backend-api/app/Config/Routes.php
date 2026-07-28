@@ -27,9 +27,10 @@ $routes->group('api/v1', function($routes) {
         $routes->put('pengajuan/(:num)/status', 'AdminController::updateStatus/$1');
         $routes->get('pengajuan/(:num)/preview', 'AdminController::previewPdf/$1');
         
-        // Modul Pengaturan Akun Admin
+        // Modul Pengaturan Akun Admin & Contoh Surat
         $routes->get('akun', 'AdminController::getAkun');
         $routes->put('akun', 'AdminController::updateAkun');
+        $routes->get('pengaturan/contoh-surat/(:segment)', 'AdminController::contohSuratPdf/$1');
 
         // WA Gateway Proxy WhatsApp Gateway
         $routes->get('wa/status', 'AdminController::waStatus');

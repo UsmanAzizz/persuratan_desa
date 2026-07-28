@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
-import { User, Lock, Save, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Lock, Save, Loader2, AlertCircle, CheckCircle, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
 
 export const PengaturanAkun = () => {
@@ -208,7 +209,14 @@ export const PengaturanAkun = () => {
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end">
+            <div className="flex justify-end pt-6 border-t border-slate-100 gap-3">
+              <Link
+                to="/admin/contoh-surat"
+                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-2.5 rounded-xl text-sm font-bold transition-all"
+              >
+                <FileText className="w-5 h-5" />
+                Contoh Surat
+              </Link>
               <button
                 type="submit"
                 disabled={saving}

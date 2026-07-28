@@ -22,6 +22,7 @@ import { PengaturanWA } from '../pages/admin/PengaturanWA';
 import { Laporan } from '../pages/admin/Laporan';
 import { DataWarga } from '../pages/admin/DataWarga';
 import { PengaturanAkun } from '../pages/admin/PengaturanAkun';
+import { ContohSurat } from '../pages/admin/ContohSurat';
 
 // Mock Pages (Temporary placeholders removed)
 
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
       {
         path: 'pengaturan-akun',
         element: <PengaturanAkun />
+      },
+      {
+        path: 'contoh-surat',
+        element: <ContohSurat />
       }
     ]
   }

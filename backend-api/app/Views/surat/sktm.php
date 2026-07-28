@@ -74,7 +74,6 @@
             <p style="margin:0;">Kutasari , <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p>
             <p style="margin:5px 0 0 0;">KEPALA DESA KUTASARI</p>
             <p class="kades-name">KUSNENDAR</p>
-            <p style="margin:0;">NIP. -</p>
         </div>
         <div class="clear"></div>
     </div>
