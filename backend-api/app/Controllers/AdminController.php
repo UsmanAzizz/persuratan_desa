@@ -524,6 +524,10 @@ class AdminController extends BaseApiController
             'agama' => 'Islam',
             'pekerjaan' => 'Wiraswasta',
             'alamat_lengkap' => 'Jl. Ir. Soekarno No. 123, RT 01 RW 02, Desa Kutasari',
+            'alamat' => 'Jl. Ir. Soekarno No. 123',
+            'rt' => '01',
+            'rw' => '02',
+            'dusun' => 'Mekarsari',
             'status_perkawinan' => 'Belum Kawin'
         ];
 
@@ -531,6 +535,20 @@ class AdminController extends BaseApiController
         
         $viewData = [
             'warga' => $dummyWarga,
+            'data_input' => [
+                'keperluan' => 'Pendaftaran, Melamar Pekerjaan, atau Keperluan Lainnya',
+                'hari_hajat' => 'Sabtu',
+                'tanggal_hajat' => date('Y-m-d', strtotime('+1 week')),
+                'jenis_hiburan' => 'Musik / Hiburan Organ Tunggal',
+                'status_perkawinan' => 'Belum Kawin',
+                'nama_ayah_kandung' => 'BAPAK FULAN',
+                'nama_ibu_kandung' => 'IBU FULANAH',
+                'nama_pewaris' => 'ALMARHUM BAPAK (PEWARIS)',
+                'nama_pasangan' => 'PASANGAN (CONTOH)',
+                'nama_usaha' => 'Toko Kelontong / Wiraswasta',
+                'no_surat_rt' => '123/RT.01/2026',
+                'tgl_surat_rt' => date('Y-m-d', strtotime('-1 day')),
+            ],
             'pengajuan' => [
                 'nomor_surat' => '140/000/CONTOH/2026',
                 'keperluan' => 'Contoh pengajuan surat untuk pratinjau aplikasi.',
@@ -538,8 +556,10 @@ class AdminController extends BaseApiController
                 'berlaku_sampai' => date('Y-m-d', strtotime('+1 month')),
             ],
             'created_at' => date('Y-m-d H:i:s'),
-            'qr_base64' => 'data:image/png;base64,' . base64_encode(file_get_contents(FCPATH . 'images/logo_Cilacap.jpg')) // Pakai logo aja buat dummy qr agar ada gambar
         ];
+        
+        $dummySvg = '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#ddd"/><text x="15" y="55" font-family="Arial" font-size="14" fill="#555">QR Code</text></svg>';
+        $viewData['qr_base64'] = 'data:image/svg+xml;base64,' . base64_encode($dummySvg);
 
         $dompdf = new \Dompdf\Dompdf();
         $options = new \Dompdf\Options();

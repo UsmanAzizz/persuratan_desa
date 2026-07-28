@@ -74,10 +74,10 @@
         <tr>
             <td width="15%" style="text-align: left; vertical-align: middle;">
                 <?php
-                    $logoPath = FCPATH . 'assets/images/logo_Cilacap.png';
+                    $logoPath = FCPATH . 'images/logo_Cilacap.jpg';
                     $logoBase64 = '';
                     if (file_exists($logoPath)) {
-                        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+                        $logoBase64 = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath));
                     }
                 ?>
                 <?php if($logoBase64): ?>
@@ -141,7 +141,7 @@
         <?php
             $ttdPath = FCPATH . 'assets/images/TTD_KADES.png';
             $ttdBase64 = '';
-            if (file_exists($ttdPath)) {
+            if (file_exists($ttdPath) && function_exists('imagecreatefrompng')) {
                 $ttdBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($ttdPath));
             }
         ?>
