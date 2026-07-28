@@ -52,7 +52,7 @@
             position: absolute;
             height: 150px;
             width: auto;
-            top: 15px;
+            top: 60px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1;
@@ -161,7 +161,7 @@
             <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
         <?php endif; ?>
         
-        <div style="height: 160px;"></div>
+        <div style="height: 180px;"></div>
         
         <p class="ttd-name">KUSNENDAR</p>
     </div>
