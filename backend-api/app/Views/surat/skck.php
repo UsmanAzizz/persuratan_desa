@@ -12,7 +12,7 @@
         .header h3 { margin: 0; font-size: 18pt; font-weight: bold; letter-spacing: 2px; }
         .kodepos-box { position: absolute; right: 0; bottom: 5px; font-size: 9pt; }
         .kode-desa { font-size: 10pt; margin-top: 5px; }
-        .title { text-align: center; margin-bottom: 15px; margin-top: 60px; line-height: 1.2; }
+        .title { text-align: center; margin-bottom: 15px; margin-top: 15px; line-height: 1.2; }
         .title h4 { margin: 0; text-decoration: underline; font-size: 13pt; font-weight: bold; }
         .title p { margin: 0; font-size: 11pt; }
         .content { text-align: justify; line-height: 1.4; margin-bottom: 15px; }
@@ -83,7 +83,7 @@
         
         <div class="signature-box">
             <p style="margin:5px 0 0 0;">Pemohon</p>
-            <p class="kades-name" style="text-decoration: underline; display:inline-block; margin-top: 140px; font-weight: bold;"><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '...................' ?></p>
+            <p class="kades-name" style="text-decoration: underline; display:inline-block; margin-top: 60px; font-weight: bold;"><?= isset($warga['nama_lengkap']) ? strtoupper($warga['nama_lengkap']) : '...................' ?></p>
         </div>
         
         <div class="signature-box">
@@ -95,7 +95,7 @@
         
         <div class="signature-box-right">
             <p style="margin:5px 0 0 0;">KEPALA DESA KUTASARI</p>
-            <p class="kades-name" style="text-decoration: underline; margin-top: 140px; display:inline-block; font-weight: bold;">KUSNENDAR</p><br/>
+            <p class="kades-name" style="text-decoration: underline; margin-top: 60px; display:inline-block; font-weight: bold;">KUSNENDAR</p><br/>
         </div>
         
         <div class="clear"></div>

@@ -74,7 +74,7 @@
         <div class="signature">
             <p style="margin:0; text-align: center;">Kutasari, <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p>
             <p style="margin:5px 0 0 0; text-align: center;">KEPALA DESA KUTASARI</p>
-            <div style="height: 140px;"></div>
+            <div style="height: 100px;"></div>
             <p class="kades-name" style="text-align: center; margin: 0; font-weight: bold; text-decoration: underline;">KUSNENDAR</p>
         </div>
         <div class="clear"></div>

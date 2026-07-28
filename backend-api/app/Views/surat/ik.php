@@ -165,7 +165,7 @@
             <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
         <?php endif; ?>
         
-        <div style="height: 140px;"></div>
+        <div style="height: 100px;"></div>
         
         <p class="ttd-name">KUSNENDAR</p>
     </div>
