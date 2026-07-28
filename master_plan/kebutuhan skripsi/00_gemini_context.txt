@@ -15,7 +15,7 @@ Oleh karena itu, dibutuhkan terobosan teknologi berupa Sistem Informasi Pelayana
 Berdasarkan identifikasi permasalahan di atas, maka rumusan masalah dalam penelitian ini adalah:
 1. Bagaimana merancang dan membangun sistem informasi layanan persuratan kependudukan Desa Kutasari berbasis website yang terintegrasi?
 2. Bagaimana cara mengimplementasikan notifikasi *real-time* otomatis (WhatsApp Gateway) guna menginformasikan status pengajuan dokumen secara langsung ke gawai milik warga pemohon?
-3. Bagaimana mengimplementasikan sistem validasi keamanan dan pengesahan surat berbasis *QR Code* (Tanda Tangan Digital) yang diverifikasi oleh Kepala Desa secara mandiri melalui dasbor *online*?
+3. Bagaimana mengimplementasikan sistem validasi keamanan dan pengesahan surat berbasis *QR Code* (Tanda Tangan Digital) yang disetujui oleh Kepala Desa secara mandiri melalui tautan verifikasi WhatsApp (Magic Link) tanpa perlu login ke dasbor?
 
 3. BATASAN MASALAH (RUANG LINGKUP)
 Untuk menghindari meluasnya pembahasan sistem, ditetapkan batasan masalah sebagai berikut:
@@ -38,11 +38,11 @@ Aplikasi ini dibangun menggunakan arsitektur Decoupled (Terpisah).
 2. DATABASE MIGRATION (MIGRASI BASIS DATA)
 - Pengertian: Migration adalah teknik version control (pengendalian versi) untuk skema basis data. Di aplikasi ini, CI4 mengelola tabel melalui file-file class PHP (berada di folder app/Database/Migrations).
 - Cara Kerja & Keuntungan: Bukannya membuat tabel MySQL secara manual via phpMyAdmin, programmer cukup menjalankan perintah `php spark migrate`. CodeIgniter akan mengeksekusi file PHP tersebut menjadi query `CREATE TABLE` atau `ALTER TABLE`. 
-- Relevansi: Sangat berguna dalam skripsi karena menjamin jika aplikasi ini didemonstrasikan di komputer dosen/kampus, struktur database dapat direplikasi 100% presisi tanpa takut ada kolom yang terlewat. Contoh di sistem ini: pemindahan field `no_hp` ke tabel pengajuan dan penambahan field kependudukan (`agama`, `tempat_lahir`, dll) terekam rapi di *migration*.
+- Relevansi: Sangat berguna dalam skripsi karena menjamin jika aplikasi ini didemonstrasikan di komputer dosen/kampus, struktur database dapat direplikasi 100% presisi tanpa takut ada kolom yang terlewat.
 
 3. DATABASE SEEDER (PENYEMAIAN DATA)
 - Pengertian: Seeder adalah skrip otomatis untuk mengisi database dengan "Data Dummy" atau data awal secara terprogram (berada di app/Database/Seeds).
-- Relevansi: Setelah *migration* membuat tabel-tabel kosong, *Seeder* akan menyisipkan akun Admin bawaan (username: admin) dan beberapa warga fiktif agar sistem bisa langsung digunakan dan diuji coba (*Black-Box testing*) tanpa harus mendaftar satu per satu secara manual.
+- Relevansi: Setelah *migration* membuat tabel-tabel kosong, *Seeder* akan menyisipkan akun Admin bawaan (username: admin) agar sistem bisa langsung digunakan dan diuji coba (*Black-Box testing*) tanpa harus mendaftar satu per satu secara manual.
 
 4. JSON WEB TOKEN (JWT)
 - Sistem ini tidak menggunakan sistem Login Session konvensional PHP (di mana data disimpan di memori server). Sistem ini menggunakan JWT.
@@ -69,16 +69,16 @@ Kebutuhan fungsional adalah hal-hal pokok yang harus bisa dilakukan oleh sistem.
    - F-08: Admin memiliki halaman kontrol "WhatsApp Gateway" untuk memindai (Scan) QR Code, menyambungkan nomor WA Balai Desa, dan mengecek status bot WA tersebut.
 
 3. Modul Kepala Desa
-   - F-09: Kepala Desa dapat melakukan verifikasi akhir pada surat berstatus 'diproses'.
-   - F-10: Kepala Desa dapat membubuhkan persetujuan yang secara otomatis me-generate Tanda Tangan Digital berupa QR Code (URL Validasi Surat) di PDF.
-   - F-11: Sistem secara asinkron memicu pengiriman pesan WhatsApp ke pemohon setelah surat disetujui.
+   - F-09: Sistem secara otomatis mengirimkan notifikasi WhatsApp berisi Tautan Validasi (Magic Link) kepada Kepala Desa setiap kali ada surat yang diproses oleh Admin.
+   - F-10: Kepala Desa dapat membuka tautan tersebut untuk melihat draf PDF dan memberikan persetujuan atau penolakan langsung dari *smartphone* tanpa perlu login.
+   - F-11: Saat disetujui, sistem secara otomatis me-generate Tanda Tangan Digital berupa QR Code di PDF, lalu memicu pengiriman pesan WhatsApp ke pemohon.
 
 B. KEBUTUHAN NON-FUNGSIONAL
 
 1. Keamanan (Security)
    - NF-01: Autentikasi sesi harus menggunakan JSON Web Token (JWT).
    - NF-02: Password database di-hash dengan BCrypt.
-   - NF-03: Routing Admin dan Kepala Desa dilindungi oleh filter JWT pada CodeIgniter 4.
+   - NF-03: Routing Admin dilindungi oleh filter JWT pada CodeIgniter 4.
 
 2. Kinerja (Performance) & Arsitektur
    - NF-04: Pengiriman pesan WA dipisah secara teknis (*Microservice*) ke Node.js Gateway agar proses PHP FPM tidak mengalami *bottleneck*.
@@ -120,7 +120,7 @@ DAFTAR USE CASE & SKENARIO:
 
 1. USE CASE: Mengajukan Surat
 - Aktor Utama: Warga
-- Deskripsi: Warga mengajukan permohonan pembuatan surat (SKCK, SKU, SKTM, dll).
+- Deskripsi: Warga mengajukan permohonan pembuatan surat.
 - Skenario Normal:
   1. Warga membuka halaman utama portal desa.
   2. Warga memilih jenis surat.
@@ -143,15 +143,16 @@ DAFTAR USE CASE & SKENARIO:
   4. Admin menekan tombol "Verifikasi & Proses".
   5. Sistem mengubah status menjadi "diproses" dan backend secara langsung memicu API Notifikasi (WA Gateway) untuk mengirim WhatsApp ke warga.
 
-4. USE CASE: Pengesahan Surat dengan TTD QR Code
+4. USE CASE: Pengesahan Surat dengan TTD QR Code (Via WhatsApp)
 - Aktor Utama: Kepala Desa
 - Skenario Normal:
-  1. Kepala Desa membuka menu "Surat Menunggu Pengesahan".
-  2. Kepala Desa memeriksa draft PDF surat.
-  3. Kepala Desa menekan tombol "Setujui & Tandatangani".
-  4. Sistem me-generate QR Code validasi tersandi SHA-256 dan menempelkannya ke dokumen PDF.
-  5. Sistem merubah status pengajuan menjadi "selesai".
-  6. Backend memicu API Notifikasi WhatsApp ke gawai pemohon berisi instruksi pengambilan file.
+  1. Kepala Desa menerima pesan WhatsApp berisi Tautan Validasi (Magic Link) dari sistem.
+  2. Kepala Desa membuka tautan tersebut tanpa perlu login.
+  3. Kepala Desa memeriksa draf PDF surat.
+  4. Kepala Desa menekan tombol "Setujui".
+  5. Sistem me-generate QR Code validasi tersandi SHA-256 dan menyematkannya beserta gambar tanda tangan ke dokumen PDF.
+  6. Sistem merubah status pengajuan menjadi "selesai" (atau "disetujui_kades").
+  7. Backend memicu API Notifikasi WhatsApp ke gawai pemohon berisi instruksi pengambilan file.
 ALUR SISTEM (BUSINESS PROCESS FLOW)
 Sistem Informasi Layanan Persuratan Desa Kutasari
 
@@ -159,7 +160,7 @@ Berikut adalah narasi alur dari mulai warga melakukan permohonan hingga surat di
 
 1. FASE PENGAJUAN (WARGA)
    a. Warga mengakses situs web layanan persuratan desa.
-   b. Warga memilih jenis layanan (Misal: SKTM).
+   b. Warga memilih jenis layanan.
    c. Warga mengisi form (NIK, Keperluan) dan mengunggah foto KTP/KK.
    d. Sistem melakukan validasi (Apakah input valid? Apakah ukuran file memenuhi syarat?).
       - Jika GAGAL: Sistem menampilkan pesan error. Warga diminta upload ulang.
@@ -176,15 +177,14 @@ Berikut adalah narasi alur dari mulai warga melakukan permohonan hingga surat di
    e. Admin menekan tombol "Proses".
    f. Status berubah menjadi "diproses". Notifikasi WA terkirim bahwa surat sedang diproses.
 
-3. FASE PENGESAHAN (KEPALA DESA)
-   a. Kepala Desa login ke sistem.
-   b. Kepala Desa melihat daftar antrean "Diproses".
-   c. Kepala Desa mem-preview dokumen surat (berbentuk draft PDF).
-   d. Kepala Desa memberikan persetujuan (Approve).
-   e. Sistem memproses HTML-to-PDF Parser dan menyematkan QR Code Tanda Tangan Digital.
-   f. Status berubah menjadi "selesai".
-   g. File PDF yang sudah sah diunggah ke storage sistem.
-   h. Sistem mengirimkan WhatsApp notifikasi akhir ke Warga ("Surat Anda sudah selesai dan dapat diunduh menggunakan Kode Tracking X").
+3. FASE PENGESAHAN (KEPALA DESA - VIA WHATSAPP)
+   a. Kepala Desa menerima notifikasi WhatsApp berisi tautan dokumen (Magic Link).
+   b. Kepala Desa mengklik tautan dan langsung melihat halaman pratinjau surat (berbentuk draf PDF) dari smartphone.
+   c. Kepala Desa memberikan keputusan (Setujui atau Tolak).
+   d. Jika Setujui: Sistem memproses HTML-to-PDF Parser dan menyematkan QR Code Tanda Tangan Digital beserta gambar tanda tangan Kepala Desa.
+   e. Status berubah menjadi "disetujui_kades" / "selesai".
+   f. File PDF yang sudah sah diunggah ke storage sistem.
+   g. Sistem mengirimkan WhatsApp notifikasi akhir ke Warga ("Surat Anda sudah selesai dan dapat diunduh menggunakan Kode Tracking X").
 
 4. FASE PENERIMAAN SURAT (WARGA)
    a. Warga mendapatkan notifikasi.
@@ -196,8 +196,8 @@ Sistem Informasi Layanan Persuratan Desa Kutasari
 
 Dokumen ini mendeskripsikan secara tekstual urutan interaksi aktor dan komponen sistem. Anda dapat menggunakan teks ini untuk menggambar Sequence Diagram.
 
-1. SEQUENCE DIAGRAM: LOGIN ADMIN/KADES
-Aktor: Admin / Kades
+1. SEQUENCE DIAGRAM: LOGIN ADMIN
+Aktor: Admin
 Lifelines (Objek Sistem): Frontend (UI), Backend (Controller Auth), Database, LocalStorage
 
 Alur:
@@ -227,22 +227,22 @@ Alur:
 8. Database merespons sukses `HTTP 201`.
 9. Frontend menampilkan sukses dialog beserta informasi Kode Tracking kepada Warga.
 
-3. SEQUENCE DIAGRAM: PROSES PENGESAHAN & NOTIFIKASI WA (HTTP POST)
+3. SEQUENCE DIAGRAM: PROSES PENGESAHAN & NOTIFIKASI WA (MAGIC LINK)
 Aktor: Kepala Desa
-Lifelines: Frontend (Dashboard Kades), Backend CI4, PDF Generator, Database, Express Node.js (WA Gateway), API WhatsApp Web
+Lifelines: Frontend (Halaman Validasi Kades Publik), Backend CI4, PDF Generator, Database, Express Node.js (WA Gateway), API WhatsApp Web
 
 Alur Pengesahan & Notifikasi Instan:
-1. Kades menekan tombol "Setujui" pada draft PDF di Frontend.
-2. Frontend me-request `POST /api/v1/pengajuan/approve` ke Backend CI4.
-3. Backend memanggil modul PDF Generator untuk menanamkan (embed) QR Code Tanda Tangan ke dalam PDF.
-4. Backend menyimpan file final PDF ke File Storage.
-5. Backend meng-update status `pengajuan_surat` menjadi `selesai` di Database.
-6. Backend CI4 melakukan pemanggilan HTTP Request `POST /wa/send` (mengirim Nomor HP dan Pesan) secara sinkron/asinkron ke Express Node.js Gateway.
-7. Node.js Gateway mem-parsing target dan pesan, lalu memanggil API WhatsApp Web JS.
-8. WhatsApp merespons status terkirim.
-9. Node.js Gateway merespons sukses `HTTP 200` ke Backend CI4.
-10. Backend CI4 mengirimkan respons sukses ke Frontend.
-11. Frontend meng-update tabel UI Kades.
+1. Kades membuka Tautan Validasi (Magic Link) dari WhatsApp yang mengarah ke Frontend Publik.
+2. Kades menekan tombol "Setujui" pada draf PDF di Frontend.
+3. Frontend me-request `POST /api/v1/pengajuan/kades-aksi/{token}` ke Backend CI4.
+4. Backend memvalidasi token, memanggil modul PDF Generator untuk menanamkan (embed) QR Code dan Tanda Tangan ke dalam PDF.
+5. Backend menyimpan file final PDF ke File Storage.
+6. Backend meng-update status `pengajuan_surat` menjadi `disetujui_kades` di Database.
+7. Backend CI4 melakukan pemanggilan HTTP Request `POST /wa/send` (mengirim Nomor HP dan Pesan) secara sinkron/asinkron ke Node.js Gateway.
+8. Node.js Gateway mem-parsing target dan pesan, lalu memanggil API WhatsApp Web JS.
+9. WhatsApp merespons status terkirim.
+10. Node.js Gateway merespons sukses `HTTP 200` ke Backend CI4.
+11. Backend CI4 mengirimkan respons sukses ke Frontend.
 PEDOMAN DESAIN ANTARMUKA DAN PENGALAMAN PENGGUNA (UI/UX)
 Sistem Informasi Layanan Persuratan Desa Kutasari
 
@@ -257,19 +257,19 @@ Aplikasi dirancang dengan gaya "Formal-Modern".
 2. PALET WARNA (COLOR PALETTE)
 Aplikasi memanfaatkan framework Tailwind CSS dengan penataan berikut:
 - Slate 800 (#1E293B): Digunakan sebagai warna otoritatif untuk Header/Navbar, judul halaman, dan menu-menu pada panel Admin.
-- Blue 600 (#2563EB): Digunakan sebagai warna Call-to-Action utama (Misal: Tombol "Kirim Pengajuan Surat" atau "Cari Kode Tracking").
+- Blue 600 (#2563EB): Digunakan sebagai warna Call-to-Action utama.
 - Slate 50 (#F8FAFC): Digunakan sebagai warna dasar latar belakang (Background) agar kontras dengan form berlatar putih bersih (White).
 - Emerald 700 (#047857): Penanda status "Selesai" atau "Dokumen Valid" (Success Badge).
 - Rose 700 (#BE123C): Penanda status kritis (Misal: Surat "Ditolak" atau pesan error validasi form).
 
 3. TIPOGRAFI
-- Web Font: Menggunakan font Sans-Serif (Inter atau Roboto) yang bersih dan tajam agar tetap terbaca meski di layar ponsel berukuran kecil (karena form kependudukan memiliki field yang padat).
+- Web Font: Menggunakan font Sans-Serif (Inter atau Roboto) yang bersih dan tajam agar tetap terbaca meski di layar ponsel berukuran kecil.
 - Font Cetak (PDF): Khusus untuk hasil *generate* dokumen surat berbentuk PDF, font disesuaikan dengan standar legalitas tata usaha desa, yaitu *Times New Roman* ukuran 12pt.
 
 4. KOMPONEN VISUAL & INTERAKSI (ANIMASI)
-- Transisi Halus (Framer Motion): Pergantian antar halaman menggunakan efek *Fade-in* & *Fade-out* yang ringan. Tidak ada animasi berlebihan yang mengurangi kesan formalitas pemerintahan desa.
-- Skeleton Loading / Shimmer Effect: Saat Admin atau Warga melakukan *request* ke server (seperti memuat tabel antrean), sistem menampilkan placeholder kerangka abu-abu bergradasi untuk meredam persepsi kelelahan menunggu (mengurangi *cognitive load*).
-- Empty State: Jika tabel antrean kosong, tampilan diganti dengan ikon dokumen bergradasi abu-abu dan teks informatif "Belum ada antrean surat masuk", bukan layar putih kosong.
+- Transisi Halus (Framer Motion): Pergantian antar halaman menggunakan efek *Fade-in* & *Fade-out* yang ringan. 
+- Skeleton Loading / Shimmer Effect: Saat Admin atau Warga melakukan *request* ke server, sistem menampilkan placeholder kerangka abu-abu bergradasi untuk meredam persepsi kelelahan menunggu.
+- Empty State: Jika tabel antrean kosong, tampilan diganti dengan ikon dokumen bergradasi abu-abu dan teks informatif "Belum ada antrean surat masuk".
 STRUKTUR DATABASE DAN RELASI APLIKASI PERSURATAN DESA KUTASARI (UPDATED)
 
 Berdasarkan implementasi kode terbaru (Migration):
@@ -294,6 +294,7 @@ Tabel: admin (Sebelumnya bernama users)
 - id_user INT AUTO_INCREMENT PRIMARY KEY
 - username VARCHAR(50) UNIQUE NOT NULL
 - password VARCHAR(255) NOT NULL (BCrypt)
+- no_wa_kades VARCHAR(50) NULL (Nomor WA untuk pengiriman Magic Link Kades)
 - nama_petugas VARCHAR(100) NOT NULL
 - role ENUM('admin', 'kepala_desa') NOT NULL
 
@@ -309,10 +310,10 @@ Tabel: pengajuan_surat
 - id_pengajuan INT AUTO_INCREMENT PRIMARY KEY
 - kode_tracking VARCHAR(12) UNIQUE NOT NULL
 - nik_warga VARCHAR(16) NOT NULL (FOREIGN KEY ke warga.nik)
-- no_hp VARCHAR(15) NOT NULL (Dipindahkan dari tabel warga ke sini)
+- no_hp VARCHAR(15) NOT NULL
 - id_jenis_surat INT NOT NULL (FOREIGN KEY ke jenis_surat.id_jenis)
 - data_input TEXT NOT NULL (JSON String)
-- status ENUM('menunggu', 'diproses', 'ditolak', 'selesai') DEFAULT 'menunggu'
+- status ENUM('menunggu', 'diproses', 'ditolak', 'selesai', 'ditolak_kades', 'disetujui_kades') DEFAULT 'menunggu'
 - alasan_penolakan TEXT NULL
 - qr_token VARCHAR(255) NULL
 - file_path VARCHAR(255) NULL
@@ -324,8 +325,6 @@ Tabel: riwayat_status (Audit Trail)
 - status_baru ENUM(...)
 - id_user_eksekutor INT NULL (FOREIGN KEY ke admin.id_user ON DELETE SET NULL)
 - catatan TEXT NULL
-
-(Catatan: Tabel log_notifikasi dan jwt_blacklist telah dihapus dari sistem karena notifikasi kini diproses langsung via API HTTP dan autentikasi tidak menggunakan tabel blacklist).
 KONTRAK LAYANAN API (API ENDPOINTS) - UPDATED (SESUAI SOURCE CODE CI4)
 Sistem Informasi Layanan Persuratan Desa Kutasari
 
@@ -351,19 +350,22 @@ A. OTENTIKASI (Public)
 - POST /api/v1/auth/login
 - POST /api/v1/auth/logout
 
-B. AREA PUBLIK (WARGA) - Tidak butuh token JWT
+B. AREA PUBLIK (WARGA & KADES) - Tidak butuh token JWT
 - GET /api/v1/pengajuan/jenis-surat (Mengambil daftar surat)
 - GET /api/v1/pengajuan/cek-nik/{nik} (Validasi NIK sebelum submit form)
 - POST /api/v1/pengajuan/buat (Proses upload berkas dan data form)
 - GET /api/v1/pengajuan/track/{kode_tracking} (Melihat status surat)
 - GET /api/v1/pengajuan/download/{kode_tracking} (Unduh PDF surat yang telah selesai)
 - GET /api/v1/pengajuan/validasi/{qr_token} (URL saat pihak ketiga memindai Tanda Tangan QR di surat fisik)
+- GET /api/v1/pengajuan/kades-detail/{qr_token} (Detail persetujuan untuk Kades)
+- GET /api/v1/pengajuan/kades-preview/{qr_token} (Pratinjau PDF bagi Kades)
+- POST /api/v1/pengajuan/kades-aksi/{qr_token} (Aksi setujui/tolak dari Kades via Magic Link)
 
-C. AREA ADMIN & KEPALA DESA (Dilindungi JWT Token)
+C. AREA ADMIN (Dilindungi JWT Token)
 1. Pengajuan Surat:
 - GET /api/v1/admin/pengajuan (Lihat antrean)
 - GET /api/v1/admin/pengajuan/{id} (Detail)
-- PUT /api/v1/admin/pengajuan/{id}/status (Ubah status: ditolak/diproses/selesai)
+- PUT /api/v1/admin/pengajuan/{id}/status (Ubah status)
 
 2. Manajemen Warga (CRUD Master Data):
 - GET /api/v1/admin/warga
