@@ -527,7 +527,7 @@ class AdminController extends BaseApiController
             'status_perkawinan' => 'Belum Kawin'
         ];
 
-        helper('custom'); 
+        helper('indo'); 
         
         $viewData = [
             'warga' => $dummyWarga,
