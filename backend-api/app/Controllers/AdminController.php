@@ -20,6 +20,7 @@ class AdminController extends BaseApiController
         $builder->join('warga w', 'w.nik = p.nik_warga');
         $builder->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat');
         $builder->orderBy('p.created_at', 'DESC');
+        $builder->limit(500); // Batasi 500 data terakhir agar tidak berat
         
         $data = $builder->get()->getResultArray();
         
