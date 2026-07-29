@@ -375,19 +375,21 @@ export const DetailPengajuan = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2 flex-1 flex flex-col min-h-0">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex justify-between shrink-0">
-                      <span>Catatan Staf / Alasan Penolakan</span>
-                      {updateForm.status_baru === 'ditolak' && <span className="text-rose-500">*wajib</span>}
-                    </label>
-                    <textarea 
-                      className="w-full h-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all resize-none"
-                      placeholder="Tulis pesan untuk warga yang akan dikirim via WhatsApp..."
-                      value={updateForm.catatan}
-                      onChange={(e) => setUpdateForm({...updateForm, catatan: e.target.value})}
-                      required={updateForm.status_baru === 'ditolak'}
-                    />
-                  </div>
+                  {updateForm.status_baru === 'ditolak' && (
+                    <div className="space-y-2 flex-1 flex flex-col min-h-0">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex justify-between shrink-0">
+                        <span>Catatan Staf / Alasan Penolakan</span>
+                        <span className="text-rose-500">*wajib</span>
+                      </label>
+                      <textarea 
+                        className="w-full h-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all resize-none"
+                        placeholder="Tulis pesan untuk warga yang akan dikirim via WhatsApp..."
+                        value={updateForm.catatan}
+                        onChange={(e) => setUpdateForm({...updateForm, catatan: e.target.value})}
+                        required
+                      />
+                    </div>
+                  )}
                   
                   <div className="pt-4 mt-4 flex justify-between items-center border-t border-slate-100 shrink-0">
                     <Button type="button" onClick={() => setActiveTab('berkas')} variant="outline" className="rounded-xl px-6 border-slate-200 text-slate-600 font-bold">
