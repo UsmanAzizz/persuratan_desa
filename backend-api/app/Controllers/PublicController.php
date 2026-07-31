@@ -103,7 +103,7 @@ class PublicController extends BaseApiController
                 'outputBase64'    => true,
             ]);
             $qrcode = new \chillerlan\QRCode\QRCode($qrOptions);
-            $frontendUrl = rtrim(getenv('FRONTEND_URL') ?: 'http://localhost:5173', '/');
+            $frontendUrl = rtrim(config('App')->baseURL, '/');
             $qrUrl = $frontendUrl . '/validasi/' . $qrToken;
             $qrBase64 = $qrcode->render($qrUrl);
 
@@ -182,7 +182,7 @@ class PublicController extends BaseApiController
             }
 
             $pesan .= "\n\nCek rincian pengajuan Anda di sini:\n";
-            $frontendUrl = getenv('FRONTEND_URL') ?: 'https://persuratan-desa-kutasari.snowline.cloud';
+            $frontendUrl = rtrim(config('App')->baseURL, '/');
             $pesan .= $frontendUrl . "/track?code=" . $pengajuanDetail['kode_tracking'];
 
             $waUrl = 'http://127.0.0.1:3030/wa/send';
