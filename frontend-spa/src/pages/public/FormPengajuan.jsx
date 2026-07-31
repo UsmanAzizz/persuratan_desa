@@ -26,7 +26,7 @@ export const FormPengajuan = () => {
     id_jenis_surat: '',
     keperluan: ''
   });
-  
+
   const [fileData, setFileData] = useState({});
   const [dynamicFields, setDynamicFields] = useState({});
   const [selectedSyarat, setSelectedSyarat] = useState([]);
@@ -48,12 +48,12 @@ export const FormPengajuan = () => {
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    
+
     // Cegah ubah data diri jika sudah terverifikasi
     if (isVerified && ['nik', 'nama_lengkap', 'no_kk', 'no_hp', 'alamat'].includes(id)) {
       return;
     }
-    
+
     setFormData(prev => ({ ...prev, [id]: value }));
 
     // Handling selection change for jenis surat
@@ -64,7 +64,7 @@ export const FormPengajuan = () => {
         try {
           const syaratArr = JSON.parse(selected.syarat_berkas);
           setSelectedSyarat(Array.isArray(syaratArr) ? syaratArr : []);
-        } catch(e) {
+        } catch (e) {
           setSelectedSyarat([]);
         }
       } else {
@@ -93,7 +93,7 @@ export const FormPengajuan = () => {
     if (formData.nik.length !== 16) return;
 
     setIsVerifying(true);
-    
+
     try {
       const res = await apiClient.get(`/pengajuan/cek-nik/${formData.nik}`, { showSuccessToast: true });
       if (res.data.success) {
@@ -132,21 +132,21 @@ export const FormPengajuan = () => {
       ...prev,
       nik: '1234567890123456',
       no_kk: '1234567890123456',
-      no_hp: '+6281315968818',
+      no_hp: '+6288983838809',
       id_jenis_surat: selected.id_jenis,
       keperluan: 'Keperluan Dummy / Testing'
     }));
 
     setSelectedKodeSurat(kodeSurat);
-    
+
     let syaratArr = [];
     try {
       syaratArr = JSON.parse(selected.syarat_berkas);
       setSelectedSyarat(Array.isArray(syaratArr) ? syaratArr : []);
-    } catch(err) {
+    } catch (err) {
       setSelectedSyarat([]);
     }
-    
+
     // Fill dynamic fields based on type
     const dummyFields = {};
     if (kodeSurat === 'IK') {
@@ -164,7 +164,7 @@ export const FormPengajuan = () => {
       dummyFields.nama_usaha = 'Warung Berkah Kutasari';
     }
     setDynamicFields(dummyFields);
-    
+
     // Simulate verification & file loading
     setIsVerifying(true);
     try {
@@ -175,16 +175,16 @@ export const FormPengajuan = () => {
           ...prev,
           nama_lengkap: warga.nama_lengkap,
           no_kk: warga.no_kk,
-          no_hp: warga.no_hp || '+6281315968818',
+          no_hp: warga.no_hp || '+6288983838809',
           alamat: warga.alamat
         }));
         setIsVerified(true);
-        
+
         // Load dummy file from public folder
         const resFile = await fetch('/TTD_KADES.png');
         const blob = await resFile.blob();
         const dummyFile = new File([blob], 'TTD_KADES.png', { type: 'image/png' });
-        
+
         const filesObj = {};
         syaratArr.forEach(s => { filesObj[s] = dummyFile; });
         setFileData(filesObj);
@@ -203,7 +203,7 @@ export const FormPengajuan = () => {
 
     setLoading(true);
 
-    const combinedDataInput = { 
+    const combinedDataInput = {
       keperluan: formData.keperluan,
       ...dynamicFields
     };
@@ -222,7 +222,7 @@ export const FormPengajuan = () => {
     });
 
     try {
-      const res = await apiClient.post('/pengajuan/buat', payload, { 
+      const res = await apiClient.post('/pengajuan/buat', payload, {
         showSuccessToast: true,
         headers: { 'Content-Type': 'multipart/form-data' }
       });
@@ -248,12 +248,12 @@ export const FormPengajuan = () => {
           <p className="text-slate-600 mb-6 text-sm sm:text-base">
             Permohonan surat Anda telah direkam. Silakan simpan kode pelacakan di bawah ini untuk memantau status surat Anda.
           </p>
-          
+
           <div className="bg-slate-100 p-4 sm:p-5 rounded-2xl mb-6 border-2 border-dashed border-slate-300 relative group">
             <p className="text-xs sm:text-sm text-slate-500 font-bold mb-1 sm:mb-2 uppercase tracking-wider">Kode Pelacakan Anda</p>
             <div className="flex items-center justify-center gap-3">
               <p className="text-3xl sm:text-4xl font-black text-blue-600 tracking-widest">{trackingCode}</p>
-              <button 
+              <button
                 onClick={() => {
                   navigator.clipboard.writeText(trackingCode);
                   addToast('Kode berhasil disalin!', 'success');
@@ -267,8 +267,8 @@ export const FormPengajuan = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setIsSuccess(false);
                 setIsVerified(false);
@@ -281,7 +281,7 @@ export const FormPengajuan = () => {
             >
               Ajukan Surat Lain
             </Button>
-            <Button 
+            <Button
               onClick={() => navigate(`/track?code=${trackingCode}`)}
               className="rounded-full px-6 py-2 sm:px-8 sm:py-2.5 font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 transition-transform active:scale-95"
             >
@@ -294,7 +294,7 @@ export const FormPengajuan = () => {
   }
 
   const isForm1Complete = formData.nik.length === 16 && formData.no_kk.length === 16 && formData.no_hp;
-  const isForm2Complete = formData.id_jenis_surat && formData.keperluan && 
+  const isForm2Complete = formData.id_jenis_surat && formData.keperluan &&
     (selectedKodeSurat !== 'SKU' || dynamicFields.data_usaha) &&
     selectedSyarat.length > 0 && selectedSyarat.every(s => fileData[s]);
 
@@ -367,26 +367,26 @@ export const FormPengajuan = () => {
                 </CardBody>
               ) : (
                 <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
-                  <Input 
-                    id="nik" label="Nomor Induk Kependudukan" 
-                    placeholder="16 Digit NIK" maxLength={16} required 
+                  <Input
+                    id="nik" label="Nomor Induk Kependudukan"
+                    placeholder="16 Digit NIK" maxLength={16} required
                     value={formData.nik} onChange={handleInputChange}
                   />
-                  <Input 
-                    id="no_kk" label="Nomor Kartu Keluarga (KK)" 
-                    placeholder="16 Digit KK" maxLength={16} required 
+                  <Input
+                    id="no_kk" label="Nomor Kartu Keluarga (KK)"
+                    placeholder="16 Digit KK" maxLength={16} required
                     value={formData.no_kk} onChange={handleInputChange}
                   />
                   <div className="md:col-span-2">
-                    <Input 
-                      id="no_hp" label="Nomor HP / WhatsApp" 
-                      placeholder="0812xxxxxx (Aktif untuk notifikasi)" required 
+                    <Input
+                      id="no_hp" label="Nomor HP / WhatsApp"
+                      placeholder="0812xxxxxx (Aktif untuk notifikasi)" required
                       value={formData.no_hp} onChange={handleInputChange}
                     />
                   </div>
                 </CardBody>
               )}
-              
+
               {isVerified ? (
                 <div className="p-3 bg-emerald-500 border-t border-emerald-600 flex items-center justify-center gap-2 text-white mt-auto">
                   <CheckCircle className="w-5 h-5" />
@@ -394,15 +394,14 @@ export const FormPengajuan = () => {
                 </div>
               ) : (
                 <div className="p-4 bg-gray-50 border-t border-slate-100 flex justify-end mt-auto">
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     isLoading={isVerifying}
                     disabled={!isForm1Complete}
-                    className={`rounded-full px-8 py-2 font-bold w-full sm:w-auto text-sm transition-colors duration-300 ${
-                      isForm1Complete 
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 cursor-pointer' 
+                    className={`rounded-full px-8 py-2 font-bold w-full sm:w-auto text-sm transition-colors duration-300 ${isForm1Complete
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 cursor-pointer'
                         : 'bg-slate-400 text-slate-100 shadow-none cursor-not-allowed hover:bg-slate-400'
-                    }`}
+                      }`}
                   >
                     Verifikasi dan Lanjutkan
                   </Button>
@@ -416,7 +415,7 @@ export const FormPengajuan = () => {
         <div className="lg:col-span-7 xl:col-span-8">
           <form onSubmit={handleSubmit} className="h-full">
             <Card className="h-full min-h-[460px] border-[3px] border-slate-100 rounded-[2rem] shadow-xl bg-white overflow-hidden flex flex-col">
-              
+
               <div className="p-5 border-b border-slate-100 bg-gradient-to-r from-blue-50/60 to-white flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-200 text-blue-600 shadow-sm shadow-blue-100 flex items-center justify-center shrink-0">
@@ -429,21 +428,20 @@ export const FormPengajuan = () => {
                     <p className="text-slate-500 text-[11px] font-medium mt-0.5">Pilih jenis layanan persuratan yang Anda butuhkan.</p>
                   </div>
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   variant={isVerified && isForm2Complete ? "solid" : "outline"}
                   isLoading={loading}
                   disabled={!isVerified || !isForm2Complete}
-                  className={`w-full sm:w-auto rounded-full px-6 py-1.5 font-bold transition-all duration-300 text-sm shrink-0 mt-2 sm:mt-1 ${
-                    isVerified && isForm2Complete 
-                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 border-transparent' 
+                  className={`w-full sm:w-auto rounded-full px-6 py-1.5 font-bold transition-all duration-300 text-sm shrink-0 mt-2 sm:mt-1 ${isVerified && isForm2Complete
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 border-transparent'
                       : 'bg-transparent border-slate-300 text-slate-400 cursor-not-allowed shadow-none hover:bg-transparent'
-                  }`}
+                    }`}
                 >
                   Kirim Pengajuan
                 </Button>
               </div>
-              
+
               <div className="relative flex-1 flex flex-col">
                 {!isVerified && (
                   <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/40 backdrop-blur-sm p-6 text-center">
@@ -454,16 +452,16 @@ export const FormPengajuan = () => {
                     </div>
                   </div>
                 )}
-                
+
                 <div className={`flex flex-col flex-1 transition-all duration-500 ${!isVerified ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}>
                   <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-5 p-5 items-start">
-                    
+
                     {/* Kolom Kiri: Input Fields */}
                     <div className="flex flex-col gap-4 md:pr-4">
                       <div className="flex flex-col gap-1.5">
                         <label htmlFor="id_jenis_surat" className="text-sm font-medium text-slate-700">Jenis Surat</label>
-                        <select 
-                          id="id_jenis_surat" 
+                        <select
+                          id="id_jenis_surat"
                           className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
                           required
                           value={formData.id_jenis_surat}
@@ -480,7 +478,7 @@ export const FormPengajuan = () => {
                       {selectedKodeSurat === 'SKU' && (
                         <div className="flex flex-col gap-1.5">
                           <label htmlFor="data_usaha" className="text-sm font-medium text-slate-700">Detail Data Usaha <span className="text-rose-500">*</span></label>
-                          <input 
+                          <input
                             type="text"
                             id="data_usaha"
                             className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
@@ -497,7 +495,7 @@ export const FormPengajuan = () => {
                         <>
                           <div className="flex flex-col gap-1.5">
                             <label htmlFor="alamat_asal" className="text-sm font-medium text-slate-700">Alamat Tinggal Asal <span className="text-rose-500">*</span></label>
-                            <input 
+                            <input
                               type="text"
                               id="alamat_asal"
                               className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
@@ -510,7 +508,7 @@ export const FormPengajuan = () => {
                           </div>
                           <div className="flex flex-col gap-1.5">
                             <label htmlFor="alamat_domisili" className="text-sm font-medium text-slate-700">Alamat Domisili Sekarang <span className="text-rose-500">*</span></label>
-                            <input 
+                            <input
                               type="text"
                               id="alamat_domisili"
                               className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
@@ -523,7 +521,7 @@ export const FormPengajuan = () => {
                           </div>
                         </>
                       )}
-                      
+
                       {selectedKodeSurat === 'IK' && (
                         <>
                           <div className="flex flex-col gap-1.5">
@@ -583,7 +581,7 @@ export const FormPengajuan = () => {
 
                       <div className="flex flex-col gap-1.5">
                         <label htmlFor="keperluan" className="text-sm font-medium text-slate-700">Tujuan / Keperluan Surat <span className="text-rose-500">*</span></label>
-                        <textarea 
+                        <textarea
                           id="keperluan"
                           rows={3}
                           className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-none disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 select-text"
@@ -616,15 +614,14 @@ export const FormPengajuan = () => {
                                       {fileData[syarat] ? fileData[syarat].name : 'Belum ada file'}
                                     </p>
                                   </div>
-                                  <label 
-                                    htmlFor={syarat} 
-                                    className={`shrink-0 cursor-pointer px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${
-                                      fileData[syarat] ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20'
-                                    }`}
+                                  <label
+                                    htmlFor={syarat}
+                                    className={`shrink-0 cursor-pointer px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${fileData[syarat] ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/20'
+                                      }`}
                                   >
                                     {fileData[syarat] ? 'Ubah' : 'Pilih File'}
                                   </label>
-                                  <input 
+                                  <input
                                     type="file"
                                     id={syarat}
                                     accept=".jpg,.jpeg,.png,.pdf"
