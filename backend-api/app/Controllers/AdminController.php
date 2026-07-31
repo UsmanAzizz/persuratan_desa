@@ -132,7 +132,7 @@ class AdminController extends BaseApiController
                 'outputBase64'    => true,
             ]);
             $qrcode = new \chillerlan\QRCode\QRCode($qrOptions);
-            $frontendUrl = rtrim(getenv('FRONTEND_URL') ?: 'http://localhost:5173', '/');
+            $frontendUrl = rtrim(config('App')->baseURL, '/');
             $qrUrl = $frontendUrl . '/validasi/' . $qrToken;
             $qrBase64 = $qrcode->render($qrUrl);
             
