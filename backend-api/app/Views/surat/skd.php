@@ -66,15 +66,18 @@
     </div>
 
     <div class="signature-container">
-        <div class="qr-code">
-            <?php if(isset($qr_base64)): ?>
-                <img src="<?= $qr_base64 ?>" alt="QR Code">
-            <?php endif; ?>
-        </div>
         <div class="signature">
             <p style="margin:0; text-align: center;">Kutasari, <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p>
             <p style="margin:5px 0 0 0; text-align: center;">KEPALA DESA KUTASARI</p>
-            <div style="height: 100px;"></div>
+            
+            <div style="text-align: center; margin: 15px 0;">
+                <?php if(isset($qr_base64)): ?>
+                    <img src="<?= $qr_base64 ?>" alt="QR Code Validasi" style="width: 80px; height: 80px;" />
+                <?php else: ?>
+                    <div style="height: 80px;"></div>
+                <?php endif; ?>
+            </div>
+            
             <p class="kades-name" style="text-align: center; margin: 0; font-weight: bold; text-decoration: underline;">KUSNENDAR</p>
         </div>
         <div class="clear"></div>

@@ -56,7 +56,8 @@ class AdminController extends BaseApiController
     {
         $rules = [
             'status_baru' => 'required|in_list[menunggu,diproses,ditolak,selesai]',
-            'catatan'     => 'permit_empty|string'
+            'catatan'     => 'permit_empty|string',
+            'nomor_surat' => 'permit_empty|string'
         ];
 
         if (!$this->validate($rules)) {
@@ -89,6 +90,11 @@ class AdminController extends BaseApiController
             return $this->respondError('Alasan penolakan wajib diisi jika status ditolak', 400);
         }
 
+        $nomorSurat = $this->request->getVar('nomor_surat');
+        if ($statusBaru === 'diproses' && empty(trim($nomorSurat))) {
+            return $this->respondError('Nomor surat wajib diisi untuk diproses', 400);
+        }
+
         // Ekstraksi ID Petugas dari JWT (via Header)
         helper('jwt');
         $authHeader = $this->request->getServer('HTTP_AUTHORIZATION');
@@ -110,33 +116,10 @@ class AdminController extends BaseApiController
 
         if ($statusBaru === 'diproses') {
             $updateData['token_validasi'] = bin2hex(random_bytes(16));
+            $updateData['nomor_surat'] = trim($nomorSurat);
         }
 
         if ($statusBaru === 'selesai') {
-            // 0. Generate Nomor Surat Otomatis (Permendagri No. 1 Tahun 2023)
-            $klasifikasiMap = [
-                'SKD' => '470',
-                'SKU' => '500',
-                'SKTM' => '460',
-                'SKCK' => '330',
-                'IK' => '330',
-                'SKW' => '470',
-                'N1' => '474.2'
-            ];
-            $kodeSurat = $pengajuanDetail['kode_surat'] ?? '';
-            $kodeKlasifikasi = $klasifikasiMap[$kodeSurat] ?? '400';
-            $tahunIni = date('Y');
-            
-            $countTahunIni = $db->table('pengajuan_surat')
-                                ->where('status', 'selesai')
-                                ->where('YEAR(created_at)', $tahunIni)
-                                ->countAllResults();
-            $nomorUrut = str_pad($countTahunIni + 1, 3, '0', STR_PAD_LEFT);
-            $kodeDesa = 'DS.KTS';
-            
-            $nomorSurat = $kodeKlasifikasi . '/' . $nomorUrut . '/' . $kodeDesa . '/' . $tahunIni;
-            $updateData['nomor_surat'] = $nomorSurat;
-
             // 1. Buat Token QR
             $qrToken = bin2hex(random_bytes(16));
             $updateData['qr_token'] = $qrToken;
@@ -149,7 +132,8 @@ class AdminController extends BaseApiController
                 'outputBase64'    => true,
             ]);
             $qrcode = new \chillerlan\QRCode\QRCode($qrOptions);
-            $qrUrl = base_url('validasi/' . $qrToken); // URL Validasi Publik (Bisa dibuat nanti)
+            $frontendUrl = rtrim(getenv('FRONTEND_URL') ?: 'http://localhost:5173', '/');
+            $qrUrl = $frontendUrl . '/validasi/' . $qrToken;
             $qrBase64 = $qrcode->render($qrUrl);
             
             // 3. Tarik Data Utuh Warga & Jenis Surat untuk Template
@@ -213,7 +197,9 @@ class AdminController extends BaseApiController
         // Trigger WA Gateway Notifikasi
         if ($pengajuanDetail && !empty($pengajuanDetail['no_hp'])) {
             $pesan = "Halo Sdr/i *" . $pengajuanDetail['nama_lengkap'] . "*, \n\n";
-            $pesan .= "Pemberitahuan dari *Desa Kutasari* mengenai permohonan *" . $pengajuanDetail['nama_surat'] . "* Anda (Kode: " . $pengajuanDetail['kode_tracking'] . ").\n\n";
+            $pesan .= "Pemberitahuan dari *Desa Kutasari* mengenai permohonan *" . $pengajuanDetail['nama_surat'] . "* Anda.\n\n";
+            $pesan .= "KODE TRACKING ANDA (Sentuh untuk menyalin):\n";
+            $pesan .= "```" . $pengajuanDetail['kode_tracking'] . "```\n\n";
             
             if ($statusBaru === 'diproses') {
                 $pesan .= "⏳ Berkas Anda saat ini sedang dalam tahap *DIPROSES* dan menunggu persetujuan Kepala Desa.";

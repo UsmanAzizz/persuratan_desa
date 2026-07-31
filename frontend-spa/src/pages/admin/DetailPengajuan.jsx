@@ -20,7 +20,7 @@ export const DetailPengajuan = () => {
   
   const [activeTab, setActiveTab] = useState('detail');
   
-  const [updateForm, setUpdateForm] = useState({ status_baru: 'menunggu', catatan: '' });
+  const [updateForm, setUpdateForm] = useState({ status_baru: 'menunggu', catatan: '', nomor_surat: '' });
   const [updating, setUpdating] = useState(false);
   
   // State for image viewer modal
@@ -374,6 +374,24 @@ export const DetailPengajuan = () => {
                       </select>
                     </div>
                   </div>
+
+                  {updateForm.status_baru === 'diproses' && (
+                    <div className="space-y-2 shrink-0 mb-5">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex justify-between shrink-0">
+                        <span>Input Nomor Surat</span>
+                        <span className="text-rose-500">*wajib</span>
+                      </label>
+                      <input 
+                        type="text"
+                        className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                        placeholder="Contoh: 470/001/DS.KTS/2026"
+                        value={updateForm.nomor_surat}
+                        onChange={(e) => setUpdateForm({...updateForm, nomor_surat: e.target.value})}
+                        required
+                      />
+                      <p className="text-xs text-slate-400 mt-1">Nomor ini akan tertera di berkas cetak/PDF surat warga.</p>
+                    </div>
+                  )}
 
                   {updateForm.status_baru === 'ditolak' && (
                     <div className="space-y-2 flex-1 flex flex-col min-h-0">

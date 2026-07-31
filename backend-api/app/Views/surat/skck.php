@@ -88,14 +88,19 @@
         
         <div class="signature-box">
             <p style="margin:5px 0 0 0;">Mengetahui,</p>
-            <?php if(isset($qr_base64)): ?>
-                <img src="<?= $qr_base64 ?>" alt="QR Code" style="width:90px; height:90px; margin-top:5px;">
-            <?php endif; ?>
+            <div style="height: 60px;"></div>
         </div>
         
         <div class="signature-box-right">
             <p style="margin:5px 0 0 0;">KEPALA DESA KUTASARI</p>
-            <p class="kades-name" style="text-decoration: underline; margin-top: 60px; display:inline-block; font-weight: bold;">KUSNENDAR</p><br/>
+            <div style="text-align: center; margin: 10px 0;">
+                <?php if(isset($qr_base64)): ?>
+                    <img src="<?= $qr_base64 ?>" alt="QR Code Validasi" style="width: 80px; height: 80px;" />
+                <?php else: ?>
+                    <div style="height: 80px;"></div>
+                <?php endif; ?>
+            </div>
+            <p class="kades-name" style="text-decoration: underline; display:inline-block; font-weight: bold; margin-top: 0;">KUSNENDAR</p><br/>
         </div>
         
         <div class="clear"></div>

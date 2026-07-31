@@ -135,23 +135,18 @@
     </div>
 
     <div class="ttd-container">
-        <p style="margin-bottom: 0;">Kutasari, <?= tgl_indo(date('Y-m-d')) ?></p>
+        <p style="margin-bottom: 0;">Kutasari, <?= tgl_indo(date('Y-m-d', strtotime($created_at))) ?></p>
         <p style="margin-top: 0; margin-bottom: 0;">KEPALA DESA KUTASARI</p>
         
-        <?php
-            $ttdPath = FCPATH . 'assets/images/TTD_KADES.png';
-            $ttdBase64 = '';
-            if (file_exists($ttdPath) && function_exists('imagecreatefrompng')) {
-                $ttdBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($ttdPath));
-            }
-        ?>
-        <?php if(isset($qr_base64) && $ttdBase64): ?>
-            <img src="<?= $ttdBase64 ?>" alt="Tanda Tangan Kades" class="ttd-image" />
-        <?php endif; ?>
+        <div style="text-align: center; margin: 15px 0;">
+            <?php if(isset($qr_base64)): ?>
+                <img src="<?= $qr_base64 ?>" alt="QR Code Validasi" style="width: 80px; height: 80px;" />
+            <?php else: ?>
+                <div style="height: 80px;"></div>
+            <?php endif; ?>
+        </div>
         
-        <div style="height: 100px;"></div>
-        
-        <p class="ttd-name">KUSNENDAR</p>
+        <p class="ttd-name" style="margin-top:0;">KUSNENDAR</p>
     </div>
 
     <div class="clear"></div>

@@ -1,4 +1,4 @@
-python -m snowline_toolkit.cli init --apply---
+---
 name: Smart Text Replacer (Pure Python)
 description: Use this skill to safely replace strings or regex patterns across multiple files in a project. It uses pure Python for fast matching and provides mandatory dry-run previews and automatic backups before applying changes.
 ---

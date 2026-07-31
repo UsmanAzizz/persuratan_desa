@@ -1,0 +1,190 @@
+{
+  "search_4e2b351c142a55f026f00205bf1e8251": {
+    "signature": "d4145f36435921f08e90bc4aec556725",
+    "results": [],
+    "scanned": 33,
+    "skipped": 0
+  },
+  "reader_c08f155d2bcd327c2cec02a2871081ce": {
+    "file": "frontend-spa/src/pages/admin/DetailPengajuan.jsx",
+    "mtime": "1785290144.4082346",
+    "toc": [
+      {
+        "line": 12,
+        "type": "Arrow Function",
+        "name": "DetailPengajuan"
+      },
+      {
+        "line": 35,
+        "type": "Arrow Function",
+        "name": "fetchDetail"
+      },
+      {
+        "line": 79,
+        "type": "Arrow Function",
+        "name": "fetchPreview"
+      },
+      {
+        "line": 101,
+        "type": "Arrow Function",
+        "name": "handleUpdate"
+      },
+      {
+        "line": 117,
+        "type": "Arrow Function",
+        "name": "getStatusBadge"
+      },
+      {
+        "line": 167,
+        "type": "Arrow Function",
+        "name": "openViewer"
+      }
+    ]
+  },
+  "search_374fe7582126836f505cb988b89ff771": {
+    "signature": "d41d8cd98f00b204e9800998ecf8427e",
+    "results": [],
+    "scanned": 0,
+    "skipped": 0
+  },
+  "search_e3846bbe65ab5f78588811e6f49ae761": {
+    "signature": "221f9e5b19ce0e24bf6953ab2da5b752",
+    "results": [
+      {
+        "file": "frontend-spa/src/router\\index.jsx",
+        "blocks": [
+          {
+            "start": 41,
+            "end": 56,
+            "matches": [
+              46,
+              50
+            ]
+          }
+        ],
+        "lines": [
+          "import { createBrowserRouter } from 'react-router-dom';\n",
+          "import React from 'react';\n",
+          "\n",
+          "// Layouts\n",
+          "import { PublicLayout } from '../components/layout/PublicLayout';\n",
+          "import { AdminLayout } from '../components/layout/AdminLayout';\n",
+          "\n",
+          "// Public Pages\n",
+          "import { Home } from '../pages/public/Home';\n",
+          "import { FormPengajuan } from '../pages/public/FormPengajuan';\n",
+          "import { TrackStatus } from '../pages/public/TrackStatus';\n",
+          "import { ValidasiSurat } from '../pages/public/ValidasiSurat';\n",
+          "import { ValidasiKades } from '../pages/public/ValidasiKades';\n",
+          "\n",
+          "// Admin Pages\n",
+          "import { Login } from '../pages/auth/Login';\n",
+          "import { SessionExpired } from '../pages/auth/SessionExpired';\n",
+          "import { Dashboard } from '../pages/admin/Dashboard';\n",
+          "import { AntreanSurat } from '../pages/admin/AntreanSurat';\n",
+          "import { DetailPengajuan } from '../pages/admin/DetailPengajuan';\n",
+          "import { PengaturanWA } from '../pages/admin/PengaturanWA';\n",
+          "import { Laporan } from '../pages/admin/Laporan';\n",
+          "import { DataWarga } from '../pages/admin/DataWarga';\n",
+          "import { PengaturanAkun } from '../pages/admin/PengaturanAkun';\n",
+          "import { ContohSurat } from '../pages/admin/ContohSurat';\n",
+          "\n",
+          "// Mock Pages (Temporary placeholders removed)\n",
+          "\n",
+          "export const router = createBrowserRouter([\n",
+          "  {\n",
+          "    path: '/',\n",
+          "    element: <PublicLayout />,\n",
+          "    children: [\n",
+          "      {\n",
+          "        index: true,\n",
+          "        element: <Home />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'ajukan',\n",
+          "        element: <FormPengajuan />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'track',\n",
+          "        element: <TrackStatus />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'validasi/:token',\n",
+          "        element: <ValidasiSurat />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'validasi-kades/:token',\n",
+          "        element: <ValidasiKades />\n",
+          "      }\n",
+          "    ]\n",
+          "  },\n",
+          "  {\n",
+          "    path: '/login',\n",
+          "    element: <Login />\n",
+          "  },\n",
+          "  {\n",
+          "    path: '/session-expired',\n",
+          "    element: <SessionExpired />\n",
+          "  },\n",
+          "  {\n",
+          "    path: '/admin',\n",
+          "    element: <AdminLayout />,\n",
+          "    children: [\n",
+          "      {\n",
+          "        index: true,\n",
+          "        element: <Dashboard />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'pengajuan',\n",
+          "        element: <AntreanSurat />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'pengajuan/:id',\n",
+          "        element: <DetailPengajuan />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'pengaturan-wa',\n",
+          "        element: <PengaturanWA />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'laporan',\n",
+          "        element: <Laporan />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'warga',\n",
+          "        element: <DataWarga />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'pengaturan-akun',\n",
+          "        element: <PengaturanAkun />\n",
+          "      },\n",
+          "      {\n",
+          "        path: 'contoh-surat',\n",
+          "        element: <ContohSurat />\n",
+          "      }\n",
+          "    ]\n",
+          "  }\n",
+          "]);\n"
+        ]
+      }
+    ],
+    "scanned": 1,
+    "skipped": 0
+  },
+  "reader_97e052f06545455d72d3ca5c599b0735": {
+    "file": "frontend-spa/src/pages/public/ValidasiSurat.jsx",
+    "mtime": "1783260350.5224974",
+    "toc": [
+      {
+        "line": 5,
+        "type": "Arrow Function",
+        "name": "ValidasiSurat"
+      },
+      {
+        "line": 13,
+        "type": "Arrow Function",
+        "name": "validateToken"
+      }
+    ]
+  }
+}

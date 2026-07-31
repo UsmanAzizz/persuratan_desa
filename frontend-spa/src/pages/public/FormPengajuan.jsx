@@ -3,11 +3,13 @@ import { Card, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import apiClient from '../../services/apiClient';
-import { CheckCircle, Lock, User, FileText, Info } from 'lucide-react';
+import { CheckCircle, Lock, User, FileText, Info, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToastStore } from '../../store/useToastStore';
 
 export const FormPengajuan = () => {
   const navigate = useNavigate();
+  const addToast = useToastStore(state => state.addToast);
   const [jenisSurat, setJenisSurat] = useState([]);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -247,9 +249,21 @@ export const FormPengajuan = () => {
             Permohonan surat Anda telah direkam. Silakan simpan kode pelacakan di bawah ini untuk memantau status surat Anda.
           </p>
           
-          <div className="bg-slate-100 p-4 sm:p-5 rounded-2xl mb-6 border-2 border-dashed border-slate-300">
+          <div className="bg-slate-100 p-4 sm:p-5 rounded-2xl mb-6 border-2 border-dashed border-slate-300 relative group">
             <p className="text-xs sm:text-sm text-slate-500 font-bold mb-1 sm:mb-2 uppercase tracking-wider">Kode Pelacakan Anda</p>
-            <p className="text-3xl sm:text-4xl font-black text-blue-600 tracking-widest">{trackingCode}</p>
+            <div className="flex items-center justify-center gap-3">
+              <p className="text-3xl sm:text-4xl font-black text-blue-600 tracking-widest">{trackingCode}</p>
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(trackingCode);
+                  addToast('Kode berhasil disalin!', 'success');
+                }}
+                className="p-2 sm:p-3 bg-white hover:bg-blue-50 text-blue-600 rounded-xl shadow-sm border border-slate-200 transition-all active:scale-95 group-hover:border-blue-300"
+                title="Salin Kode"
+              >
+                <Copy className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">

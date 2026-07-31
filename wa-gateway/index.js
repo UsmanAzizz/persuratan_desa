@@ -82,18 +82,28 @@ app.get('/wa/qr', (req, res) => {
 app.post('/wa/logout', async (req, res) => {
     try {
         if (connectionStatus === 'CONNECTED') {
-            await client.logout();
+            try { await client.logout(); } catch(e) {}
         } else {
-            // If it's just stuck or want to reset
             try { await client.destroy(); } catch (e) {}
-            setTimeout(() => {
-                client.initialize();
-            }, 3000);
         }
+        
+        // Force delete the auth folder to ensure a fresh QR on next init
+        const fs = require('fs');
+        const path = require('path');
+        const authPath = path.join(__dirname, '.wwebjs_auth');
+        if (fs.existsSync(authPath)) {
+            fs.rmSync(authPath, { recursive: true, force: true });
+        }
+
         connectionStatus = 'DISCONNECTED';
         qrCodeDataUrl = null;
+        linkedNumber = null;
 
-        res.json({ success: true, message: 'Logged out or reset successfully' });
+        setTimeout(() => {
+            client.initialize();
+        }, 3000);
+
+        res.json({ success: true, message: 'Sesi di-reset secara paksa. Harap muat ulang.' });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }

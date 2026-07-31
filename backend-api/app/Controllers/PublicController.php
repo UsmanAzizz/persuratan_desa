@@ -71,7 +71,7 @@ class PublicController extends BaseApiController
         $pengajuanModel = new PengajuanSuratModel();
         
         $pengajuanDetail = $db->table('pengajuan_surat p')
-                              ->select('p.id_pengajuan, p.kode_tracking, p.status, p.no_hp, p.nik_warga, p.data_input, p.created_at, p.id_jenis_surat, j.kode_surat, j.nama_surat, w.nama_lengkap')
+                              ->select('p.id_pengajuan, p.kode_tracking, p.status, p.no_hp, p.nik_warga, p.data_input, p.created_at, p.id_jenis_surat, p.nomor_surat, j.kode_surat, j.nama_surat, w.nama_lengkap')
                               ->join('warga w', 'w.nik = p.nik_warga')
                               ->join('jenis_surat j', 'j.id_jenis = p.id_jenis_surat')
                               ->where('p.token_validasi', $token)
@@ -88,29 +88,8 @@ class PublicController extends BaseApiController
         if ($aksi === 'terima') {
             $statusBaru = 'selesai'; // Otomatis selesai dan terbit nomor
             
-            // Generate Nomor Surat Otomatis (Sama dengan AdminController)
-            $klasifikasiMap = [
-                'SKD' => '470',
-                'SKU' => '500',
-                'SKTM' => '460',
-                'SKCK' => '330',
-                'IK' => '330',
-                'SKW' => '470',
-                'N1' => '474.2'
-            ];
-            $kodeSurat = $pengajuanDetail['kode_surat'] ?? '';
-            $kodeKlasifikasi = $klasifikasiMap[$kodeSurat] ?? '400';
-            $tahunIni = date('Y');
-            
-            $countTahunIni = $db->table('pengajuan_surat')
-                                ->where('status', 'selesai')
-                                ->where('YEAR(created_at)', $tahunIni)
-                                ->countAllResults();
-            $nomorUrut = str_pad($countTahunIni + 1, 3, '0', STR_PAD_LEFT);
-            $kodeDesa = 'DS.KTS';
-            
-            $nomorSurat = $kodeKlasifikasi . '/' . $nomorUrut . '/' . $kodeDesa . '/' . $tahunIni;
-            $updateData['nomor_surat'] = $nomorSurat;
+            // Nomor surat sudah ada di DB dari input admin saat status 'diproses'
+            $nomorSurat = $pengajuanDetail['nomor_surat'] ?: '[Belum Diterbitkan]';
 
             // Generate Token Validasi QR
             $qrToken = bin2hex(random_bytes(16));
@@ -124,7 +103,8 @@ class PublicController extends BaseApiController
                 'outputBase64'    => true,
             ]);
             $qrcode = new \chillerlan\QRCode\QRCode($qrOptions);
-            $qrUrl = base_url('validasi/' . $qrToken);
+            $frontendUrl = rtrim(getenv('FRONTEND_URL') ?: 'http://localhost:5173', '/');
+            $qrUrl = $frontendUrl . '/validasi/' . $qrToken;
             $qrBase64 = $qrcode->render($qrUrl);
 
             $warga = $db->table('warga')->where('nik', $pengajuanDetail['nik_warga'])->get()->getRowArray();

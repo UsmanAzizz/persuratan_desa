@@ -85,6 +85,18 @@ export const ValidasiSurat = () => {
                   <p className="font-medium text-slate-700 text-base">{new Date(data.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                 </div>
               </div>
+              <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 mb-8 text-center shadow-sm">
+                <p className="text-xs sm:text-sm text-slate-500 font-medium mb-3 uppercase tracking-wider">Telah Ditandatangani Secara Digital Oleh:</p>
+                <p className="text-sm font-bold text-slate-800 mb-6">KEPALA DESA KUTASARI</p>
+                
+                <div className="flex justify-center mb-6">
+                  <div className="w-16 h-16 rounded-full bg-emerald-100/50 flex items-center justify-center border border-emerald-200">
+                    <ShieldCheck className="w-8 h-8 text-emerald-600" />
+                  </div>
+                </div>
+                
+                <p className="text-lg font-black text-slate-800 underline decoration-2 underline-offset-4 tracking-wide">KUSNENDAR</p>
+              </div>
 
               <Link to="/" className="inline-flex items-center justify-center w-full gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-colors">
                 Tutup Halaman
