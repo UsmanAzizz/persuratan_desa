@@ -134,7 +134,7 @@ export const FormPengajuan = () => {
       no_kk: '1234567890123456',
       no_hp: '+6288983838809',
       id_jenis_surat: selected.id_jenis,
-      keperluan: 'Keperluan Dummy / Testing'
+      keperluan: 'Test'
     }));
 
     setSelectedKodeSurat(kodeSurat);
@@ -399,8 +399,8 @@ export const FormPengajuan = () => {
                     isLoading={isVerifying}
                     disabled={!isForm1Complete}
                     className={`rounded-full px-8 py-2 font-bold w-full sm:w-auto text-sm transition-colors duration-300 ${isForm1Complete
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 cursor-pointer'
-                        : 'bg-slate-400 text-slate-100 shadow-none cursor-not-allowed hover:bg-slate-400'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 cursor-pointer'
+                      : 'bg-slate-400 text-slate-100 shadow-none cursor-not-allowed hover:bg-slate-400'
                       }`}
                   >
                     Verifikasi dan Lanjutkan
@@ -434,8 +434,8 @@ export const FormPengajuan = () => {
                   isLoading={loading}
                   disabled={!isVerified || !isForm2Complete}
                   className={`w-full sm:w-auto rounded-full px-6 py-1.5 font-bold transition-all duration-300 text-sm shrink-0 mt-2 sm:mt-1 ${isVerified && isForm2Complete
-                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 border-transparent'
-                      : 'bg-transparent border-slate-300 text-slate-400 cursor-not-allowed shadow-none hover:bg-transparent'
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 border-transparent'
+                    : 'bg-transparent border-slate-300 text-slate-400 cursor-not-allowed shadow-none hover:bg-transparent'
                     }`}
                 >
                   Kirim Pengajuan
