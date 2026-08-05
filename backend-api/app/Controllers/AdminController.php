@@ -198,7 +198,7 @@ class AdminController extends BaseApiController
         if ($pengajuanDetail && !empty($pengajuanDetail['no_hp'])) {
             $pesan = "Halo Sdr/i *" . $pengajuanDetail['nama_lengkap'] . "*, \n\n";
             $pesan .= "Pemberitahuan dari *Desa Kutasari* mengenai permohonan *" . $pengajuanDetail['nama_surat'] . "* Anda.\n\n";
-            $pesan .= "KODE TRACKING ANDA (Sentuh untuk menyalin):\n";
+            $pesan .= "KODE TRACKING ANDA:\n";
             $pesan .= "```" . $pengajuanDetail['kode_tracking'] . "```\n\n";
             
             if ($statusBaru === 'diproses') {
