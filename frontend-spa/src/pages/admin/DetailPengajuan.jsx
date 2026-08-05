@@ -71,7 +71,7 @@ export const DetailPengajuan = () => {
 
   // Fetch PDF Preview
   useEffect(() => {
-    if (activeTab === 'preview' && !pdfUrl) {
+    if (activeTab === 'preview') {
       if ((data?.status === 'selesai' || data?.status === 'disetujui_kades') && data?.file_path) {
         setPdfUrl(`${BASE_URL}/${data.file_path}`);
         return;
@@ -80,6 +80,7 @@ export const DetailPengajuan = () => {
       const fetchPreview = async () => {
         try {
           const response = await apiClient.get(`/admin/pengajuan/${id}/preview`, {
+            params: { nomor_surat: updateForm.nomor_surat },
             responseType: 'blob'
           });
           const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -90,7 +91,7 @@ export const DetailPengajuan = () => {
       };
       fetchPreview();
     }
-  }, [activeTab, id, pdfUrl, data?.status, data?.file_path]);
+  }, [activeTab, id, data?.status, data?.file_path, updateForm.nomor_surat]);
 
   // Clean up ObjectURL
   useEffect(() => {

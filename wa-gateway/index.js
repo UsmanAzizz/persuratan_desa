@@ -129,6 +129,9 @@ app.post('/wa/send', async (req, res) => {
         // Remove spaces, + or - 
         formattedTarget = formattedTarget.replace(/[\+\-\s]/g, '');
         
+        // Remove session id (:xx) if exists (whatsapp multi-device)
+        formattedTarget = formattedTarget.split(':')[0];
+        
         // WhatsApp Web JS requires appending @c.us for regular numbers
         formattedTarget = `${formattedTarget}@c.us`;
 

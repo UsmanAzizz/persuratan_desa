@@ -285,18 +285,20 @@ class AdminController extends BaseApiController
         // Siapkan Data
         $warga = $db->table('warga')->where('nik', $pengajuan['nik_warga'])->get()->getRowArray();
         
+        $customNomor = $this->request->getVar('nomor_surat');
+        $nomorSurat = $customNomor ?: ($pengajuan['nomor_surat'] ?: '[Belum Diterbitkan]');
+
         $viewData = [
             'warga' => $warga,
             'data_input' => json_decode($pengajuan['data_input'], true),
             'id_pengajuan' => $pengajuan['id_pengajuan'],
             'created_at' => $pengajuan['created_at'],
             'qr_base64' => null, // Default null untuk diproses
-            'nomor_surat' => '[Belum Diterbitkan]' // Default
+            'nomor_surat' => $nomorSurat
         ];
 
-        // Jika selesai, tampilkan QR dan nomor surat
+        // Jika selesai, tampilkan QR
         if ($pengajuan['status'] === 'selesai' || $pengajuan['status'] === 'disetujui_kades') {
-            $viewData['nomor_surat'] = $pengajuan['nomor_surat'] ?: '[Belum Diterbitkan]';
             if ($pengajuan['qr_token']) {
                 $qrOptions = new \chillerlan\QRCode\QROptions([
                     'version'         => 5,
@@ -481,7 +483,8 @@ class AdminController extends BaseApiController
 
     public function waSendTest()
     {
-        $target = $this->request->getVar('target');
+        $json = $this->request->getJSON();
+        $target = $json->target ?? $this->request->getVar('target');
         $message = "🤖 *UJI COBA SISTEM*\n\nHalo! Jika pesan ini sampai ke Anda, artinya *WhatsApp Gateway Desa Kutasari* telah terhubung dan berfungsi dengan sempurna. ✅\n\n_Pesan otomatis dikirim pada: " . date('Y-m-d H:i:s') . "_";
         
         return $this->_proxyWaGateway('/wa/send', 'POST', [
