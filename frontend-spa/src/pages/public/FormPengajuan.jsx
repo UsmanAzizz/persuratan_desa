@@ -304,7 +304,7 @@ export const FormPengajuan = () => {
         <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
           Formulir Pengajuan Surat
         </h1>
-        <div className="absolute right-0 top-0">
+        <div className="absolute right-0 top-0 hidden">
           <select onChange={handleFillDummy} className="text-xs px-2 py-1 bg-amber-100 text-amber-800 border border-amber-300 rounded shadow-sm focus:outline-none font-medium cursor-pointer">
             <option value="">🚀 Auto-Fill Dummy...</option>
             {jenisSurat.map(j => (

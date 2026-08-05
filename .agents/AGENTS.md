@@ -9,7 +9,14 @@ python .agents/skills/companion.py "<instruksi user>"
 ```
 
 Baca hasilnya. Gunakan sebagai referensi tool mana yang dipanggil.
-Ini berlaku untuk SEMUA instruksi, termasuk yang terlihat sederhana.
+Ini berlaku untuk SEMUA instruksi kerja teknis, termasuk yang terlihat sederhana.
+
+**Pengecualian — JANGAN panggil companion untuk:**
+1. Sapaan/basa-basi ("hai", "halo", "terima kasih", dll) — balas natural langsung, tidak perlu analisis intent.
+2. Pengecekan ekosistem project di awal sesi (lihat bagian "Auto-Setup Project Essentials" di bawah) — itu proses tersendiri yang jalan independen, tidak lewat companion.
+3. Pertanyaan yang murni percakapan (bukan instruksi kerja), misal user bertanya soal status/opini, bukan minta eksekusi tool.
+
+Jika ragu apakah sebuah pesan itu instruksi kerja atau sekadar percakapan, pakai heuristik sederhana: apakah menjawabnya butuh menyentuh file/kode project? Jika ya, panggil companion dulu. Jika tidak, jawab langsung.
 
 **Sebelum membuat fungsi baru:**
 Definisi semua variabel yang akan digunakan terlebih dahulu (untuk menghindari *ReferenceError* atau variabel yang belum di-*destructure*).
@@ -61,6 +68,18 @@ Hanya tool yang MEMODIFIKASI file yang butuh persetujuan:
 - `import_fixer --apply` — fix import paths
 
 **BARU JALAN SETELAH USER SETUJU.**
+
+---
+
+## 🚨 Security Findings - Mandatory Halt
+
+Jika `project_guardian` melaporkan temuan CRITICAL:
+1. **STOP SEGERA** — jangan lanjutkan task atau instruksi lain
+2. **LAPORKAN** temuan tersebut ke user dengan detail lengkap
+3. **TUNGGU** konfirmasi eksplisit dari user sebelum melanjutkan
+4. Ini berlaku **MESKIPUN** instruksi asli tidak menyebut soal keamanan
+
+Meskipun user meminta "cuma fix X" tanpa menyebut keamanan, temuan CRITICAL tetap diutamakan — laporkan dulu.
 
 ---
 
@@ -127,3 +146,32 @@ Setelah user setuju:
 - Pakai format tag: [TASK], [DONE], [WARN], [INFO]
 - Bahasa Indonesia, lugas, tanpa hype
 - ⚠️ WAJIB laporkan error yang diatasi sendiri
+
+**7. "Grill First" & Formal Planning (The `_plan` Convention):**
+- Jika prompt user mengandung kata kunci `_plan` (case-insensitive, contoh: `_plan buat fitur login`), Anda DIWAJIBKAN untuk masuk ke mode **Formal Planning** dan dilarang keras langsung memodifikasi kode.
+- **Tahap 1 (Grill First):** Jangan langsung berasumsi. Gunakan `deep_analyzer` atau `context_mapper` untuk membaca struktur proyek, lalu ajukan 1-2 pertanyaan terarah (Grill) kepada user untuk memperjelas batasan atau edge-cases.
+- **Tahap 2 (Blueprint):** Setelah asumsi terjawab, susun rencana eksekusi menggunakan struktur `plan_tracker/PLAN_TEMPLATE.md`. Bagian "Keputusan & Asumsi" dan "Menunggu Konfirmasi" wajib diisi.
+- **Tahap 3 (Explicit Approval):** Berhenti dan tunggu konfirmasi eksplisit dari user ("Proceed", "Silakan lanjut") SEBELUM mengeksekusi tool WRITE apa pun.
+
+---
+
+## 🔍 Bukti Live-Test WAJIB Mentah, Bukan Ringkasan
+
+Setiap kali melaporkan hasil live-test atau eksekusi command, WAJIB tampilkan:
+
+1. **Command asli** yang dijalankan, persis apa adanya
+2. **Output literal** yang keluar di terminal, TIDAK BOLEH diringkas, dipotong, atau diganti placeholder seperti "[Output: ALL]" atau "Test passed ✅"
+3. Jika output panjang, tetap tampilkan SELURUHNYA — panjang bukan alasan untuk meringkas
+
+**Yang DILARANG:**
+- Tabel ringkasan ("Step 1: ✅ Success") sebagai pengganti output asli
+- Placeholder yang menjanjikan bukti tapi tidak menunjukkannya
+- Kalimat "Test berhasil" tanpa command dan output asli
+
+**Yang BOLEH:**
+- Ringkasan/tabel BOLEH ditambahkan SETELAH output mentah, BUKAN MENGGANTIKAN output mentah
+- User harus bisa baca sendiri apa yangbenar-benar terjadi di terminal
+
+**Prinsip:** ringkasan/tabel adalah TAMBAHAN, BUKAN PENGGANTI bukti mentah.
+
+**Scope aturan ini:** Hanya berlaku SAAT AI MEMBANGUN/MEMPERBAIKI tools/companion/ekosistem snowline ITU SENDIRI (development mode). Saat tools dipakai sebagai alat bantu di project lain, cukup hasil ringkas natural.

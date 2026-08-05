@@ -75,8 +75,8 @@ export const PengaturanWA = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto h-[400px]">
-      <Card className="border-0 shadow-sm rounded-3xl overflow-hidden bg-white h-full flex flex-col">
+    <div className="max-w-4xl mx-auto min-h-[450px] flex flex-col">
+      <Card className="border-0 shadow-sm rounded-3xl overflow-hidden bg-white flex-1 flex flex-col">
         <div className="h-16 bg-slate-900 relative overflow-hidden flex items-center px-6 shrink-0">
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500 opacity-20 rounded-full blur-3xl -mr-10 -mt-10"></div>
           <div className="flex items-center gap-4 relative z-10">

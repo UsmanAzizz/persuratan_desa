@@ -8,11 +8,28 @@ if sys.stdout.encoding.lower() != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 
 def find_usages(project_root, target_name):
-    """Scan all files to find which ones mention target_name"""
+    """Scan all files to find import/require usages of target_name (no false positives from comments/strings)."""
     usages = set()
     exclude_dirs = {'.git', 'node_modules', 'dist', 'build', '.agents', 'vendor', '.history', 'quarantine'}
 
-    pattern = re.compile(r'\b' + re.escape(target_name) + r'\b')
+    escaped = re.escape(target_name)
+    # Suffix pattern: target name can appear after ./ ../ or folder/ prefixes in quoted paths.
+    # e.g. './Button', '../components/Button', 'utils/Button'
+    quoted_suffix = rf"['\"](?:\.\/|\.\.\/|[^'\"]*/)?{escaped}['\"]"
+
+    patterns = [
+        # ES module named import (exact + suffix): import { Foo } from 'Foo' or import Foo from './Foo'
+        re.compile(rf"import\s+(?:\{{[^}}]*}}|[^{{}};\n]+)\s+from\s+{quoted_suffix}"),
+        re.compile(rf"import\s+{{[^}}]*}}\s+from\s+{quoted_suffix}"),
+        # CommonJS require (exact + suffix): require('./Foo') or require('Foo')
+        re.compile(rf"require\s*\(\s*{quoted_suffix}"),
+        # Dynamic import (exact + suffix): import('./Foo') or import('Foo')
+        re.compile(rf"import\s*\(\s*{quoted_suffix}"),
+        # Export from (exact + suffix)
+        re.compile(rf"export\s+.*?\s+from\s+{quoted_suffix}"),
+        # Direct bareword import (exact + suffix): import 'Foo' or import './Foo'
+        re.compile(rf"import\s+{quoted_suffix}"),
+    ]
 
     for root, dirs, files in os.walk(project_root):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
@@ -24,7 +41,7 @@ def find_usages(project_root, target_name):
             try:
                 with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
-                    if pattern.search(content):
+                    if any(p.search(content) for p in patterns):
                         usages.add(filepath)
             except Exception:
                 pass

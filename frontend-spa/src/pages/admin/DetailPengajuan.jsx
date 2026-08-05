@@ -71,7 +71,7 @@ export const DetailPengajuan = () => {
 
   // Fetch PDF Preview
   useEffect(() => {
-    if (activeTab === 'preview' && !pdfUrl && data?.status !== 'menunggu') {
+    if (activeTab === 'preview' && !pdfUrl) {
       if ((data?.status === 'selesai' || data?.status === 'disetujui_kades') && data?.file_path) {
         setPdfUrl(`${BASE_URL}/${data.file_path}`);
         return;
@@ -207,15 +207,11 @@ export const DetailPengajuan = () => {
             <Activity className="w-4 h-4" /> Tindak Lanjut
           </button>
           <button
-            disabled={data.status === 'menunggu'}
-            title={data.status === 'menunggu' ? "Preview belum tersedia untuk status menunggu" : ""}
             onClick={() => setActiveTab('preview')}
-            className={`flex-1 px-6 py-4 font-bold text-sm transition-all flex items-center justify-center gap-2 border-b-2 ${
-              data.status === 'menunggu' 
-                ? 'opacity-50 cursor-not-allowed border-transparent text-slate-400 bg-slate-50'
-                : activeTab === 'preview' 
-                  ? 'border-blue-600 text-blue-700 bg-white cursor-pointer' 
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100 cursor-pointer'
+            className={`flex-1 px-6 py-4 font-bold text-sm transition-all flex items-center justify-center gap-2 border-b-2 cursor-pointer ${
+              activeTab === 'preview' 
+                ? 'border-blue-600 text-blue-700 bg-white' 
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100'
             }`}
           >
             <FileText className="w-4 h-4" /> Preview Surat
